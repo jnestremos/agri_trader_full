@@ -1,6 +1,6 @@
 <template>
   <div class="showFarm" style="position:relative; height:100%;">
-    <router-link to="/farms" style="position:absolute; top: 1%; left:1%; z-index:99999"><h3>&LeftTriangle; Back</h3></router-link>
+    <router-link to="/farms" style="position:absolute; top: 1%; left:1%;"><h3>&LeftTriangle; Back</h3></router-link>
     <div class="grid">
       <div class="farm-image">        
         <img alt="" width="100%" style="border-radius:10%;" :src="[getFarmDetails.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmDetails.farm.farm_imageUrl}`) : '']"
@@ -50,7 +50,10 @@
         alt="" width="100%">
       </div>                       
       <div class="farm-produces d-flex align-items-center justify-content-center" style="position:relative">
-        <h2 style="position:absolute; right:2%; top:2%;">+</h2>
+        <h2 style="position:absolute; right:2%; top:2%; cursor:pointer;" @click="triggerModal()">+</h2>
+        <b-modal id="modal-1" title="Add Produce">
+           <p class="my-4">Hello from modal!</p>
+        </b-modal>
         <h3 v-if="getFarmDetails.produces"></h3>
         <h3 v-else>NO PRODUCES</h3>
       </div>
@@ -84,7 +87,10 @@ export default {
       ...mapGetters(['getFarmDetails'])
     },
     methods:{
-      ...mapActions(['readyApp', 'fetchFarm']),      
+      ...mapActions(['readyApp', 'fetchFarm']), 
+      triggerModal(){
+        this.$bvModal.show('modal-1')
+      }     
     }
 }
 </script>
@@ -97,8 +103,7 @@ export default {
   grid-template-columns: repeat(6, 1fr);
   position:absolute;     
   top: 6%;
-  left: 10%;
-  z-index:9999;  
+  left: 10%;    
 }
 
 

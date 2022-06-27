@@ -19,11 +19,11 @@
         </b-nav-text>                    
       </b-nav>
     </div>
-    <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:99;" class="d-flex align-items-center" id="moduless">
+    <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
       <div style="background-color:green; width:100%; height:40%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
           <li>Projects</li>
-          <li>Produces</li>
+          <li><router-link to="/produces">Produces</router-link></li>
           <li><router-link to="/farms">Farms and Owners</router-link></li>
           <li>Bid Orders</li>
           <li>Delivery</li>
@@ -61,7 +61,7 @@ export default {
         if(!this.show){
           modules.style.opacity = '0'       
           modules.style.display = 'none'                 
-          moduless.style.zIndex = '99'
+          moduless.style.zIndex = '-1'
         }                  
       },
       moduleEnter(){
@@ -80,7 +80,7 @@ export default {
         this.show = false        
         modules.style.opacity = '0'           
         modules.style.display = 'none'  
-        moduless.style.zIndex = '99'        
+        moduless.style.zIndex = '-1'        
       },
       logoutUser(){            
         this.logout()

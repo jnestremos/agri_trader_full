@@ -13,6 +13,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RefundController;
 use App\Models\Farm;
 use App\Models\FarmOwner;
+use App\Models\Produce;
 use App\Models\Trader;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -135,8 +136,23 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/partner/assignToFarm', 'assignToFarm');
             });
         });
+        
+        Route::get('/produces', function (){
+            $trader = Trader::where('user_id', auth()->id())->first();
+            return response([
+                'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->paginate(6)
+            ], 200);
+        });
 
-        Route::prefix('produce')->group(function () {
+        Route::get('/produce/details/{id}', function ($id){
+            $trader = Trader::where('user_id', auth()->id())->first();
+            return response([
+                'produce' => Produce::find($id),
+                'grades' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()
+            ], 200);
+        });
+
+        Route::prefix('produce')->group(function () {            
             Route::post('/add', [ProduceController::class, 'assignProduceToTrader']);
         });
 
