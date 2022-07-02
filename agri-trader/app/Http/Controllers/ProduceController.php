@@ -13,7 +13,8 @@ class ProduceController extends Controller
     {
         $produce = $request->validate([
             'produce_id' => 'required|exists:produces,id',
-            'produce_numOfGrades' => 'required|numeric'
+            'produce_numOfGrades' => 'required|numeric',
+            'prod_details' => 'nullable|string'
         ]);
 
         $result = DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first();
@@ -28,7 +29,9 @@ class ProduceController extends Controller
         $produce->traders()->attach($trader);
 
         DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
-            'produce_numOfGrades' => $request->produce_numOfGrades
+            'prod_name' => $produce->prod_name,            
+            'produce_numOfGrades' => $request->produce_numOfGrades,
+            'prod_details' => $request->prod_details
         ]);
 
         return response([

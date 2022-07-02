@@ -94,6 +94,12 @@ class FarmController extends Controller
         $produce = Produce::find($request->produce_id);
         $farm->produces()->attach($produce);
 
+        $prodNumOfFarms = DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first()->prod_numOfFarms;
+
+        DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
+            'prod_numOfFarms' => $prodNumOfFarms + 1
+        ]);
+
         return response([
             'message' => 'Successful!'
         ], 200);

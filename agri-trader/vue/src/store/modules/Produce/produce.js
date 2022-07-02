@@ -19,7 +19,8 @@ const state = {
         prod_type: null,
         prod_timeOfHarvest: null,
         produce_numOfGrades: null
-    }
+    },
+    produces: null
 }
 
 const getters = {
@@ -31,13 +32,16 @@ const getters = {
     },
     getProduceDetails(){
         return state.produce_details
+    },
+    getAllProduceOptions(){
+        return state.produces
     }
 }
 
 const actions = {
     fetchAllProduces({ commit }, query = null){
         if(query){
-            return axiosClient.get(`/produces/${query}`)
+            return axiosClient.get(`/produces/?${query}`)
             .then((res) => {
                 console.log(res.data)
                 commit('setAllProduces', res.data)
@@ -64,7 +68,15 @@ const actions = {
             console.log(res.data)
             commit('setProduce', res.data)
         })
-    },      
+    },   
+    getAllProduces({ commit }){
+        return axiosClient.get('produces/all')
+        .then((res) => {
+            console.log(res.data)
+            commit('setProduceOptions', res.data)
+        })
+        
+    }   
 }
 
 const mutations = {
@@ -96,6 +108,9 @@ const mutations = {
         state.produce_details.prod_timeOfHarvest = data.produce.prod_timeOfHarvest
         state.produce_details.produce_numOfGrades = data.grades.produce_numOfGrades            
     },
+    setProduceOptions: (state, data) => {
+        state.produces = data.produces
+    }
 }
 
 

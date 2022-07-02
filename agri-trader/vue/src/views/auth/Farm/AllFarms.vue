@@ -50,8 +50,7 @@ import farm from '../../../store/modules/Farm/farm'
 
 export default {
     name: "allFarms",
-    created(){
-        this.readyApp()                       
+    created(){                               
         this.fetchAllFarms()
         .then(() => {
             //this.loading = true                           
@@ -60,7 +59,7 @@ export default {
                 this.fetchAllFarms(query)                
             }
             this.filtered = this.filteredFarmArray()   
-                     
+            this.readyApp()
         })
         this.fetchAllOwners()        
     },   

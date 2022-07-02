@@ -46,7 +46,7 @@
                 <div class="d-none" id="showExisting">                   
                     <label for="owner_id" class="form-label me-4" style="width:15%;">Select Farm Owner:</label>
                     <select name="owner_id" id="ownerSelect" class="form-select" @change="setOwner($event)">
-                        <option :value="owner.id" v-for="owner in getOwners" :key="owner.id">{{ owner.owner_firstName }} {{ owner.owner_lastName }}</option>
+                        <option :value="owner.id" v-for="(owner, index) in getOwners" :key="index">{{ owner.owner_firstName }} {{ owner.owner_lastName }}</option>
                     </select>
                 </div>
                 <div id="errors" v-if="errors">
@@ -109,12 +109,13 @@ export default {
             var isExisting = document.getElementById('isExisting')
             isExisting.className = 'd-none'
             var showExisting = document.getElementById('showExisting')
-            showExisting.className = 'd-flex justify-content-between align-items-center w-100'
+            showExisting.className = 'd-flex justify-content-between align-items-center w-100'            
             this.farm.owner_id = this.getOwners[0].id
         },
         setImageUrl(e){            
             const file = e.target.files[0]                                            
             var coverBg = document.getElementById('coverBg')
+            console.log(file)
             if(file){                                      
                 formData.append('farm_imageUrl', file, file.name)                     
                 coverBg.style.backgroundColor = ''

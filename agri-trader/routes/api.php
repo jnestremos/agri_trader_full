@@ -137,11 +137,26 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             });
         });
         
+        Route::get('/produces/all', function(){
+            return response([
+                'produces' => Produce::all()
+            ]);
+        });
+
         Route::get('/produces', function (){
             $trader = Trader::where('user_id', auth()->id())->first();
-            return response([
-                'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->paginate(6)
-            ], 200);
+            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();
+            if(count($produces) > 6){
+                return response([
+                    'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->paginate(6)
+                ], 200);
+            }
+            else{
+                return response([
+                    'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->get()
+                ], 200);
+            }
+            
         });
 
         Route::get('/produce/details/{id}', function ($id){

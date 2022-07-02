@@ -67,6 +67,13 @@ class ProduceYieldController extends Controller
         }
 
 
+        $prodTotalQty = DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first()->prod_totalQty;
+
+        DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
+            'prod_totalQty' => $prodTotalQty + $yield->produce_yield_qtyHarvested,
+            'prod_lastDateOfHarvest' => ProduceYield::where('produce_id', $request->produce_id)->orderBy('desc')->first()
+        ]);
+
         return response([
             'message' => 'Harvest Successful!'
         ], 200);
