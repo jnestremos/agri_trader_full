@@ -10,18 +10,19 @@
     </div>
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getProduces.length > 0">            
-            <div class="row mb-5 justify-content-center" v-for="(produce, index) in filtered" :key="index">                     
+            <div class="row mb-5" v-for="(produce, index) in filtered" :key="index">                     
                 <div class="col-4" style="height:30vh" v-for="(p, i) in produce" :key="i">                
-                    <div class="d-flex produce" style="height:100%; border-radius:50px; position: relative;" @click="showFarm(f.id)">
+                    <div class="d-flex produce" style="height:100%; border-radius:50px; position: relative;" @click="showProduce(p.produce_id)">
                         <div class="" style="position: absolute; top:5%; left:5%; 
-                        width:85%;">
+                        width:90%;">
                             <div class="d-flex mb-4">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
                                 <h3 class="mb-4">{{ p.prod_name }}</h3>
                             </div>                                                                                
                             <h4 class="d-flex">Quantity: <p class="ms-3">{{ p.prod_totalQty }}</p></h4>
                             <h4 class="d-flex">Farms Associated: <p class="ms-3">{{ p.prod_numOfFarms }}</p></h4>
-                            <h4 class="d-flex">Date of Harvest: <p class="ms-3">{{ p.prod_lastDateOfHarvest }}</p></h4>
+                            <h4 class="d-flex" v-if="p.prod_lastDateOfHarvest">Date of Harvest: <p class="ms-3">{{ p.prod_lastDateOfHarvest }}</p></h4>
+                            <h4 class="d-flex" v-else>Date of Harvest: <p class="ms-3">No Harvest Date Recorded</p></h4>
                         </div>                                                
                     </div>
                 </div>                
@@ -95,6 +96,7 @@ export default {
             return filtered
         },
         showProduce(id){
+            console.log(id)
             this.fetchProduce(id)
             .then(() => {
                 this.$router.push({path : `/produce/${id}`})

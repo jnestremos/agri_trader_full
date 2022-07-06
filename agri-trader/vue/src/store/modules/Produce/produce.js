@@ -1,6 +1,5 @@
 import axiosClient from '../../../axios'
 
-
 const state = {
     produce_data: {
         produces: [],
@@ -18,9 +17,11 @@ const state = {
         prod_name: null,
         prod_type: null,
         prod_timeOfHarvest: null,
-        produce_numOfGrades: null
+        produce_numOfGrades: null,
+        produce_yield_dateHarvestTo: null
     },
-    produces: null
+    produces: null,
+    filtered_produces: []
 }
 
 const getters = {
@@ -35,7 +36,10 @@ const getters = {
     },
     getAllProduceOptions(){
         return state.produces
-    }
+    },
+    getFilteredProduces(){
+        return state.filtered_produces
+    }    
 }
 
 const actions = {
@@ -55,8 +59,8 @@ const actions = {
             })
         }
     },
-    addProduce({ commit }){
-        return axiosClient.post('/produce/add')
+    addProduce({ commit }, produce){
+        return axiosClient.post('/produce/add', produce)
         .then((res) => {
             console.log(res.data)
             commit('asd')
@@ -74,8 +78,14 @@ const actions = {
         .then((res) => {
             console.log(res.data)
             commit('setProduceOptions', res.data)
+        })        
+    },
+    produceSelection({ commit }){
+        return axiosClient.get('/producess')
+        .then((res) => {
+            console.log(res.data)
+            commit('setFilteredProduces', res.data)
         })
-        
     }   
 }
 
@@ -106,10 +116,12 @@ const mutations = {
         state.produce_details.prod_name = data.produce.prod_name
         state.produce_details.prod_type = data.produce.prod_type
         state.produce_details.prod_timeOfHarvest = data.produce.prod_timeOfHarvest
-        state.produce_details.produce_numOfGrades = data.grades.produce_numOfGrades            
+        state.produce_details.produce_numOfGrades = data.grades            
+        state.produce_details.prod_numOfFarms = data.farms            
+        state.produce_details.produce_yield_dateHarvestTo = data.produce_yield_dateHarvestTo            
     },
-    setProduceOptions: (state, data) => {
-        state.produces = data.produces
+    setFilteredProduces: (state, data) => {
+        state.filtered_produces = data.produces
     }
 }
 

@@ -21,18 +21,34 @@ class ProduceController extends Controller
 
         if (!$produce || $result) {
             return response([
-                'error' => 'Invalid produce details!'
+                'error' => 'Invalid produce details!/Produce Already Added!'
             ], 400);
-        }
+        }    
         $produce = Produce::find($request->produce_id);
-        $trader = Trader::find(auth()->id());
-        $produce->traders()->attach($trader);
+        $trader = Trader::find(auth()->id()); 
+        if($request->produce_numOfGrades > 1){
+            $classes = ['A', 'B', 'C'];
+            for($i = 0; $i < 3; $i++){
+                $produce->traders()->attach($trader);       
+                DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()], ['prod_name', '=', null]])->update([
+                    'prod_name' => $produce->prod_name . ' (Class ' . $classes[$i] . ')',            
+                    'produce_numOfGrades' => $request->produce_numOfGrades,
+                    'prod_details' => $request->prod_details,
+                    'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest
+                ]);
+            }            
+        }
+        else{
+            $produce->traders()->attach($trader); 
+            DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
+                'prod_name' => $produce->prod_name,            
+                'produce_numOfGrades' => $request->produce_numOfGrades,
+                'prod_details' => $request->prod_details,
+                'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest
+            ]);
+        }
 
-        DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
-            'prod_name' => $produce->prod_name,            
-            'produce_numOfGrades' => $request->produce_numOfGrades,
-            'prod_details' => $request->prod_details
-        ]);
+        
 
         return response([
             'message' => 'Successful!'

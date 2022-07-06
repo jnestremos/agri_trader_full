@@ -121,7 +121,13 @@ const actions = {
             console.log(res.data)
             commit('setFarm', res.data)
         })
-    },    
+    },
+    addProduceToFarm({ commit }, data){
+        return axiosClient.post('farm/add/produce', data)
+        .then((res) => {
+            commit('setFarmProduce', res.data)
+        })
+    }    
 };
 
 
@@ -171,7 +177,10 @@ const mutations = {
             state.farm_details.farm_partners = data.farm_partners
         }
         
-    },    
+    }, 
+    setFarmProduce(state, data){
+        state.farm_details.produces = data.produces
+    }   
 };
 
 

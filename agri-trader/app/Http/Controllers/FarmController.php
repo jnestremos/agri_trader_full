@@ -76,11 +76,11 @@ class FarmController extends Controller
     public function addProduce(Request $request)
     {
         $query = $request->validate([
-            'farm_id' => 'required|exists:farms,id',
-            'produce_id' => 'required|exists:produces,id',
+            'id' => 'required',        
+            'farm_id' => 'required|exists:farms,id',    
         ]);
 
-        $result1 = DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first();
+        $result1 = DB::table('produce_trader')->where('id', '=', $request->id)->first();
         $owner = Farm::find($request->farm_id)->farm_owner_id;
         $result2 = DB::table('owner_trader')->where([['farm_owner_id', '=', $owner], ['trader_id', '=', auth()->id()]])->first();
 
@@ -90,18 +90,24 @@ class FarmController extends Controller
             ], 400);
         }
 
-        $farm = Farm::find($request->farm_id);
-        $produce = Produce::find($request->produce_id);
-        $farm->produces()->attach($produce);
+        $farm = Farm::find($request->farm_id);  
+        $produce = DB::table('produce_trader')->where('id', '=', $request->id)->first();      
+        DB::table('farm_produce')->insert([
+            'farm_id' => $farm->id,
+            'produce_trader_id' => $request->id,
+            'prod_name' => $produce->prod_name
+        ]);
+        // $farm->produces()->attach($produce);
 
-        $prodNumOfFarms = DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first()->prod_numOfFarms;
+        $prodNumOfFarms = DB::table('produce_trader')->where('id', '=', $request->id)->first()->prod_numOfFarms;
 
-        DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
+        DB::table('produce_trader')->where('id', '=', $request->id)->update([
             'prod_numOfFarms' => $prodNumOfFarms + 1
         ]);
+        
 
         return response([
-            'message' => 'Successful!'
+            'produces' => DB::table('farm_produce')->where('farm_id', $request->farm_id)->get()
         ], 200);
     }
 }

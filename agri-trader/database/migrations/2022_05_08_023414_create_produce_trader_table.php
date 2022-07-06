@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('produce_trader', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('trader_id')->constrained('traders')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('produce_id')->constrained('produces')->onUpdate('cascade')->onDelete('cascade');
             $table->string('prod_name')->nullable();
@@ -22,6 +23,8 @@ return new class extends Migration
             $table->date('prod_lastDateOfHarvest')->nullable();
             $table->string('prod_details')->nullable();
             $table->integer('produce_numOfGrades')->nullable();
+            $table->string('produce_yield_dateHarvestTo')->nullable();
+            $table->string('prod_timeOfHarvest')->nullable();
             $table->timestamps();
         });
     }

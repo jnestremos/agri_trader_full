@@ -12,7 +12,7 @@
       </div>
       <div class="edit-profile">
         <p>Edit Profile</p>
-      </div>
+      </div>      
       <div class="address">
         <h5>Address</h5>       
         <p>{{ getFarmDetails.address.farm_address }}</p>
@@ -49,13 +49,48 @@
         <img src="https://media.istockphoto.com/vectors/sample-stamp-sample-square-grunge-sign-sample-vector-id1172218730?k=20&m=1172218730&s=612x612&w=0&h=0iTFUtb2WJtRAfg4Lbx7oh2lfVtH5pBsQAMxhCWKZH0="
         alt="" width="100%">
       </div>                       
-      <div class="farm-produces d-flex align-items-center justify-content-center" style="position:relative">
-        <h2 style="position:absolute; right:2%; top:2%; cursor:pointer;" @click="triggerModal()">+</h2>
-        <b-modal id="modal-1" title="Add Produce">
-           <p class="my-4">Hello from modal!</p>
-        </b-modal>
+      <div class="farm-produces" style="position:relative;">
+        <h2 style="float:right; cursor:pointer;" @click="triggerModal()">+</h2>
+        <div style="clear:right;">
+        <!-- display all produces for farm here -->
+        </div>
+        <template> 
+          <b-modal id="modal-1" size="xl" title="Produces" scrollable>            
+            <div class="container-fluid w-100 d-flex flex-wrap">
+              <div v-if="getFilteredProduces.length > 0" class="w-100">
+                <div class="row">
+                  <div class="col-6 mb-5" v-for="(produce, index) in getFilteredProduces" :key="index" style="height:20vh;" @click="setProduce(produce.id)">                
+                    <div class="produce" style="height:100%; border-radius: 50px;" :id="'produce'+produce.id">
+                        <div class="" style="position: absolute; top:2%; left:8%; width:90%; height:80%">
+                            <div class="d-flex mb-2 align-items-center">
+                                <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/>
+                                <h3>{{  produce.prod_name }}</h3>
+                            </div>                                                                                
+                            <h5 class="d-flex">Time to Harvest: <p class="ms-3">{{ produce.prod_timeOfHarvest }}</p></h5>
+                            <h5 class="d-flex" v-if="produce.produce_numOfGrades > 1">Grades: <p class="ms-3">A, B, C</p></h5>                          
+                            <h5 class="d-flex" v-else>Grades: <p class="ms-3">None</p></h5>                          
+                        </div>                       
+                    </div>
+                  </div>                                                               
+                </div>
+              </div>
+              <div v-else class="w-100 d-flex justify-content-center align-items-center">
+                <h3>NO PRODUCES ADDED!</h3>
+              </div>         
+            </div> 
+            <template #modal-footer="{ ok, cancel }">
+              <!-- Emulate built in modal header close button action -->
+              <b-button size="md" variant="secondary" @click="cancel()">
+                Cancel
+              </b-button>             
+              <b-button size="md" variant="primary" @click="ok()" disabled id="okButton">
+                Add Produce
+              </b-button>                                                                 
+            </template>                      
+          </b-modal>
+        </template>
         <h3 v-if="getFarmDetails.produces"></h3>
-        <h3 v-else>NO PRODUCES</h3>
+        <h4 v-else style="position:absolute; top:50%; left: 10%;">NO PRODUCES</h4>
       </div>
       <div class="title-num">
         <h5>Title Number</h5>
@@ -73,24 +108,87 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-
 export default {
     name: 'ShowFarm',
-    created(){    
-      this.readyApp()
+    data(){
+      return {
+        filtered: null,
+        id: null
+      }
+    },
+    created(){          
+      this.fetchFarm(this.$route.params.id)
       .then(() => {
-        this.fetchFarm(this.$route.params.id)               
-      })         
-      
+        this.produceSelection()
+        .then(() => {
+          this.readyApp(); 
+        })                    
+      })                                   
+    },
+    mounted(){      
+      this.$root.$on('bv::modal::hide', (bvEvent) => {      
+        if(bvEvent.trigger == 'ok'){
+         this.assignProduce()                   
+        }
+        this.id = null                
+      })     
+               
+    },
+    watch: {  
+      id(newVal, oldVal){        
+        var okButton = document.getElementById('okButton')        
+        if(newVal == null){
+          okButton.className = 'btn btn-primary btn-md disabled'
+          okButton.setAttribute('disabled', 'disabled')          
+        }
+        else{
+           okButton.className = 'btn btn-primary btn-md'
+           okButton.removeAttribute('disabled')
+        }
+        if(oldVal != null){
+          var produce = document.getElementById(`produce${oldVal}`)
+          produce.className = 'produce'
+        }        
+      },      
     },
     computed:{
-      ...mapGetters(['getFarmDetails'])
+      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces'])
     },
     methods:{
-      ...mapActions(['readyApp', 'fetchFarm']), 
+      ...mapActions(['readyApp', 'fetchFarm', 'fetchAllProduces', 'produceSelection', 'addProduceToFarm']), 
       triggerModal(){
         this.$bvModal.show('modal-1')
-      }     
+      },
+      filteredProdArray(){
+        var filtered = [];
+        var arr = this.getFilteredProduces;             
+        var arr1 = arr.slice(0,3)
+        var arr2 = arr.slice(3,arr.length)
+
+        filtered.push(arr1)
+        if(arr2.length > 0){
+            filtered.push(arr2)
+        }            
+        return filtered
+      },           
+      setProduce(id){
+        var produce = document.getElementById(`produce${id}`)
+        produce.className = 'produce clicked'
+        this.id = id       
+      },
+      assignProduce(){        
+        var data = {
+          id: this.id, 
+          farm_id: this.$route.params.id       
+        }
+        this.addProduceToFarm(data)    
+        .then(() => {
+          location.reload()
+        })    
+        .catch((err) => {
+          console.log(err)
+        })
+      }
     }
 }
 </script>
@@ -137,6 +235,7 @@ export default {
   grid-row-start: 2;
   grid-row-end: span 3;
   background:lightgreen;
+  overflow-y: scroll;
 }
 
 .primary-image{
@@ -165,6 +264,19 @@ export default {
 
 .farm-owner{
   grid-column-start:3;
+}
+.produce{
+    background-color:greenyellow;
+}
+
+.produce:hover{
+    transition: 0.5s;
+    background-color:grey;
+    cursor:pointer;
+}
+
+.produce.clicked{
+    background-color:grey;
 }
 
 </style>

@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('farm_produce', function (Blueprint $table) {
             $table->foreignId('farm_id')->constrained('farms')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('produce_id')->constrained('produces')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('produce_trader_id')->constrained('produce_trader')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('prod_name')->nullable();            
             $table->timestamps();
         });
     }

@@ -145,25 +145,52 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('/produces', function (){
             $trader = Trader::where('user_id', auth()->id())->first();
-            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();
-            if(count($produces) > 6){
+            $produces = DB::table('produce_trader')->where('trader_id', $trader->id);
+            if(count($produces->get()) > 6){
                 return response([
                     'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->paginate(6)
                 ], 200);
             }
             else{
                 return response([
-                    'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->get()
+                    'produces' => $produces->get()
                 ], 200);
             }
             
+        });
+        
+        Route::get('/producess', function (){
+            $trader = Trader::where('user_id', auth()->id())->first();
+            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();   
+            $farm_produces = DB::table('farm_produce')->get();           
+            $filteredProduces = [];
+            for($i = 0; $i < count($produces); $i++){
+                $check = true;
+                for($ii = 0; $ii < count($farm_produces); $ii++){
+                    if($produces[$i]->id == $farm_produces[$ii]->produce_trader_id){
+                        $check = false;
+                        break;
+                    }
+                    else{
+                        $check = true;
+                    }
+                }
+                if($check){
+                    array_push($filteredProduces, $produces[$i]);
+                }
+            }
+            return response([
+                'produces' => $filteredProduces
+            ], 200);
         });
 
         Route::get('/produce/details/{id}', function ($id){
             $trader = Trader::where('user_id', auth()->id())->first();
             return response([
                 'produce' => Produce::find($id),
-                'grades' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()
+                'grades' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_numOfGrades,
+                'farms' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()->prod_numOfFarms,
+                'dateOfHarvest' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_yield_dateHarvestTo,
             ], 200);
         });
 
