@@ -1,17 +1,17 @@
 <template>
-  <div class="showFarm" style="position:relative; height:100%;">
-    <router-link to="/farms" style="position:absolute; top: 1%; left:1%;"><h3>&LeftTriangle; Back</h3></router-link>
+  <div class="showFarm p-4" style="position:relative; height:100%; overflow-y: hidden;">
+    <!-- <router-link to="/farms" style="position:absolute; top: 1%; left:1%;"><h3>&LeftTriangle; Back</h3></router-link> -->
     <div class="grid">
       <div class="farm-image">        
-        <img alt="" width="100%" style="border-radius:10%;" :src="[getFarmDetails.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmDetails.farm.farm_imageUrl}`) : '']"
+        <img alt="" width="80%" style="border-radius:10%; float:right;" :src="[getFarmDetails.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmDetails.farm.farm_imageUrl}`) : '']"
         v-if="getFarmDetails.farm.farm_imageUrl">
       </div>
-      <div class="location">              
+      <div class="location d-flex flex-column justify-content-center">              
         <h2>{{ getFarmDetails.farm.farm_name }}</h2>
         <p>{{ getFarmDetails.farm.farm_hectares }} hectares of land</p>
       </div>
       <div class="edit-profile">
-        <p>Edit Profile</p>
+        <p class="me-3">Edit Profile</p>
       </div>      
       <div class="address">
         <h5>Address</h5>       
@@ -61,7 +61,7 @@
                         <div class="" style="position: absolute; top:2%; left:8%; width:90%; height:80%">
                             <div class="d-flex mb-2 align-items-center">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/>
-                                <h3>{{  produce.prod_name }}</h3>
+                                <h3>{{ produce.prod_name }}</h3>
                             </div>                                                                                
                             <h5 class="d-flex">Time to Harvest: <p class="ms-3">{{ produce.prod_timeOfHarvest }}</p></h5>
                             <h5 class="d-flex" v-if="produce.produce_numOfGrades > 1">Grades: <p class="ms-3">A, B, C</p></h5>                          
@@ -87,7 +87,42 @@
           </b-modal>
         </template>
         <div style="clear:right;" v-if="getFarmProduces.length > 0">
-          {{ getFarmProduces[0].farm_id }}
+          <div class="container-fluid w-100 d-flex">
+             <div class="w-100">
+                <div class="row">
+                  <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
+                    <div class="produce" style="height:100%; border-radius: 50px;">
+                        <div class="" style="position: absolute; top:36%; left:18%; width:90%; height:80%">
+                            <div class="d-flex mb-2 align-items-center">
+                                <!-- <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/> -->
+                                <p style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>
+                            </div>                                                                                                                             
+                        </div>                       
+                    </div>                      
+                  </div>
+                  <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
+                    <div class="produce" style="height:100%; border-radius: 50px;">
+                        <div class="" style="position: absolute; top:36%; left:18%; width:90%; height:80%">
+                            <div class="d-flex mb-2 align-items-center">
+                                <!-- <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/> -->
+                                <p style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>
+                            </div>                                                                                                                             
+                        </div>                       
+                    </div>                      
+                  </div>
+                  <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
+                    <div class="produce" style="height:100%; border-radius: 50px;">
+                        <div class="" style="position: absolute; top:36%; left:18%; width:90%; height:80%">
+                            <div class="d-flex mb-2 align-items-center">
+                                <!-- <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/> -->
+                                <p style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>
+                            </div>                                                                                                                             
+                        </div>                       
+                    </div>                      
+                  </div>
+                </div>
+             </div>
+          </div>          
         </div>
         <h4 v-else style="position:absolute; top:50%; left: 10%;">NO PRODUCES</h4>
       </div>
@@ -196,14 +231,14 @@ export default {
 </script>
 
 <style>
-.grid{
-  width:78%;    
+.grid{  
+  width:95%;      
   display:grid;
   gap: 1rem;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: 1.2fr repeat(4, 0.6fr) 1.4fr;
+  grid-template-rows: 0.5fr 0.5fr repeat(2, 11rem) 0.4fr;
   position:absolute;     
-  top: 6%;
-  left: 10%;    
+
 }
 
 
@@ -220,6 +255,7 @@ export default {
 
 .edit-profile :first-child{
   float:right;
+  
 }
 
 .address{
@@ -238,13 +274,15 @@ export default {
   grid-row-end: span 3;
   background:lightgreen;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .primary-image{
   background:red;
   grid-column-start:2;
-  grid-column-end:span 4;  
-  grid-row-end:span 2;
+  grid-column-end:6;  
+  grid-row-start: 3;
+  grid-row-end: 4;
 }
 
 .second-image{ 
@@ -256,16 +294,16 @@ export default {
   grid-row-start:4;    
 }
 
-.title-num, .farm-owner{
-  margin-top:1.5rem
-}
+
 
 .title-num{
   grid-column-start:2;
+  grid-row-start: 5
 }
 
 .farm-owner{
   grid-column-start:3;
+    grid-row-start: 5
 }
 .produce{
     background-color:greenyellow;
