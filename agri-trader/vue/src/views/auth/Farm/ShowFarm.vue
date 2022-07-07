@@ -99,27 +99,7 @@
                             </div>                                                                                                                             
                         </div>                       
                     </div>                      
-                  </div>
-                  <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
-                    <div class="produce" style="height:100%; border-radius: 50px;">
-                        <div class="" style="position: absolute; top:36%; left:18%; width:90%; height:80%">
-                            <div class="d-flex mb-2 align-items-center">
-                                <!-- <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/> -->
-                                <p style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>
-                            </div>                                                                                                                             
-                        </div>                       
-                    </div>                      
-                  </div>
-                  <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
-                    <div class="produce" style="height:100%; border-radius: 50px;">
-                        <div class="" style="position: absolute; top:36%; left:18%; width:90%; height:80%">
-                            <div class="d-flex mb-2 align-items-center">
-                                <!-- <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/> -->
-                                <p style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>
-                            </div>                                                                                                                             
-                        </div>                       
-                    </div>                      
-                  </div>
+                  </div>                  
                 </div>
              </div>
           </div>          
