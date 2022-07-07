@@ -89,7 +89,7 @@ const actions = {
         delete owner['contactNum3']
         owner.contactNum = contactNumArr
         return axiosClient.post('/farm/owner/add', owner)
-        .then((res) => {
+        .then((res) => {            
             console.log(res.data);    
             commit('asd')        
         })        

@@ -7,6 +7,7 @@ use App\Models\FarmAddress;
 use App\Models\FarmOwner;
 use App\Models\FarmPartner;
 use App\Models\Produce;
+use App\Models\Trader;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -40,11 +41,13 @@ class FarmController extends Controller
         $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
         $extension = $request->file('farm_imageUrl')->getClientOriginalExtension();
         $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-        $request->file('farm_imageUrl')->storeAs('public/farms', $fileNameToStore);       
+        $request->file('farm_imageUrl')->storeAs('public/farms', $fileNameToStore);   
+        
+        $trader = Trader::where('user_id', auth()->id())->first();
 
         $farm = Farm::create([
             'farm_owner_id' => $request->owner_id,
-            'trader_id' => auth()->id(),
+            'trader_id' => $trader->id,
             'farm_name' => $request->farm_name,
             'farm_hectares' => $request->farm_hectares,
             'farm_titleNum' => $request->farm_titleNum,

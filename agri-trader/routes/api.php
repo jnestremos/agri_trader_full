@@ -70,7 +70,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             Route::get('/', function (){
                 $farm_produces = [];
-                $farms = Farm::where('trader_id', auth()->id());
+                $trader = Trader::where('user_id',auth()->id())->first();
+                $farms = Farm::where('trader_id',$trader->id);
                 foreach($farms as $farm){
                     $farm_produce = [
                         'id' => $farm->id,
@@ -110,8 +111,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             Route::get('/owners', function (){
                $farmOwners = []; 
-            
-               $owners = DB::table('owner_trader')->where('trader_id', auth()->id())->get();
+               $trader = Trader::where('user_id', auth()->id())->first();        
+               $owners = DB::table('owner_trader')->where('trader_id', $trader->id)->get();
+
+            //    return response([
+            //     'id' => auth()->id(),
+            //    ], 200);
 
                foreach($owners as $owner){
                 $farmOwner = [

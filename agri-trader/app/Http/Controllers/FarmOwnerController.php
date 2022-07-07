@@ -32,6 +32,9 @@ class FarmOwnerController extends Controller
                 'error' => 'Invalid credentials',
             ], 401);
         }
+
+       
+
         $newUser = User::create([
             'email' => $request->email,
             'password' => bcrypt($request->password)
@@ -46,6 +49,11 @@ class FarmOwnerController extends Controller
         ]);
 
         $trader = Trader::where('user_id', auth()->id())->first();       
+
+        return response([
+            'trader' => $trader,
+        ], 200);
+
         $trader->farm_owners()->attach($farmOwner);
 
         FarmOwnerAddress::create([
