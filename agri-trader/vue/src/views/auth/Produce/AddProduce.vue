@@ -17,7 +17,7 @@
                         <option :value="produce.id" v-for="(produce, index) in getAllProduceOptions" :key="index">{{ produce.id }}. {{ produce.prod_name }}</option>
                     </select>
                 </div>
-                <div class="d-flex align-items-center w-100">
+                <div class="d-flex w-100">
                     <label for="prod_type" class="form-label me-4" style="width:15%;">Produce Type: </label>
                     <p>{{ prod_type }}</p>
                 </div>

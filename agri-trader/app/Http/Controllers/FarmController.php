@@ -85,7 +85,8 @@ class FarmController extends Controller
 
         $result1 = DB::table('produce_trader')->where('id', '=', $request->id)->first();
         $owner = Farm::find($request->farm_id)->farm_owner_id;
-        $result2 = DB::table('owner_trader')->where([['farm_owner_id', '=', $owner], ['trader_id', '=', auth()->id()]])->first();
+        $trader = Trader::where('user_id', auth()->id())->first();
+        $result2 = DB::table('owner_trader')->where([['farm_owner_id', '=', $owner], ['trader_id', '=', $trader->id]])->first();
 
         if (!$query || !$result1 || !$result2) {
             return response([

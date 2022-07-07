@@ -25,12 +25,12 @@ class ProduceController extends Controller
             ], 400);
         }    
         $produce = Produce::find($request->produce_id);
-        $trader = Trader::find(auth()->id()); 
+        $trader = Trader::where('user_id', auth()->id())->first(); 
         if($request->produce_numOfGrades > 1){
             $classes = ['A', 'B', 'C'];
             for($i = 0; $i < 3; $i++){
                 $produce->traders()->attach($trader);       
-                DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()], ['prod_name', '=', null]])->update([
+                DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', $trader->id], ['prod_name', '=', null]])->update([
                     'prod_name' => $produce->prod_name . ' (Class ' . $classes[$i] . ')',            
                     'produce_numOfGrades' => $request->produce_numOfGrades,
                     'prod_details' => $request->prod_details,
@@ -40,16 +40,13 @@ class ProduceController extends Controller
         }
         else{
             $produce->traders()->attach($trader); 
-            DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
+            DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', $trader->id]])->update([
                 'prod_name' => $produce->prod_name,            
                 'produce_numOfGrades' => $request->produce_numOfGrades,
                 'prod_details' => $request->prod_details,
                 'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest
             ]);
         }
-
-        
-
         return response([
             'message' => 'Successful!'
         ], 200);

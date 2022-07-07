@@ -148,26 +148,32 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ]);
         });
 
-        Route::get('/produces', function (){
+        Route::get('/produce/list', function (){
             $trader = Trader::where('user_id', auth()->id())->first();
-            $produces = DB::table('produce_trader')->where('trader_id', $trader->id);
-            if(count($produces->get()) > 6){
+            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();
+            if(count($produces) > 6){
                 return response([
                     'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->paginate(6)
                 ], 200);
             }
             else{
                 return response([
-                    'produces' => $produces->get()
+                    'produces' => $produces
                 ], 200);
             }
             
         });
+
+        Route::get('/produces/{farm_id}', function ($farm_id){            
+            return response([
+                'produces' => DB::table('farm_produce')->where('farm_id', $farm_id)->get()
+            ], 200);
+        });
         
-        Route::get('/producess', function (){
+        Route::get('/producess/{farm_id}', function ($farm_id){
             $trader = Trader::where('user_id', auth()->id())->first();
-            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();   
-            $farm_produces = DB::table('farm_produce')->get();           
+            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();   //1, 2, 3
+            $farm_produces = DB::table('farm_produce')->where('farm_id', $farm_id)->get();     //1, 2      
             $filteredProduces = [];
             for($i = 0; $i < count($produces); $i++){
                 $check = true;

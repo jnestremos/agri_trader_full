@@ -45,14 +45,14 @@ const getters = {
 const actions = {
     fetchAllProduces({ commit }, query = null){
         if(query){
-            return axiosClient.get(`/produces/?${query}`)
+            return axiosClient.get(`/produce/list/?${query}`)
             .then((res) => {
                 console.log(res.data)
                 commit('setAllProduces', res.data)
             })
         }
         else{
-            return axiosClient.get('/produces')
+            return axiosClient.get('/produce/list')
             .then((res) => {
                 console.log(res.data)
                 commit('setAllProduces', res.data)
@@ -80,8 +80,8 @@ const actions = {
             commit('setProduceOptions', res.data)
         })        
     },
-    produceSelection({ commit }){
-        return axiosClient.get('/producess')
+    produceSelection({ commit }, farm_id){
+        return axiosClient.get(`/producess/${farm_id}`)
         .then((res) => {
             console.log(res.data)
             commit('setFilteredProduces', res.data)
@@ -122,6 +122,9 @@ const mutations = {
     },
     setFilteredProduces: (state, data) => {
         state.filtered_produces = data.produces
+    },
+    setProduceOptions: (state, data) => {
+        state.produces = data.produces
     }
 }
 

@@ -52,6 +52,9 @@ const getters = {
     },
     getFarmDetails(){
         return state.farm_details
+    },
+    getFarmProduces(){
+        return state.farm_produces
     }
 };
 
@@ -127,6 +130,13 @@ const actions = {
         .then((res) => {
             commit('setFarmProduce', res.data)
         })
+    },
+    fetchFarmProduces({ commit }, farm_id){
+        return axiosClient.get(`/produces/${farm_id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setFarmProduces', res.data)
+        })
     }    
 };
 
@@ -180,6 +190,9 @@ const mutations = {
     }, 
     setFarmProduce(state, data){
         state.farm_details.produces = data.produces
+    },    
+    setFarmProduces(state, data){
+        state.farm_produces = data.produces
     }   
 };
 

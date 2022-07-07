@@ -3,7 +3,7 @@
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Produce List</h3>
         <div class="d-flex justify-content-between align-items-center" style="width:200px;">
-            <button class="btn btn-success" style="width:60px;"><router-link to="/produces/add" style="text-decoration:none; color:white;">Add</router-link></button>
+            <router-link to="/produces/add" style="text-decoration:none; color:white;"><button class="btn btn-success" style="width:60px;">Add</button></router-link>
             <button>Edit</button>
             <button>Search</button>
         </div>

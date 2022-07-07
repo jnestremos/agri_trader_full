@@ -50,10 +50,7 @@
         alt="" width="100%">
       </div>                       
       <div class="farm-produces" style="position:relative;">
-        <h2 style="float:right; cursor:pointer;" @click="triggerModal()">+</h2>
-        <div style="clear:right;">
-        <!-- display all produces for farm here -->
-        </div>
+        <h2 style="float:right; cursor:pointer;" @click="triggerModal()">+</h2>        
         <template> 
           <b-modal id="modal-1" size="xl" title="Produces" scrollable>            
             <div class="container-fluid w-100 d-flex flex-wrap">
@@ -89,7 +86,9 @@
             </template>                      
           </b-modal>
         </template>
-        <h3 v-if="getFarmDetails.produces"></h3>
+        <div style="clear:right;" v-if="getFarmProduces.length > 0">
+          {{ getFarmProduces[0].farm_id }}
+        </div>
         <h4 v-else style="position:absolute; top:50%; left: 10%;">NO PRODUCES</h4>
       </div>
       <div class="title-num">
@@ -119,9 +118,12 @@ export default {
     created(){          
       this.fetchFarm(this.$route.params.id)
       .then(() => {
-        this.produceSelection()
+        this.produceSelection(this.$route.params.id)
         .then(() => {
-          this.readyApp(); 
+          this.fetchFarmProduces(this.$route.params.id)
+          .then(() => {
+            this.readyApp(); 
+          })          
         })                    
       })                                   
     },
@@ -152,10 +154,10 @@ export default {
       },      
     },
     computed:{
-      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces'])
+      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces', 'getFarmProduces'])
     },
     methods:{
-      ...mapActions(['readyApp', 'fetchFarm', 'fetchAllProduces', 'produceSelection', 'addProduceToFarm']), 
+      ...mapActions(['readyApp', 'fetchFarm', 'fetchAllProduces', 'produceSelection', 'addProduceToFarm', 'fetchFarmProduces']), 
       triggerModal(){
         this.$bvModal.show('modal-1')
       },
