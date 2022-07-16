@@ -3,7 +3,7 @@
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Projects</h3>
         <div class="d-flex justify-content-between align-items-center" style="width:200px;">
-            <router-link to="/project/add"><button class="btn btn-success" style="width:60px;">Add</button></router-link>
+            <router-link v-if="getFarmsForProject" :to="getFarmsForProject.length > 0 ? '/project/add' : ''" :style="[getFarmsForProject.length > 0 ? {'cursor' : 'pointer'} : {'cursor' : 'default'}]"><button :class="[getFarmsForProject.length > 0 ? 'btn btn-success' : 'btn btn-secondary']" style="width:60px" :disabled="getFarmsForProject.length == 0">Add</button></router-link>
             <button>Edit</button>
             <button>Search</button>
         </div>
@@ -54,8 +54,11 @@ export default {
                 var query = `page=${this.getProjectData.current_page}`               
                 this.fetchAllProjects(query)                
             }        
-            this.filtered = this.filteredProjectArray()      
-            this.readyApp()
+            this.filtered = this.filteredProjectArray() 
+            this.fetchAllFarmsForProject() 
+            .then(() => {
+                this.readyApp()
+            })                
         })
         
     },
@@ -65,10 +68,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getProjects', 'getProjectData'])
+        ...mapGetters(['getProjects', 'getProjectData', 'getFarmsForProject'])
     },
     methods: {
-        ...mapActions(['readyApp', 'fetchAllProjects']),
+        ...mapActions(['readyApp', 'fetchAllProjects', 'fetchAllFarmsForProject']),
         filteredProjectArray(){
             var filtered = [];
             var arr = this.getProjects;             

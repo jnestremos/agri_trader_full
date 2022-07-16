@@ -113,24 +113,27 @@ export default {
         },
         getProduces(id){
             if(this.$store.state.loading){
-                var produces =  farm.state.farm_produces.filter((farm_produce) => {
+                var farmm = farm.state.farm_produces.filter((f) => {
+                    return f.id === id
+                })
+                var produces =  farmm[0].produces.filter((farm_produce) => {
                     return farm_produce.farm_id === id
                 })
-                if(produces.length > 0){
+                if(produces.length > 0){                    
                     var value = ''
-                    if(produces.length <= 3){                        
+                    if(produces.length <= 3){                                                
                         for(var i = 0; i < produces.length; i++){
                             if(i == produces.length - 1){
-                                value += produces[i]
+                                value += produces[i].prod_name
                             }
                             else{
-                                value += produces[i] + ','
+                                value += produces[i].prod_name + ','
                             }
                         }
                         return value
                     }
                     else{
-                        return produces[0] + ',' + produces[1] + ',' + produces[2] + '...'
+                        return produces[0].prod_name + ',' + produces[1].prod_name + ',' + produces[2].prod_name + '...'
                     }
                 }
                 else{

@@ -30,14 +30,14 @@ class ProjectController extends Controller
             'contractShare_amount' => 'required',
             'project_completionDate' => 'required|date|after:project_commenceDate',
             'project_commenceDate' => 'required|date|before:project_completionDate',
-            'project_floweringStart' => 'date',
-            'project_floweringEnd' => 'date',
-            'project_fruitBuddingStart' => 'date',
-            'project_fruitBuddingEnd' => 'date',
-            'project_devFruitStart' => 'date',
-            'project_devFruitEnd' => 'date',
-            'project_harvestableStart' => 'date',
-            'project_harvestableEnd' => 'date',
+            'project_floweringStart' => 'date|nullable',
+            'project_floweringEnd' => 'date|nullable',
+            'project_fruitBuddingStart' => 'date|nullable',
+            'project_fruitBuddingEnd' => 'date|nullable',
+            'project_devFruitStart' => 'date|nullable',
+            'project_devFruitEnd' => 'date|nullable',
+            'project_harvestableStart' => 'date|nullable',
+            'project_harvestableEnd' => 'date|nullable',
         ]);
         $result1 = ProduceTrader::find($request->produce_trader_id);
         $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_id', '=', $request->produce_id]])->first();

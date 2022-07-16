@@ -19,14 +19,14 @@ return new class extends Migration
             $table->foreignId('project_status_id')->constrained('project_statuses')->onUpdate('cascade')->onDelete('cascade');
             $table->date('project_completionDate');
             $table->date('project_commenceDate');
-            $table->date('project_floweringStart');
-            $table->date('project_floweringEnd');
-            $table->date('project_fruitBuddingStart');
-            $table->date('project_fruitBuddingEnd');
-            $table->date('project_devFruitStart');
-            $table->date('project_devFruitEnd');
-            $table->date('project_harvestableStart');
-            $table->date('project_harvestableEnd');
+            $table->date('project_floweringStart')->nullable();
+            $table->date('project_floweringEnd')->nullable();
+            $table->date('project_fruitBuddingStart')->nullable();
+            $table->date('project_fruitBuddingEnd')->nullable();
+            $table->date('project_devFruitStart')->nullable();
+            $table->date('project_devFruitEnd')->nullable();
+            $table->date('project_harvestableStart')->nullable();
+            $table->date('project_harvestableEnd')->nullable();
             $table->timestamps();
         });
     }

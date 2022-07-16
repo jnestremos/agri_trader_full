@@ -74,7 +74,7 @@ const actions = {
         else{            
             return axiosClient.get('/farm')
             .then((res) => {               
-                //console.log(res.data);            
+                console.log(res.data);            
                 commit('setFarms', res.data)                                               
             })
             .catch((err) => {

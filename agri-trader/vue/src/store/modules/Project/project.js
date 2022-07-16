@@ -13,6 +13,9 @@ const state = {
         total: null,
         links: null        
     },
+    farms: null,
+    produces: null,
+    owners: null
 }
 
 const getters = {
@@ -21,6 +24,15 @@ const getters = {
     },
     getProjectData(){
         return state.project_data
+    },
+    getFarmsForProject(){
+        return state.farms
+    },
+    getProducesForProject(){
+        return state.produces
+    },
+    getOwnersForProject(){
+        return state.owners
     }
 }
 
@@ -45,8 +57,21 @@ const actions = {
             .catch((err) => {
                 console.log(err)
             })
-        }
-        
+        }        
+    },
+    fetchAllFarmsForProject({ commit }){
+        return axiosClient.get('/farm/all')
+        .then((res) => {            
+            console.log(res.data)
+            commit('setAllFarmsForProject', res.data)
+        })
+    },
+    fetchAllProducesForProject({ commit }, farm_id){
+        return axiosClient.get(`/farm/produces/all/${farm_id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setAllProducesForProject', res.data)
+        })
     },
 }
 
@@ -69,6 +94,13 @@ const mutations = {
         else{
             state.project_data.projects = data.projects
         }        
+    },
+    setAllFarmsForProject(state, data){
+        state.farms = data.farms
+        state.owners = data.owners        
+    },
+    setAllProducesForProject(state, data){
+        state.produces = data.produces
     }
 }
 

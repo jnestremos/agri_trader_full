@@ -55,7 +55,7 @@ export default {
         modules.style.display = 'block'      
         this.show = true               
       },
-      hideModules(){       
+      hideModules(){           
         var modules = document.getElementById('modules')
         var moduless = document.getElementById('moduless')  
         if(!this.show){
@@ -63,7 +63,7 @@ export default {
           modules.style.display = 'none'                 
           moduless.style.zIndex = '-1'
         }                  
-      },
+      },  
       moduleEnter(){
         var modules = document.getElementById('modules')
         var moduless = document.getElementById('moduless')  
@@ -71,7 +71,7 @@ export default {
         if(modules.style.opacity == '1'){
           modules.style.opacity = '1' 
           modules.style.display = 'block' 
-          moduless.style.zIndex = '999999999999'
+          moduless.style.zIndex = '99'
         }                        
       },
       moduleLeave(){
