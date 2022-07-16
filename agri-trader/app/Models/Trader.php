@@ -43,4 +43,7 @@ class Trader extends Model
     {
         return $this->hasMany(BidOrder::class, 'bid_order_id');
     }
+    public function produce_trader(){
+        return $this->hasMany(ProduceTrader::class);
+    }
 }

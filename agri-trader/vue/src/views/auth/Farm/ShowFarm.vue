@@ -58,7 +58,7 @@
                 <div class="row">
                   <div class="col-6 mb-5" v-for="(produce, index) in getFilteredProduces" :key="index" style="height:20vh;" @click="setProduce(produce.id)">                
                     <div class="produce" style="height:100%; border-radius: 50px;" :id="'produce'+produce.id">
-                        <div class="" style="position: absolute; top:2%; left:8%; width:90%; height:80%">
+                        <div class="" style="position: absolute; top:7%; left:8%; width:90%; height:80%">
                             <div class="d-flex mb-2 align-items-center">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/>
                                 <h3>{{ produce.prod_name }}</h3>
@@ -91,20 +91,15 @@
              <div class="w-100">
                 <div class="row">
                   <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
-                    <div class="produce" style="height:100%; border-radius: 50px;">
-                        <div class="" style="position: absolute; top:36%; left:18%; width:90%; height:80%">
-                            <div class="d-flex mb-2 align-items-center">
-                                <!-- <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/> -->
-                                <p style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>
-                            </div>                                                                                                                             
-                        </div>                       
+                    <div class="produce d-flex justify-content-center align-items-center" v-b-tooltip.hover :title="produce.produce_inventory_qtyOnHand + ' kgs'" style="height:100%; border-radius: 20px; cursor:default">                                                            
+                      <p class="mt-2" style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>                                                                                                                                                                                               
                     </div>                      
                   </div>                  
                 </div>
              </div>
           </div>          
         </div>
-        <h4 v-else style="position:absolute; top:50%; left: 10%;">NO PRODUCES</h4>
+        <h4 v-else style="position:absolute; top:50%; left: 25%;">NO PRODUCES</h4>
       </div>
       <div class="title-num">
         <h5>Title Number</h5>

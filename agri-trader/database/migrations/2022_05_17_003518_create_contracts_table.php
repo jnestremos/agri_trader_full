@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('trader_id')->constrained('traders')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('farm_id')->constrained('farms')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('contract_share_id')->constrained('contract_shares')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('produce_id')->constrained('produces')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('produce_trader_id')->constrained('produce_trader')->onDelete('cascade')->onUpdate('cascade');
             //$table->foreignId('project_id')->constrained('projects')->onDelete('cascade')->onUpdate('cascade');
             $table->double('contract_estimatedHarvest');
             $table->double('contract_estimatedPrice');

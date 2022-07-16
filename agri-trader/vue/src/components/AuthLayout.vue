@@ -22,7 +22,7 @@
     <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
       <div style="background-color:green; width:100%; height:40%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
-          <li>Projects</li>
+          <li><router-link to="/projects">Projects</router-link></li>
           <li><router-link to="/produces">Produces</router-link></li>
           <li><router-link to="/farms">Farms and Owners</router-link></li>
           <li>Bid Orders</li>

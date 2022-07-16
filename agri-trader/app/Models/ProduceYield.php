@@ -11,7 +11,7 @@ class ProduceYield extends Model
 
     protected $fillable = [
         'project_id',
-        'produce_id',
+        'produce_trader_id',
         'produce_yield_class',
         'produce_yield_qtyHarvested',
         'produce_yield_price',
@@ -26,7 +26,7 @@ class ProduceYield extends Model
     }
     public function produce()
     {
-        return $this->belongsTo(Produce::class, 'produce_id');
+        return $this->belongsTo(ProduceTrader::class, 'produce_trader_id');
     }
     public function produce_inventory()
     {

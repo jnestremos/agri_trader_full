@@ -10,6 +10,9 @@ import ShowFarm from '../views/auth/Farm/ShowFarm.vue'
 import AllProduces from '../views/auth/Produce/AllProduces.vue'
 import AddProduce from '../views/auth/Produce/AddProduce.vue'
 import ShowProduce from '../views/auth/Produce/ShowProduce.vue'
+import AllProjects from '../views/auth/Project/AllProjects.vue'
+import ShowProject from '../views/auth/Project/ShowProject.vue'
+import AddProject from '../views/auth/Project/AddProject.vue'
 import ErrorPage from '../views/404.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -71,6 +74,24 @@ const routes = [
         name: 'ShowProduce',  
         meta: {needsAuth : true, role:'trader'},    
         component: ShowProduce
+      },
+      {
+        path: '/projects',
+        name: 'AllProjects', 
+        meta: {needsAuth : true, role:'trader'},
+        component: AllProjects
+      },
+      {
+        path: '/projects/:id',
+        name: 'ShowProject', 
+        meta: {needsAuth : true, role:'trader'},
+        component: ShowProject
+      },
+      {
+        path: '/project/add',
+        name: 'AddProject', 
+        meta: {needsAuth : true, role:'trader'},
+        component: AddProject
       },
     ]
   },

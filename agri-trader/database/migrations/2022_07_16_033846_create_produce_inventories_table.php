@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('produce_inventories', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('produce_yield_id')->constrained('produce_yields')->onUpdate('cascade')->onDelete('cascade');
             $table->double('produce_inventory_qtyOnHand');
             $table->timestamps();

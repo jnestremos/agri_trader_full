@@ -11,9 +11,12 @@ use App\Http\Controllers\ProduceController;
 use App\Http\Controllers\ProduceYieldController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RefundController;
+use App\Models\Contract;
 use App\Models\Farm;
 use App\Models\FarmOwner;
 use App\Models\Produce;
+use App\Models\ProduceTrader;
+use App\Models\Project;
 use App\Models\Trader;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -150,10 +153,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('/produce/list', function (){
             $trader = Trader::where('user_id', auth()->id())->first();
-            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();
+            $produces = ProduceTrader::where('trader_id', $trader->id)->get();
             if(count($produces) > 6){
                 return response([
-                    'produces' => DB::table('produce_trader')->where('trader_id', $trader->id)->paginate(6)
+                    'produces' => ProduceTrader::where('trader_id', $trader->id)->paginate(6)
                 ], 200);
             }
             else{
@@ -172,7 +175,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         
         Route::get('/producess/{farm_id}', function ($farm_id){
             $trader = Trader::where('user_id', auth()->id())->first();
-            $produces = DB::table('produce_trader')->where('trader_id', $trader->id)->get();   //1, 2, 3
+            $produces = ProduceTrader::where('trader_id', $trader->id)->get();   //1, 2, 3
             $farm_produces = DB::table('farm_produce')->where('farm_id', $farm_id)->get();     //1, 2      
             $filteredProduces = [];
             for($i = 0; $i < count($produces); $i++){
@@ -199,9 +202,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $trader = Trader::where('user_id', auth()->id())->first();
             return response([
                 'produce' => Produce::find($id),
-                'grades' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_numOfGrades,
-                'farms' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()->prod_numOfFarms,
-                'dateOfHarvest' => DB::table('produce_trader')->where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_yield_dateHarvestTo,
+                'grades' => ProduceTrader::where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_numOfGrades,
+                'farms' => ProduceTrader::where([['trader_id', $trader->id], ['produce_id', $id]])->first()->prod_numOfFarms,
+                'dateOfHarvest' => ProduceTrader::where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_yield_dateHarvestTo,
             ], 200);
         });
 
@@ -220,6 +223,23 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/add/pictures/{id}', 'addPictures');
             });
             Route::put('/refund/approve/{id}', [RefundController::class, 'approveRefund']);
+        });
+
+        Route::get('/projects', function () {
+            $projectIDs = [];
+            $contracts = Contract::where('trader_id', auth()->id())->get();
+            foreach($contracts as $contract) {
+                array_push($projectIDs, Project::where('contract_id', $contract->id)->first()->id);
+            }
+            $projects = Project::whereIn('id', $projectIDs);
+            if(count($projects->get()) > 6){
+                return response([
+                    'projects' => $projects->paginate(6)
+                ], 200);
+            } 
+            return response([
+                'projects' => $projects->get()
+            ], 200);   
         });
 
 

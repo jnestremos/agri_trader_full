@@ -20,7 +20,7 @@ class FarmOwnerController extends Controller
             'gender' => 'required|string',
             'contactNum' => 'required|array',
             'birthDate' => 'required|date',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
             'province' => 'required|string',
             'address' => 'required|string',
             'zipcode' => 'required|string',
@@ -49,11 +49,7 @@ class FarmOwnerController extends Controller
         ]);
 
         $trader = Trader::where('user_id', auth()->id())->first();       
-
-        return response([
-            'trader' => $trader,
-        ], 200);
-
+     
         $trader->farm_owners()->attach($farmOwner);
 
         FarmOwnerAddress::create([

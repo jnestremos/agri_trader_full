@@ -26,4 +26,7 @@ class Produce extends Model
     {
         return $this->hasMany(ProduceYield::class);
     }
+    public function produce_trader(){
+        return $this->hasMany(ProduceTrader::class);
+    }
 }

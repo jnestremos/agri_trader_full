@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produce;
+use App\Models\ProduceTrader;
 use App\Models\Trader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class ProduceController extends Controller
             'prod_details' => 'nullable|string'
         ]);
 
-        $result = DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first();
+        $result = ProduceTrader::where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->first();
 
         if (!$produce || $result) {
             return response([
@@ -30,7 +31,7 @@ class ProduceController extends Controller
             $classes = ['A', 'B', 'C'];
             for($i = 0; $i < 3; $i++){
                 $produce->traders()->attach($trader);       
-                DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', $trader->id], ['prod_name', '=', null]])->update([
+                ProduceTrader::where([['produce_id', '=', $request->produce_id], ['trader_id', '=', $trader->id], ['prod_name', '=', null]])->update([
                     'prod_name' => $produce->prod_name . ' (Class ' . $classes[$i] . ')',            
                     'produce_numOfGrades' => $request->produce_numOfGrades,
                     'prod_details' => $request->prod_details,
@@ -40,7 +41,7 @@ class ProduceController extends Controller
         }
         else{
             $produce->traders()->attach($trader); 
-            DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', $trader->id]])->update([
+            ProduceTrader::where([['produce_id', '=', $request->produce_id], ['trader_id', '=', $trader->id]])->update([
                 'prod_name' => $produce->prod_name,            
                 'produce_numOfGrades' => $request->produce_numOfGrades,
                 'prod_details' => $request->prod_details,

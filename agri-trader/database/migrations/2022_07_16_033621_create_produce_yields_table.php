@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('produce_yields', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('produce_id')->constrained('produces')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('produce_trader_id')->constrained('produce_trader')->onUpdate('cascade')->onDelete('cascade');
             $table->char('produce_yield_class');
             $table->double('produce_yield_qtyHarvested');
             $table->integer('produce_yield_price');

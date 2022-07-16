@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import auth from './modules/Auth/auth'
 import farm from './modules/Farm/farm'
 import produce from './modules/Produce/produce'
+import project from './modules/Project/project'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -31,6 +32,7 @@ export default new Vuex.Store({
   modules: {
     auth,
     farm,
-    produce
+    produce,
+    project
   },
 })

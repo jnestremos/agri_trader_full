@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contract;
 use App\Models\ContractShare;
 use App\Models\Farm;
+use App\Models\ProduceTrader;
 use App\Models\Project;
 use App\Models\ProjectImage;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class ProjectController extends Controller
         $project = $request->validate([
             //'trader_id' => 'required',
             'farm_id' => 'required|exists:farms,id',
-            'produce_id' => 'required|exists:produces,id',
+            'produce_trader_id' => 'required|exists:produce_trader,id',
             'project_status_id' => 'required|exists:project_statuses,id',
             // 'project_stageImg' => 'image',           
             'contract_estimatedHarvest' => 'required',
@@ -38,7 +39,7 @@ class ProjectController extends Controller
             'project_harvestableStart' => 'date',
             'project_harvestableEnd' => 'date',
         ]);
-        $result1 = DB::table('produce_trader')->where([['trader_id', '=', auth()->id()], ['produce_id', '=', $request->produce_id]])->first();
+        $result1 = ProduceTrader::find($request->produce_trader_id);
         $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_id', '=', $request->produce_id]])->first();
         if (!$project || !$result1 || !$result2) {
             return response([
@@ -57,7 +58,7 @@ class ProjectController extends Controller
             'trader_id' => auth()->id(),
             'farm_id' => $farm->id,
             'contract_share_id' => $share->id,
-            'produce_id' => $request->produce_id,
+            'produce_trader_id' => $result1->id,
             'contract_estimatedHarvest' => $request->contract_estimatedHarvest,
             'contract_estimatedPrice' => $request->contract_estimatedPrice,
             'contract_estimatedSales' => $request->contract_estimatedSales,
@@ -83,10 +84,8 @@ class ProjectController extends Controller
         $newProj->statuses()->attach($share);
 
         return response([
-            'project' => $newProj,
-            'contract' => $contract,
-            'share' => $share
-        ]);
+            'message' => 'Project Added Successfully!'
+        ], 200);
     }
     
     public function addPictures(Request $request, $id){

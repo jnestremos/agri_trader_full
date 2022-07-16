@@ -13,7 +13,7 @@ class Contract extends Model
         'trader_id',
         'farm_id',
         'contract_share_id',
-        'produce_id',
+        'produce_trader_id',
         'contract_estimatedHarvest',
         'contract_estimatedPrice',
         'contract_estimatedSales',
@@ -39,5 +39,8 @@ class Contract extends Model
     public function contract_share()
     {
         return $this->belongsTo(ContractShare::class);
+    }
+    public function produce_trader(){
+        return $this->belongsTo(ProduceTrader::class);
     }
 }
