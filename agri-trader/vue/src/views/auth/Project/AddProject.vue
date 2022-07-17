@@ -45,11 +45,11 @@
         </div>
       </div>
       <div class="row px-5 w-100 m-0" style="height:70%;">
-        <div class="col-8 d-flex flex-column justify-content-evenly">
+        <div class="col-9 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
             <div class="col-4 p-0 d-flex align-items-baseline">
               <label for="produce_trader_id" class="form-label me-4">Select Produce:</label>
-              <select name="produce_trader_id" id="" class="form-select" style="width:200px" @change="setProduce($event)">
+              <select name="produce_trader_id" id="" class="form-select" style="width:250px" @change="setProduce($event)">
                 <option :value="produce.produce_trader_id" v-for="(produce, index) in getProducesForProject" :key="index">{{ produce.prod_name }}</option>
               </select>
             </div>
@@ -167,57 +167,91 @@ export default {
         this.data.contract_estimatedSales = (parseFloat(newVal) * parseFloat(this.data.contract_estimatedPrice)).toFixed(2)
       },
       'data.contractShare_amount'(newVal){
-        if(parseFloat(newVal) <= 0 || newVal.trim() == '' || parseFloat(newVal) >= 100){
+        if(parseFloat(newVal) <= 0 || newVal.trim() == '' || (this.data.contractShare_type == 'Percentage' && parseFloat(newVal) > 100)){
           this.data.contractShare_amount = '0.00'
           this.data.contract_ownerShare = '0.00'
           this.data.contract_traderShare = '0.00'
         }
         else{
-          this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100))).toFixed(2)
-          this.data.contract_ownerShare = (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100)).toFixed(2)        
+          if(this.data.contractShare_type == 'Percentage'){
+            this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100))).toFixed(2)
+            this.data.contract_ownerShare = (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100)).toFixed(2)        
+          }
+          else{
+            this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - parseFloat(newVal)).toFixed(2)
+            this.data.contract_ownerShare = parseFloat(newVal).toFixed(2)
+          }
+          
         }
         
       },
       'stage1'(newVal){
         var project_floweringStart = document.getElementById('project_floweringStart')
         var project_floweringEnd = document.getElementById('project_floweringEnd')
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]')        
         if(newVal){
           project_floweringStart.disabled = false
           project_floweringEnd.disabled = false
+          this.stage2 = true
+          checkboxes[1].disabled = true
+          this.stage3 = true
+          checkboxes[2].disabled = true
+          this.stage4 = true          
+          checkboxes[3].disabled = true
         }
         else{
           this.data.project_floweringStart = null
           this.data.project_floweringEnd = null
           project_floweringStart.disabled = true
           project_floweringEnd.disabled = true
-        }
+          this.stage2 = false
+          checkboxes[1].disabled = false
+          this.stage3 = false
+          checkboxes[2].disabled = false
+          this.stage4 = false          
+          checkboxes[3].disabled = false 
+        }        
       },
       'stage2'(newVal){
         var project_fruitBuddingStart = document.getElementById('project_fruitBuddingStart')
         var project_fruitBuddingEnd = document.getElementById('project_fruitBuddingEnd')
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]')        
         if(newVal){
           project_fruitBuddingStart.disabled = false
           project_fruitBuddingEnd.disabled = false
+          this.stage3 = true
+          checkboxes[2].disabled = true
+          this.stage4 = true          
+          checkboxes[3].disabled = true           
         }
         else{
           this.data.project_fruitBuddingStart = null
           this.data.project_fruitBuddingEnd = null
           project_fruitBuddingStart.disabled = true
           project_fruitBuddingEnd.disabled = true
+          this.stage3 = false
+          checkboxes[2].disabled = false
+          this.stage4 = false          
+          checkboxes[3].disabled = false           
         }
       },
       'stage3'(newVal){
         var project_devFruitStart = document.getElementById('project_devFruitStart')
         var project_devFruitEnd = document.getElementById('project_devFruitEnd')
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]')        
         if(newVal){
           project_devFruitStart.disabled = false
           project_devFruitEnd.disabled = false
+          this.stage4 = true          
+          checkboxes[3].disabled = true           
         }
         else{
           this.data.project_devFruitStart = null
           this.data.project_devFruitEnd = null
           project_devFruitStart.disabled = true
           project_devFruitEnd.disabled = true
+          this.stage4 = false          
+          checkboxes[3].disabled = false                    
         }
       },
       'stage4'(newVal){
@@ -265,6 +299,14 @@ export default {
             this.project_devFruitEnd = null,
             this.project_harvestableStart = null,
             this.project_harvestableEnd = null            
+            var farmObj = this.getFarmsForProject.filter((farm) => {              
+              return parseInt(farm.id) === parseInt(this.data.farm_id)
+            })            
+            var owner_id = farmObj[0].farm_owner_id
+            var ownerObj = this.getOwnersForProject.filter((owner) => {
+              return parseInt(owner.id) === parseInt(owner_id)
+            })
+            this.owner_name = ownerObj[0].owner_firstName + " " + ownerObj[0].owner_lastName
           })     
         },
         setProduce(e){
@@ -281,13 +323,13 @@ export default {
           this.stage2 = false
           this.stage3 = false
           this.stage4 = false
-          this.project_floweringStart = null,
-          this.project_floweringEnd = null,
-          this.project_fruitBuddingStart = null,
-          this.project_fruitBuddingEnd = null,
-          this.project_devFruitStart = null,
-          this.project_devFruitEnd = null,
-          this.project_harvestableStart = null,
+          this.project_floweringStart = null
+          this.project_floweringEnd = null
+          this.project_fruitBuddingStart = null
+          this.project_fruitBuddingEnd = null
+          this.project_devFruitStart = null
+          this.project_devFruitEnd = null
+          this.project_harvestableStart = null
           this.project_harvestableEnd = null          
         }
     },
