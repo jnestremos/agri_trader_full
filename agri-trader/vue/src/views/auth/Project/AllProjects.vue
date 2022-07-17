@@ -7,20 +7,20 @@
             <button>Edit</button>
             <button>Search</button>
         </div>
-    </div> 
+    </div>     
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
-        <div class="w-100" v-if="getProjects.length > 0">            
-            <div class="row mb-5" v-for="(project, index) in filtered" :key="index">                     
+        <div class="w-100" v-if="getProjects.length > 0">                 
+            <div class="row mb-5" v-for="(project, index) in filtered" :key="index">                                   
                 <div class="col-4" style="height:30vh" v-for="(p, i) in project" :key="i">                
                     <div class="d-flex project" style="height:100%; border-radius:50px; position: relative;" @click="showProject(p.id)">                    
                         <div class="" style="position: absolute; top:5%; left:5%; 
                         width:85%;">
                             <div class="d-flex mb-4">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
-                                <h3 class="mb-4">asdasd</h3>
-                            </div>                                                                                
-                            <h4 class="d-flex">Owner: <p class="ms-3">asdasd</p></h4>
-                            <h4 class="d-flex">Produces Owned: <p class="ms-3">asdasd</p></h4>
+                                <h3 class="mb-4">{{ getOwnerList[i].owner_firstName + ' ' + getOwnerList[i].owner_lastName }} - {{ getDateList[i].project_commenceDate }} - {{100 - parseInt(getShareList[i].contractShare_amount) + "/" + getShareList[i].contractShare_amount }}</h3>
+                            </div>                                                                
+                            <h4 class="d-flex">Produce: <p class="ms-3">{{ getProduceList[i].prod_name }}</p></h4>
+                            <h4 class="d-flex">Estimated Harvest (in kg): <p class="ms-3">{{ p.contract_estimatedHarvest + ' kg'}}</p></h4>
                         </div>                                                
                     </div>
                 </div>                
@@ -56,7 +56,7 @@ export default {
             }        
             this.filtered = this.filteredProjectArray() 
             this.fetchAllFarmsForProject() 
-            .then(() => {
+            .then(() => {                
                 this.readyApp()
             })                
         })
@@ -68,8 +68,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getProjects', 'getProjectData', 'getFarmsForProject'])
-    },
+        ...mapGetters(['getProjects', 'getProjectData', 'getFarmsForProject', 'getFarmList' , 'getOwnerList', 'getProduceList', 'getShareList', 'getDateList']),        
+    },   
     methods: {
         ...mapActions(['readyApp', 'fetchAllProjects', 'fetchAllFarmsForProject']),
         filteredProjectArray(){
@@ -105,7 +105,7 @@ export default {
             .then(() => {
                 this.filtered = this.filteredProjectArray()   
             })
-        }                        
+        },                                
     }
 }
 </script>

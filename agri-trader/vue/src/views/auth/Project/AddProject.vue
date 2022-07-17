@@ -2,8 +2,8 @@
   <div class="addProject">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Add Project</h3>        
-    </div>
-    <form action="" @submit.prevent="addProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">     
+    </div>        
+    <form action="" @submit.prevent="sendProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">     
       <div class="row px-5 w-100 m-0" style="height:30%;">
         <div class="col-6 d-flex flex-column justify-content-evenly">
           <div class="d-flex align-items-baseline">
@@ -270,7 +270,7 @@ export default {
       },
     },
     methods: {
-        ...mapActions(['readyApp', 'fetchAllFarmsForProject', 'fetchAllProducesForProject']),
+        ...mapActions(['readyApp', 'fetchAllFarmsForProject', 'fetchAllProducesForProject', 'addProject']),
         resetShareAmount(e){
           this.data.contractShare_type = e.target.value
           this.data.contractShare_amount = '0.00'
@@ -307,6 +307,7 @@ export default {
               return parseInt(owner.id) === parseInt(owner_id)
             })
             this.owner_name = ownerObj[0].owner_firstName + " " + ownerObj[0].owner_lastName
+            this.data.produce_trader_id = this.getProducesForProject[0].produce_trader_id
           })     
         },
         setProduce(e){
@@ -332,8 +333,18 @@ export default {
           this.project_harvestableStart = null
           this.project_harvestableEnd = null          
         },
-        addProject(){
-          console.log(1)
+        sendProject(){
+          this.addProject(this.data)
+          .then(() => {
+            this.$router.push({ name: 'AllProjects' })
+          })
+          .catch((err) => {
+            console.log(err)
+            this.errors = err.response.data.errors
+            for(var error in this.errors){
+              this.$toastr.e(this.errors[error][0])
+            }
+          })
         }
     },
     computed: {

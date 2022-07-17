@@ -26,7 +26,7 @@ class Contract extends Model
     }
     public function trader()
     {
-        return $this->belongsTo(Trader::class, 'trader_id');
+        return $this->belongsTo(Trader::class);
     }
     public function farm()
     {

@@ -8,6 +8,7 @@ use App\Models\Farm;
 use App\Models\ProduceTrader;
 use App\Models\Project;
 use App\Models\ProjectImage;
+use App\Models\Trader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,13 +22,13 @@ class ProjectController extends Controller
             'produce_trader_id' => 'required|exists:produce_trader,id',
             'project_status_id' => 'required|exists:project_statuses,id',
             // 'project_stageImg' => 'image',           
-            'contract_estimatedHarvest' => 'required',
-            'contract_estimatedPrice' => 'required',
-            'contract_estimatedSales' => 'required',
-            'contract_ownerShare' => 'required',
-            'contract_traderShare' => 'required',
+            'contract_estimatedHarvest' => 'required|gt:0.00',
+            'contract_estimatedPrice' => 'required|gt:0.00',
+            'contract_estimatedSales' => 'required|gt:0.00',
+            'contract_ownerShare' => 'required|gt:0.00',
+            'contract_traderShare' => 'required|gt:0.00',
             'contractShare_type' => 'required',
-            'contractShare_amount' => 'required',
+            'contractShare_amount' => 'required|gt:0.00',
             'project_completionDate' => 'required|date|after:project_commenceDate',
             'project_commenceDate' => 'required|date|before:project_completionDate',
             'project_floweringStart' => 'date|nullable',
@@ -40,8 +41,9 @@ class ProjectController extends Controller
             'project_harvestableEnd' => 'date|nullable',
         ]);
         $result1 = ProduceTrader::find($request->produce_trader_id);
-        $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_id', '=', $request->produce_id]])->first();
-        if (!$project || !$result1 || !$result2) {
+        $trader = Trader::where('user_id', auth()->id())->first();
+        $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_trader_id', '=', $request->produce_trader_id]])->first(); 
+        if (!$project || !($result1->trader_id == $trader->id) || !$result2) {
             return response([
                 'error' => 'Unavailable Produce for that Farm!'
             ], 400);
@@ -54,11 +56,19 @@ class ProjectController extends Controller
 
         $farm = Farm::find($request->farm_id);
 
+
+        // return response([
+        //     'produce_trader_id' => $request->produce_trader_id,
+        //     'farm_id' => $farm->id,
+        //     'trader_id' => auth()->id(),
+        //     'share_id' => $share->id
+        // ], 200);
+
         $contract = Contract::create([
             'trader_id' => auth()->id(),
             'farm_id' => $farm->id,
             'contract_share_id' => $share->id,
-            'produce_trader_id' => $result1->id,
+            'produce_trader_id' => $request->produce_trader_id,
             'contract_estimatedHarvest' => $request->contract_estimatedHarvest,
             'contract_estimatedPrice' => $request->contract_estimatedPrice,
             'contract_estimatedSales' => $request->contract_estimatedSales,

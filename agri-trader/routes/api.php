@@ -248,20 +248,42 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::put('/refund/approve/{id}', [RefundController::class, 'approveRefund']);
         });
 
-        Route::get('/projects', function () {
-            $projectIDs = [];
-            $contracts = Contract::where('trader_id', auth()->id())->get();
-            foreach($contracts as $contract) {
-                array_push($projectIDs, Project::where('contract_id', $contract->id)->first()->id);
-            }
-            $projects = Project::whereIn('id', $projectIDs);
-            if(count($projects->get()) > 6){
+        Route::get('/projects', function () {       
+            $farms = [];
+            $farm_owners = [];
+            $produces = [];
+            $shares = [];
+            $start_dates = [];
+            $contracts = Contract::where('trader_id', auth()->id());
+            foreach($contracts->get() as $contract){
+                $farm = $contract->farm()->first();
+                $farm_owner = $farm->farm_owner()->first();
+                $produce = $contract->produce_trader()->first();
+                $share = $contract->contract_share()->first();
+                $start_date = $contract->project()->first();
+                array_push($farms, $farm);
+                array_push($farm_owners, $farm_owner);
+                array_push($produces, $produce);
+                array_push($shares, $share);
+                array_push($start_dates, $start_date);
+            }                        
+            if(count($contracts->get()) > 6){
                 return response([
-                    'projects' => $projects->paginate(6)
+                    'projects' => $contracts->paginate(6),
+                    'farms' => $farms,
+                    'farm_owners' => $farm_owners,
+                    'produces' => $produces,
+                    'shares' => $shares,
+                    'start_dates' => $start_dates,
                 ], 200);
             } 
             return response([
-                'projects' => $projects->get()
+                'projects' => $contracts->get(),
+                'farms' => $farms,
+                'farm_owners' => $farm_owners,
+                'produces' => $produces,
+                'shares' => $shares,
+                'start_dates' => $start_dates,
             ], 200);   
         });
 

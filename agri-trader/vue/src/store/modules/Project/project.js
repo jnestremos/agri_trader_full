@@ -15,7 +15,12 @@ const state = {
     },
     farms: null,
     produces: null,
-    owners: null
+    owners: null,
+    farm_list: null,
+    owner_list: null,
+    produce_list: null,
+    share_list: null,
+    date_list: null
 }
 
 const getters = {
@@ -33,7 +38,22 @@ const getters = {
     },
     getOwnersForProject(){
         return state.owners
-    }
+    },
+    getFarmList(){
+        return state.farm_list
+    },
+    getOwnerList(){
+        return state.owner_list
+    },
+    getProduceList(){
+        return state.produce_list
+    },
+    getShareList(){
+        return state.share_list
+    },
+    getDateList(){
+        return state.date_list
+    },
 }
 
 const actions = {
@@ -73,6 +93,13 @@ const actions = {
             commit('setAllProducesForProject', res.data)
         })
     },
+    addProject({ commit }, data){
+        return axiosClient.post('/project/add', data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    }
 }
 
 const mutations = {
@@ -93,7 +120,12 @@ const mutations = {
         }
         else{
             state.project_data.projects = data.projects
-        }        
+        }
+        state.farm_list = data.farms
+        state.owner_list = data.farm_owners
+        state.produce_list = data.produces
+        state.share_list = data.shares
+        state.date_list = data.start_dates        
     },
     setAllFarmsForProject(state, data){
         state.farms = data.farms
@@ -101,6 +133,9 @@ const mutations = {
     },
     setAllProducesForProject(state, data){
         state.produces = data.produces
+    },
+    asd(){
+        console.log(1)
     }
 }
 
