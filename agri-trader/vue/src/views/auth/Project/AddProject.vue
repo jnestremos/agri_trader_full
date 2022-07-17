@@ -3,7 +3,7 @@
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Add Project</h3>        
     </div>
-    <form action="" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">     
+    <form action="" @submit.prevent="addProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">     
       <div class="row px-5 w-100 m-0" style="height:30%;">
         <div class="col-6 d-flex flex-column justify-content-evenly">
           <div class="d-flex align-items-baseline">
@@ -331,6 +331,9 @@ export default {
           this.project_devFruitEnd = null
           this.project_harvestableStart = null
           this.project_harvestableEnd = null          
+        },
+        addProject(){
+          console.log(1)
         }
     },
     computed: {

@@ -1,16 +1,12 @@
 <template>
   <div class="register vw-100 vh-100" style="background-color:green; position:relative;">
-  <div v-if="errors">
-    <div v-for="(error, index) in errors" :key="index">
-      {{error[0]}}
-    </div>    
-  </div>
+
     <div class="container-fluid">
       <router-link to="/login/distributor" v-if="$route.name == 'RegisterDistributor'"><h3>&LeftTriangle; Back</h3></router-link>
       <router-link to="/login/trader" v-else><h3>&LeftTriangle; Back</h3></router-link>
       <h2 class="d-flex justify-content-end" v-if="$route.name == 'RegisterTrader'">Sign-up As Trader</h2>    
       <h2 class="d-flex justify-content-end" v-else>Sign-up As Distributor</h2>    
-      <div class="container-fluid float-left" style="width:60%;">
+      <div class="container-fluid m-0" style="width:60%;">
         <form action="" @submit.prevent="registerAcc()">          
           <div class="row mt-4">
             <div class="col-4">
@@ -156,7 +152,7 @@ export default {
       errors: null  
     }
   },  
-  mounted() {  
+  mounted() {       
     if(this.$route.name == "RegisterDistributor"){
       this.user.role = 2
     }
@@ -188,12 +184,9 @@ export default {
       .catch((err) => {
         console.log(err)
         this.errors = err.response.data.errors
-        // if(this.$router.currentRoute.path == "/register/distributor"){
-        //   this.$router.push({name: 'RegisterDistributor'})
-        // }
-        // else{
-        //   this.$router.push({name: 'RegisterTrader'})
-        // }
+        for(var error in this.errors){
+          this.$toastr.e(this.errors[error][0])
+        }
       })
     }
   }

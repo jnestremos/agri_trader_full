@@ -14,10 +14,13 @@
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^2.0.6",
     "axios": "^0.27.2",
+    "bootstrap": "^4.6.1",
     "bootstrap-vue": "^2.22.0",
     "core-js": "^3.6.5",
+    "portal-vue": "^2.1.7",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vue-toastr": "^2.1.2",
     "vuex": "^3.4.0"
   },
   "devDependencies": {

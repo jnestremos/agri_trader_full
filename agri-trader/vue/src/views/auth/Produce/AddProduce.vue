@@ -2,11 +2,6 @@
   <div class="addProduce" style="position:relative;">
         <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%;">
         <h3>Add Produce</h3>        
-    </div>
-    <div v-if="errors">
-        <div v-for="(error, index) in errors" :key="index">
-        {{error[0]}}
-        </div>    
     </div>       
     <div class="container-fluid" style="height:60%; float:left; width:40%;">    
         <div style="width:100%; height:100%;" class="pb-5">
@@ -90,6 +85,9 @@ export default {
             .catch((err) => {
                 console.log(err.response.data.errors)
                 this.errors = err.response.data.errors
+                for(var error in this.errors){
+                    this.$toastr.e(this.errors[error][0])
+                }                
             })
         },
         setProduceId(e){

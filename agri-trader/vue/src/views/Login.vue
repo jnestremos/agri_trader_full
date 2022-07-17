@@ -40,7 +40,7 @@
 
 <script>
 // @ is an alias to /src
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Login',
@@ -52,9 +52,6 @@ export default {
       },
       error: null                     
     }
-  },
-  computed: {
-    ...mapGetters(['getError'])    
   },
   methods:{
     ...mapActions(['login']),

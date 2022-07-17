@@ -2,12 +2,7 @@
   <div class="addFarmOwner">
     <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%;">
         <h3>Add Farm Owner</h3>        
-    </div>
-    <div v-if="errors">
-        <div v-for="(error, index) in errors" :key="index">
-        {{error[0]}}
-        </div>    
-    </div>       
+    </div>          
     <div class="container-fluid w-100" style="height:90%;">    
         <div style="width:100%; height:100%;" class="pb-5">
             <form action="" class="d-flex flex-column justify-content-between" style="height:100%; position:relative; z-index: 999;" @submit.prevent="sendOwner()">
@@ -125,6 +120,9 @@ export default {
             .catch((err) => {
                 console.log(err)
                 this.errors = err.response.data.errors
+                for(var error in this.errors){
+                    this.$toastr.e(this.errors[error][0])
+                }                
             })
         }
     },

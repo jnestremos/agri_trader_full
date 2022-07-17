@@ -13,7 +13,6 @@ import ShowProduce from '../views/auth/Produce/ShowProduce.vue'
 import AllProjects from '../views/auth/Project/AllProjects.vue'
 import ShowProject from '../views/auth/Project/ShowProject.vue'
 import AddProject from '../views/auth/Project/AddProject.vue'
-import ErrorPage from '../views/404.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
 import auth from '../store/modules/Auth/auth'
@@ -94,7 +93,7 @@ const routes = [
         component: AddProject
       },
     ]
-  },
+  },  
   {
     path:'/login', 
     redirect:'/login/distributor'
@@ -132,12 +131,12 @@ const routes = [
       },     
     ]
   },
-  {
-    path: '/404',
-    name: 'ErrorPage',    
-    meta: {needsAuth: true, role: 'distributor'},
-    component: ErrorPage
-  },
+  // {
+  //   path: '/404',
+  //   name: 'ErrorPage',    
+  //   meta: {needsAuth: true, role: 'distributor'},
+  //   component: ErrorPage
+  // },
   {
     path: '/:catchAll(.*)',
     redirect: '/404',    

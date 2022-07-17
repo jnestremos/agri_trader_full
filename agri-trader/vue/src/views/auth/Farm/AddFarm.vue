@@ -49,9 +49,6 @@
                         <option :value="owner.id" v-for="(owner, index) in getOwners" :key="index">{{ owner.owner_firstName }} {{ owner.owner_lastName }}</option>
                     </select>
                 </div>
-                <div id="errors" v-if="errors">
-                    {{errors}}
-                </div>
                 <input type="submit" v-if="farm.owner_id" value="Add Farm" class="btn btn-primary" style="position: absolute; bottom:5%; right:5%;">               
             </form>
         </div>
@@ -146,6 +143,9 @@ export default {
             .catch((err) => {
                 console.log(err)
                 this.errors = err.response.data.errors
+                for(var error in this.errors){
+                    this.$toastr.e(this.errors[error][0])
+                }                
             })
         }
     }
