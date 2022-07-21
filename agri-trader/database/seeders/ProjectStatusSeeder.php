@@ -15,7 +15,7 @@ class ProjectStatusSeeder extends Seeder
      */
     public function run()
     {
-        $statuses = ['For Approval', 'Cancelled', 'Approved', 'Terminated Successfully', 'Terminated w/ Complications'];
+        $statuses = ['For Approval', 'Approved', 'Cancelled', 'Terminated Successfully', 'Terminated w/ Complications'];
 
         foreach ($statuses as $status) {
             ProjectStatus::create([

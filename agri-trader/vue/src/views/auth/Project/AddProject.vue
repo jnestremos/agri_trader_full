@@ -55,12 +55,8 @@
             </div>
             <div class="col-4 p-0 d-flex align-items-baseline">
               <label for="project_commenceDate" class="form-label me-4">Project Start:</label>
-              <input type="date" name="project_commenceDate" id="" v-model="data.project_commenceDate" class="form-control" style="width:200px">
-            </div>
-            <div class="col-4 p-0 d-flex align-items-baseline">
-              <label for="project_completionDate" class="form-label me-4">Project End:</label>
-              <input type="date" name="project_completionDate" id="" v-model="data.project_completionDate" class="form-control" style="width:200px">
-            </div>
+              <input type="date" onkeydown="return false" name="project_commenceDate" id="" v-model="data.project_commenceDate" class="form-control" style="width:200px">
+            </div>            
           </div>
           <div class="row w-100 m-0">
             <div class="col-4 p-0">
@@ -79,10 +75,10 @@
                <label for="stage1" class="form-label ms-2">Flowering:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_floweringStart" v-model="data.project_floweringStart" id="project_floweringStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_floweringStart" v-model="data.project_floweringStart" id="project_floweringStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_floweringEnd" v-model="data.project_floweringEnd" id="project_floweringEnd" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_floweringEnd" v-model="data.project_floweringEnd" id="project_floweringEnd" class="form-control" style="width:200px" disabled>
             </div>
           </div>
           <div class="row w-100 m-0">
@@ -91,10 +87,10 @@
                <label for="stage2" class="form-label ms-2">Fruit Budding:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_fruitBuddingStart" v-model="data.project_fruitBuddingStart" id="project_fruitBuddingStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_fruitBuddingStart" v-model="data.project_fruitBuddingStart" id="project_fruitBuddingStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_fruitBuddingEnd" v-model="data.project_fruitBuddingEnd" id="project_fruitBuddingEnd" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_fruitBuddingEnd" v-model="data.project_fruitBuddingEnd" id="project_fruitBuddingEnd" class="form-control" style="width:200px" disabled>
             </div>
           </div>
           <div class="row w-100 m-0">
@@ -103,10 +99,10 @@
                <label for="stage3" class="form-label ms-2">Developing Fruit:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_devFruitStart" v-model="data.project_devFruitStart" id="project_devFruitStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_devFruitStart" v-model="data.project_devFruitStart" id="project_devFruitStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_devFruitEnd" v-model="data.project_devFruitEnd" id="project_devFruitEnd" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_devFruitEnd" v-model="data.project_devFruitEnd" id="project_devFruitEnd" class="form-control" style="width:200px" disabled>
             </div>
           </div>
           <div class="row w-100 m-0">
@@ -115,10 +111,10 @@
                <label for="stage4" class="form-label ms-2">Harvestable:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_harvestableStart" v-model="data.project_harvestableStart" id="project_harvestableStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_harvestableStart" v-model="data.project_harvestableStart" id="project_harvestableStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" name="project_harvestableEnd" v-model="data.project_harvestableEnd" id="project_harvestableEnd" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_harvestableEnd" v-model="data.project_harvestableEnd" id="project_harvestableEnd" class="form-control" style="width:200px" disabled>
             </div>
           </div>          
         </div>        
@@ -204,6 +200,8 @@ export default {
           this.data.project_floweringEnd = null
           project_floweringStart.disabled = true
           project_floweringEnd.disabled = true
+          project_floweringStart.value = null
+          project_floweringEnd.value = null
           this.stage2 = false
           checkboxes[1].disabled = false
           this.stage3 = false
@@ -229,6 +227,8 @@ export default {
           this.data.project_fruitBuddingEnd = null
           project_fruitBuddingStart.disabled = true
           project_fruitBuddingEnd.disabled = true
+          project_fruitBuddingStart.value = null
+          project_fruitBuddingEnd.value = null
           this.stage3 = false
           checkboxes[2].disabled = false
           this.stage4 = false          
@@ -250,6 +250,8 @@ export default {
           this.data.project_devFruitEnd = null
           project_devFruitStart.disabled = true
           project_devFruitEnd.disabled = true
+          project_devFruitStart.value = null
+          project_devFruitEnd.value = null
           this.stage4 = false          
           checkboxes[3].disabled = false                    
         }
@@ -261,11 +263,13 @@ export default {
           project_harvestableStart.disabled = false
           project_harvestableEnd.disabled = false
         }
-        else{
+        else{          
           this.data.project_harvestableStart = null
           this.data.project_harvestableEnd = null
           project_harvestableStart.disabled = true
           project_harvestableEnd.disabled = true
+          project_harvestableStart.value = null
+          project_harvestableEnd.value = null
         }
       },
     },
@@ -340,9 +344,16 @@ export default {
           })
           .catch((err) => {
             console.log(err)
-            this.errors = err.response.data.errors
-            for(var error in this.errors){
-              this.$toastr.e(this.errors[error][0])
+            if(err.response.data.errors){
+              this.errors = err.response.data.errors
+              for(var error in this.errors){
+                this.$toastr.e(this.errors[error][0])
+              }
+            }
+            else{
+              console.log(err.response.data.error.toString())
+              this.errors = err.response.data.error                          
+              this.$toastr.e(this.errors.toString())
             }
           })
         }
@@ -358,8 +369,7 @@ export default {
           project_status_id: 1,
           contract_estimatedHarvest: '0.00',
           contract_estimatedPrice: '0.00',
-          contractShare_amount: '0.00',
-          project_completionDate: null,
+          contractShare_amount: '0.00',          
           project_commenceDate: null,
           contractShare_type: 'Percentage',
           contract_estimatedSales: '0.00',

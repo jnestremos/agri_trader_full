@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('contract_id')->constrained('contracts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('project_status_id')->constrained('project_statuses')->onUpdate('cascade')->onDelete('cascade');
-            $table->date('project_completionDate');
+            $table->date('project_completionDate')->nullable();
             $table->date('project_commenceDate');
             $table->date('project_floweringStart')->nullable();
             $table->date('project_floweringEnd')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->date('project_harvestableStart')->nullable();
             $table->date('project_harvestableEnd')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

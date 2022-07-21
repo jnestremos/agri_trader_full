@@ -13,6 +13,13 @@ const state = {
         total: null,
         links: null        
     },
+    farm: null,
+    history: null,
+    share: null,
+    farm_owner: null,
+    produce: null,
+    contract: null,
+    project: null,
     farms: null,
     produces: null,
     owners: null,
@@ -53,6 +60,27 @@ const getters = {
     },
     getDateList(){
         return state.date_list
+    },
+    getProject(){
+        return state.project
+    },
+    getContract(){
+        return state.contract
+    },
+    getFarm(){
+        return state.farm
+    },
+    getProduce(){
+        return state.produce
+    },
+    getShare(){
+        return state.share
+    },
+    getOwner(){
+        return state.owner
+    },
+    getHistory(){
+        return state.history
     },
 }
 
@@ -99,7 +127,21 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
-    }
+    },
+    fetchProject({ commit }, id){
+        return axiosClient.get(`/projects/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProject', res.data)
+        })
+    },
+    updateProject({ commit }, data){       
+        return axiosClient.patch(`/projects/${data.id}`, data.data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    }   
 }
 
 const mutations = {
@@ -136,6 +178,15 @@ const mutations = {
     },
     asd(){
         console.log(1)
+    },
+    setProject(state, data){
+        state.project = data.project
+        state.contract = data.contract
+        state.farm = data.farm
+        state.share = data.share
+        state.farm_owner = data.farm_owner
+        state.produce = data.produce
+        state.history = data.history
     }
 }
 

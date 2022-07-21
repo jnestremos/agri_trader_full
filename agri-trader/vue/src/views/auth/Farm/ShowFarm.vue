@@ -92,7 +92,7 @@
                 <div class="row">
                   <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
                     <div class="produce d-flex justify-content-center align-items-center" v-b-tooltip.hover :title="produce.produce_inventory_qtyOnHand + ' kgs'" style="height:100%; border-radius: 20px; cursor:default">                                                            
-                      <p class="mt-2" style="font-weight:bold; font-size:0.8rem">{{  produce.prod_name }}</p>                                                                                                                                                                                               
+                      <p class="mt-2" style="font-weight:bold; text-align: center; font-size:0.8rem">{{  produce.prod_name }}</p>                                                                                                                                                                                               
                     </div>                      
                   </div>                  
                 </div>

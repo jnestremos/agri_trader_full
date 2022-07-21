@@ -17,7 +17,7 @@
                         width:85%;">
                             <div class="d-flex mb-4">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
-                                <h3 class="mb-4">{{ getOwnerList[i].owner_firstName + ' ' + getOwnerList[i].owner_lastName }} - {{ getDateList[i].project_commenceDate }} - {{100 - parseInt(getShareList[i].contractShare_amount) + "/" + getShareList[i].contractShare_amount }}</h3>
+                                <h4 class="mb-4">{{ getOwnerList[i].owner_firstName + ' ' + getOwnerList[i].owner_lastName }} - {{ getDateList[i].project_commenceDate }} - {{100 - parseInt(getShareList[i].contractShare_amount) + "/" + getShareList[i].contractShare_amount }}</h4>
                             </div>                                                                
                             <h4 class="d-flex">Produce: <p class="ms-3">{{ getProduceList[i].prod_name }}</p></h4>
                             <h4 class="d-flex">Estimated Harvest (in kg): <p class="ms-3">{{ p.contract_estimatedHarvest + ' kg'}}</p></h4>
@@ -105,7 +105,10 @@ export default {
             .then(() => {
                 this.filtered = this.filteredProjectArray()   
             })
-        },                                
+        },  
+        showProject(id){
+            this.$router.push({ path: `/projects/${id}` })
+        }                              
     }
 }
 </script>

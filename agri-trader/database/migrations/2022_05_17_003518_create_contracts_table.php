@@ -27,6 +27,7 @@ return new class extends Migration
             $table->double('contract_traderShare');
             $table->boolean('contract_status')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -17,6 +17,7 @@ use App\Models\FarmOwner;
 use App\Models\Produce;
 use App\Models\ProduceTrader;
 use App\Models\Project;
+use App\Models\ProjectStatus;
 use App\Models\Trader;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -245,47 +246,69 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/add', 'add');
                 Route::post('/add/pictures/{id}', 'addPictures');
             });
-            Route::put('/refund/approve/{id}', [RefundController::class, 'approveRefund']);
+            Route::put('/refund/approve/{id}', [RefundController::class, 'approveRefund']);            
         });
 
-        Route::get('/projects', function () {       
-            $farms = [];
-            $farm_owners = [];
-            $produces = [];
-            $shares = [];
-            $start_dates = [];
-            $contracts = Contract::where('trader_id', auth()->id());
-            foreach($contracts->get() as $contract){
-                $farm = $contract->farm()->first();
-                $farm_owner = $farm->farm_owner()->first();
-                $produce = $contract->produce_trader()->first();
-                $share = $contract->contract_share()->first();
-                $start_date = $contract->project()->first();
-                array_push($farms, $farm);
-                array_push($farm_owners, $farm_owner);
-                array_push($produces, $produce);
-                array_push($shares, $share);
-                array_push($start_dates, $start_date);
-            }                        
-            if(count($contracts->get()) > 6){
+        Route::prefix('projects')->group(function (){            
+
+            Route::get('/', function () {       
+                $farms = [];
+                $farm_owners = [];
+                $produces = [];
+                $shares = [];
+                $start_dates = [];
+                $trader = Trader::where('user_id', auth()->id())->first();
+                $contracts = Contract::where('trader_id', $trader->id);    
+                            
+                foreach($contracts->get() as $contract){
+                    $farm = $contract->farm()->first();
+                    $farm_owner = $farm->farm_owner()->first();
+                    $produce = $contract->produce_trader()->first();
+                    $share = $contract->contract_share()->first();
+                    $start_date = $contract->project()->first();
+                    array_push($farms, $farm);
+                    array_push($farm_owners, $farm_owner);
+                    array_push($produces, $produce);
+                    array_push($shares, $share);
+                    array_push($start_dates, $start_date);
+                }                        
+                if(count($contracts->get()) > 6){
+                    return response([
+                        'projects' => $contracts->paginate(6),
+                        'farms' => $farms,
+                        'farm_owners' => $farm_owners,
+                        'produces' => $produces,
+                        'shares' => $shares,
+                        'start_dates' => $start_dates,
+                    ], 200);
+                } 
                 return response([
-                    'projects' => $contracts->paginate(6),
+                    'projects' => $contracts->get(),
                     'farms' => $farms,
                     'farm_owners' => $farm_owners,
                     'produces' => $produces,
                     'shares' => $shares,
                     'start_dates' => $start_dates,
+                ], 200);   
+            });
+
+            Route::get('/{id}', function ($id){                
+                return response([
+                    'farm' => Project::find($id)->contract()->first()->farm()->first(),
+                    'contract' => Project::find($id)->contract()->first(),
+                    'project' => Project::find($id),
+                    'share' => Project::find($id)->contract()->first()->contract_share()->first(),
+                    'farm_owner' => Project::find($id)->contract()->first()->farm()->first()->farm_owner()->first(),
+                    'produce' => Project::find($id)->contract()->first()->produce_trader()->first(),
+                    'history' => DB::table('project_status_history')->where('project_id', $id)->get()                  
                 ], 200);
-            } 
-            return response([
-                'projects' => $contracts->get(),
-                'farms' => $farms,
-                'farm_owners' => $farm_owners,
-                'produces' => $produces,
-                'shares' => $shares,
-                'start_dates' => $start_dates,
-            ], 200);   
+            });
+            
+            Route::patch('/{id}', [ProjectController::class, 'update']);
+
         });
+
+
 
 
 

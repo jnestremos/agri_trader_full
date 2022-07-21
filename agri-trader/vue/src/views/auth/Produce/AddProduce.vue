@@ -38,7 +38,7 @@
                         ></b-form-textarea>
                     <!-- <input type="text" name="prod_details" style="width:30%;" class="form-control" v-model="prod_details"> -->
                 </div>                
-                <input type="submit" value="Add Owner" class="btn btn-primary" style="position:absolute; right:5%; bottom:5%;">
+                <input type="submit" value="Add Produce" class="btn btn-primary" style="position:absolute; right:5%; bottom:5%;">
             </form>
         </div>
     </div>
