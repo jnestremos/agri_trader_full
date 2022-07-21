@@ -16,6 +16,9 @@ class Contract extends Model
         'farm_id',
         'contract_share_id',
         'produce_trader_id',
+        'project_status_id',
+        'produce_id',
+        'farm_name',
         'contract_estimatedHarvest',
         'contract_estimatedPrice',
         'contract_estimatedSales',
@@ -45,4 +48,5 @@ class Contract extends Model
     public function produce_trader(){
         return $this->belongsTo(ProduceTrader::class);
     }
+    
 }

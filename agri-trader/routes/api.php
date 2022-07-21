@@ -259,7 +259,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $start_dates = [];
                 $trader = Trader::where('user_id', auth()->id())->first();
                 $contracts = Contract::where('trader_id', $trader->id);    
-                            
+
                 foreach($contracts->get() as $contract){
                     $farm = $contract->farm()->first();
                     $farm_owner = $farm->farm_owner()->first();
@@ -334,6 +334,37 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['middleware' => ['role:distributor']], function () {
+
+        Route::get('/catalog', function () {
+            $filteredContracts = Contract::select('*')->whereNotIn('project_status_id', [1, 3])->groupBy('produce_id');
+            $contracts = Contract::all();
+            $projects = [];
+            $produces = [];
+            foreach($contracts as $contract){
+                $project = $contract->project()->first();
+                $produce = $contract->produce()->first();
+                array_push($projects, $project);
+                array_push($produces, $produce);
+            }
+            if(count($filteredContracts->get()) > 8){
+                return response([
+                    'filteredContracts' => $filteredContracts->paginate(8),
+                    'contracts' => $contracts,
+                    'projects' => $projects,
+                    'produces' => $produces
+                ], 200);
+            }
+            else{
+                return response([
+                    'filteredContracts' => $filteredContracts->get(),
+                    'contracts' => $contracts,
+                    'projects' => $projects,
+                    'produces' => $produces
+                ], 200);
+            }
+        });
+
+
         Route::prefix('bid/project')->group(function () {
             Route::controller(ProjectBidController::class)->group(function () {
                 Route::post('/add', 'addProjectBid');

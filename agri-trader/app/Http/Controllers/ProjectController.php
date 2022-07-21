@@ -100,6 +100,9 @@ class ProjectController extends Controller
             'farm_id' => $farm->id,
             'contract_share_id' => $share->id,
             'produce_trader_id' => $request->produce_trader_id,
+            'project_status_id' => $request->project_status_id,
+            'produce_id' => ProduceTrader::find($request->produce_trader_id)->produce_id,
+            'farm_name' => $farm->farm_name,
             'contract_estimatedHarvest' => $request->contract_estimatedHarvest,
             'contract_estimatedPrice' => $request->contract_estimatedPrice,
             'contract_estimatedSales' => $request->contract_estimatedSales,
@@ -210,6 +213,10 @@ class ProjectController extends Controller
         ]);
 
         $updProj = Project::find($id);
+
+        Contract::find($updProj->contract_id)->update([
+            'project_status_id' => $updProj->project_status_id
+        ]);
 
         $status = ProjectStatus::find($request->project_status_id);
         $updProj->statuses()->attach($status);

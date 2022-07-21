@@ -178,7 +178,7 @@ export default {
           this.$router.push({name: 'Dashboard'})
         } 
         else{          
-          this.$router.push({name: 'ErrorPage'})
+          this.$router.push({name: 'Catalog'})
         }                                                 
       })
       .catch((err) => {

@@ -13,7 +13,9 @@ import ShowProduce from '../views/auth/Produce/ShowProduce.vue'
 import AllProjects from '../views/auth/Project/AllProjects.vue'
 import ShowProject from '../views/auth/Project/ShowProject.vue'
 import AddProject from '../views/auth/Project/AddProject.vue'
+import Catalog from '../views/auth/Catalog/Catalog.vue'
 import AuthLayout from '../components/AuthLayout.vue'
+import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
 import ErrorPage from '../views/404.vue'
 import auth from '../store/modules/Auth/auth'
@@ -94,7 +96,20 @@ const routes = [
         component: AddProject
       },
     ]
-  },  
+  }, 
+  {
+    path: '/distributor',
+    redirect: '/catalog',
+    component: DistributorLayout,
+    children: [
+      {
+        path: '/catalog',
+        name: 'Catalog',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: Catalog
+      },
+    ]
+  }, 
   {
     path:'/login', 
     redirect:'/login/distributor'
@@ -186,7 +201,7 @@ router.beforeEach((to, from, next) => {
         next({name: 'Dashboard'});
       }   
       else{
-        next({name: 'ErrorPage'});
+        next({name: 'Catalog'});
       } 
       
     }
@@ -195,7 +210,8 @@ router.beforeEach((to, from, next) => {
         next({name: 'Dashboard'});
       }
       else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){
-        next({name: 'ErrorPage'});
+        console.log(1)
+        next({name: 'Catalog'});
       }
       else{
         next();
