@@ -19,12 +19,12 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('images:clear', function () {
-    $pattern = "/catalog_images\/*/";
-    for($i = 0; $i < count(Storage::disk('public')->allFiles()); $i++){      
-        if(Storage::disk('public')->allFiles()[$i] != '.gitignore' || preg_match($pattern, Storage::disk('public')->allFiles()[$i])){
-            Storage::disk('public')->delete(Storage::disk('public')->allFiles()[$i]);
-        }
-    }
-    $this->comment('Images Deleted!');
-})->purpose('To clear all images after clean migration');
+// Artisan::command('images:clear', function () {
+//     $pattern = "/catalog_images\/*/";
+//     for($i = 0; $i < count(Storage::disk('public')->allFiles()); $i++){      
+//         if(Storage::disk('public')->allFiles()[$i] != '.gitignore' || preg_match($pattern, Storage::disk('public')->allFiles()[$i])){
+//             Storage::disk('public')->delete(Storage::disk('public')->allFiles()[$i]);
+//         }
+//     }
+//     $this->comment('Images Deleted!');
+// })->purpose('To clear all images after clean migration');

@@ -21,11 +21,13 @@ class CornSeeder extends Seeder
 
         for ($i = 0; $i < count($html->find('h2')); $i++) {
             if ($i >= 6 && $i <= 11) {
-                Produce::create([
-                    'prod_name' => $html->find('h2')[$i]->plaintext,
-                    'prod_timeOfHarvest' => '60-90 days',
-                    'prod_type' => 'Corn'
-                ]);
+                if($html->find('h2')[$i]->plaintext != 'Visayan White Corn'){
+                    Produce::create([
+                        'prod_name' => trim($html->find('h2')[$i]->plaintext),
+                        'prod_timeOfHarvest' => '60-90 days',
+                        'prod_type' => 'Corn'
+                    ]); 
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import farm from './modules/Farm/farm'
 import produce from './modules/Produce/produce'
 import project from './modules/Project/project'
 import catalog from './modules/Catalog/catalog'
+import bidOrder from './modules/BidOrder/bidOrder'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -21,7 +22,7 @@ export default new Vuex.Store({
     readyApp({ commit }){
       setTimeout(() => {
         commit('appReady')
-      }, 2000)
+      }, 4000)
       return Promise.resolve('success')
     }
   },
@@ -35,6 +36,7 @@ export default new Vuex.Store({
     farm,
     produce,
     project,
-    catalog
+    catalog,
+    bidOrder
   },
 })

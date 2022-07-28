@@ -2,7 +2,7 @@
   <div id="app"> 
     <div style="position:absolute; background-color: white; z-index:999999999999999999" class="vw-100 vh-100 d-flex justify-content-center align-items-center" v-if="!loading">
       <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden"></span>
       </div>
     </div>
     

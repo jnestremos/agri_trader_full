@@ -98,6 +98,7 @@ class FarmController extends Controller
         $produce = DB::table('produce_trader')->where('id', '=', $request->id)->first();      
         DB::table('farm_produce')->insert([
             'farm_id' => $farm->id,
+            'farm_name' => $farm->farm_name,
             'produce_trader_id' => $request->id,
             'prod_name' => $produce->prod_name
         ]);

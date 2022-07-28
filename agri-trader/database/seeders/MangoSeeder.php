@@ -19,7 +19,7 @@ class MangoSeeder extends Seeder
 
         foreach ($mangoes as $mango) {
             Produce::create([
-                'prod_name' => $mango,
+                'prod_name' => trim($mango),
                 'prod_timeOfHarvest' => '120-140 days',
                 'prod_type' => 'Mango'
             ]);

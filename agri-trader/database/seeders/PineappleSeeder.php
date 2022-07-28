@@ -20,11 +20,11 @@ class PineappleSeeder extends Seeder
         // • Red Spanish
         // • Pernambuco
 
-        $pineapples = ['Smooth Cayenne', 'Queen Victoria', 'Red Spanish', 'Pernambuco'];
+        $pineapples = ['Smooth Cayenne', 'Queen Victoria', 'Red Spanish'];
 
         foreach ($pineapples as $pineapple) {
             Produce::create([
-                'prod_name' => $pineapple,
+                'prod_name' => trim($pineapple),
                 'prod_timeOfHarvest' => '480-540 days',
                 'prod_type' => 'Pineapple'
             ]);

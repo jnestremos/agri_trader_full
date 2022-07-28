@@ -22,11 +22,21 @@ class RiceSeeder extends Seeder
         foreach ($html->find('div[style="float: left; height: 150px; width: 200px;"]') as $lists) {
             foreach ($lists->children() as $items) {
                 foreach ($items->children() as $item) {
-                    Produce::create([
-                        'prod_name' => $item->plaintext,
-                        'prod_timeOfHarvest' => '130-136 days',
-                        'prod_type' => 'Rice'
-                    ]);
+                    if($item->plaintext == 'Dinurado / Denorado'){
+                        Produce::create([
+                            'prod_name' => 'Dinurado',
+                            'prod_timeOfHarvest' => '130-136 days',
+                            'prod_type' => 'Rice'
+                        ]);
+                    }
+                    else if($item->plaintext != 'C4 (UPLB C4-63G)' && $item->plaintext != 'IR42' && $item->plaintext != 'IR64'){
+                        Produce::create([
+                            'prod_name' => trim($item->plaintext),
+                            'prod_timeOfHarvest' => '130-136 days',
+                            'prod_type' => 'Rice'
+                        ]);
+                    }
+
                 }
             }
         }

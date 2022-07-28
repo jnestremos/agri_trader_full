@@ -19,7 +19,7 @@ class BananaSeeder extends Seeder
 
         foreach ($bananas as $banana) {
             Produce::create([
-                'prod_name' => $banana,
+                'prod_name' => trim($banana),
                 'prod_timeOfHarvest' => '420-480 days',
                 'prod_type' => 'Banana'
             ]);

@@ -174,7 +174,7 @@ class AuthController extends Controller
             'user' => $user,
             'role' => $role,
             'name' => $name
-        ], 200);
+        ], 201);
     }
     public function logout(Request $request)
     {

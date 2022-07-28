@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('produce_trader_id')->constrained('produce_trader')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('produce_inventory_id')->nullable()->constrained('produce_inventories')->onUpdate('cascade')->onDelete('cascade');
             $table->double('produce_inventory_qtyOnHand')->default('0');
+            $table->string('farm_name')->nullable();            
             $table->string('prod_name')->nullable();            
             $table->timestamps();
         });

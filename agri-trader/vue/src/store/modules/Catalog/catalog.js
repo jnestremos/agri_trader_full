@@ -1,8 +1,8 @@
 import axiosClient from "../../../axios";
 
 const state = {
-    contract_data: {
-        contracts: [],
+    produce_data: {
+        produces: [],
         current_page: null,
         first_page_url: null,
         last_page: null,
@@ -15,21 +15,29 @@ const state = {
     },
     contracts: null,
     projects: null,
-    produces: null
+    produce_trader: null,
+    farm_produces: null,
+    produce_yields: null
 }
 
 const getters = {
-    getContractData(){
-        return state.contract_data
+    getProduceDataa(){
+        return state.produce_data
     },
-    getProducess(){
-        return state.produces
+    getProduceTrader(){
+        return state.produce_trader
     },
     getProjectss(){
         return state.projects
     },
     getContractss(){
         return state.contracts
+    },    
+    getFarmProducess(){
+        return state.farm_produces
+    },    
+    getProduceYields(){
+        return state.produce_yields
     },    
     
 }
@@ -57,26 +65,28 @@ const actions = {
 
 const mutations = {
     setAllProducess: (state, data) => {
-        if(data.filteredContracts.data){            
-            state.contract_data.contracts = data.filteredContracts.data
-            state.contract_data.current_page = data.filteredContracts.current_page
-            state.contract_data.first_page_url = data.filteredContracts.first_page_url
-            state.contract_data.last_page = data.filteredContracts.last_page
-            state.contract_data.last_page_url = data.filteredContracts.last_page_url
-            state.contract_data.next_page_url = data.filteredContracts.next_page_url
-            state.contract_data.per_page = data.filteredContracts.per_page
-            state.contract_data.prev_page_url = data.filteredContracts.prev_page_url
-            state.contract_data.total = data.filteredContracts.total
-            state.contract_data.links = data.filteredContracts.links
-            state.contract_data.links.splice(0, 1)
-            state.contract_data.links.splice(state.produce_data.links.length - 1, 1)  
+        if(data.produces.data){            
+            state.produce_data.produces = data.produces.data
+            state.produce_data.current_page = data.produces.current_page
+            state.produce_data.first_page_url = data.produces.first_page_url
+            state.produce_data.last_page = data.produces.last_page
+            state.produce_data.last_page_url = data.produces.last_page_url
+            state.produce_data.next_page_url = data.produces.next_page_url
+            state.produce_data.per_page = data.produces.per_page
+            state.produce_data.prev_page_url = data.produces.prev_page_url
+            state.produce_data.total = data.produces.total
+            state.produce_data.links = data.produces.links
+            state.produce_data.links.splice(0, 1)
+            state.produce_data.links.splice(state.produce_data.links.length - 1, 1)  
         }
         else{
-            state.contract_data.contracts = data.filteredContracts
+            state.produce_data.produces = data.produces
         }
         state.contracts = data.contracts
-        state.projects = data.projects
-        state.produces = data.produces
+        state.projects = data.projects       
+        state.produce_trader = data.produce_trader 
+        state.farm_produces = data.farm_produce
+        state.produce_yields = data.produce_yields
     },
 }
 

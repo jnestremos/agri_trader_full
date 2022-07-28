@@ -50,16 +50,20 @@ class ProjectController extends Controller
             ], 400);
         }
 
+        // return response([
+        //     'result' => $request->all()
+        // ], 200);
+
         if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
         || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
         || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
-        || ($request->project_fruitBuddingStart != null && $request->project_fruitBudding == null)
+        || ($request->project_fruitBuddingStart != null && $request->project_fruitBuddingEnd == null)
         || ($request->project_devFruitStart == null && $request->project_devFruitEnd != null)
         || ($request->project_devFruitStart != null && $request->project_devFruitEnd == null)
         || ($request->project_harvestableStart == null && $request->project_harvestableEnd != null)
         || ($request->project_harvestableStart != null && $request->project_harvestableEnd == null)){
             
-            return response([
+            return response([                
                 'error' => 'One of the dates fields has been missed out!'
             ], 400);
 

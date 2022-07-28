@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             LaratrustSeeder::class,
             RiceSeeder::class,
             CornSeeder::class,
-            CoconutSeeder::class,
+            //CoconutSeeder::class,
             //SugarcaneSeeder::class,
             BananaSeeder::class,
             PineappleSeeder::class,

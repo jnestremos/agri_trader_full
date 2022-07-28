@@ -14,6 +14,8 @@ import AllProjects from '../views/auth/Project/AllProjects.vue'
 import ShowProject from '../views/auth/Project/ShowProject.vue'
 import AddProject from '../views/auth/Project/AddProject.vue'
 import Catalog from '../views/auth/Catalog/Catalog.vue'
+import BidOrderProgress from '../views/auth/BidOrder/BidOrderProgress.vue'
+import ShowBidOrder from '../views/auth/BidOrder/ShowBidOrder.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -108,6 +110,24 @@ const routes = [
         meta: {needsAuth: true, role: 'distributor'},
         component: Catalog
       },
+      {
+        path: '/bid_order/progress/:id',
+        name: 'BidOrderProgress',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: BidOrderProgress
+      },
+      {
+        path: '/bid_order/project/:id',
+        name: 'BidOrderProject',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: ShowBidOrder
+      },
+      {
+        path: '/bid_order/on_hand/:id',
+        name: 'BidOrderOnHand',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: ShowBidOrder
+      },
     ]
   }, 
   {
@@ -166,54 +186,62 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if(!store.state.loading){    
-    if(!to.meta.needsAuth){
-      store.state.loading = true
-    }
-    else{
-      store.watch(
-        (state) => state.loading,
-        (ready) => {
-            if(ready){              
-              proceed()
-            }
-        }
-      )
-    }      
-  }
-  else if(!to.meta.needsAuth){
+  store.state.loading = false
+    
+  if(!to.meta.needsAuth){    
     store.state.loading = true
-  } 
-  else{    
-    store.state.loading = false
-  }  
+  }
+  // else{
+  //   store.watch(
+  //     (state) => state.loading,
+  //     (ready) => {
+  //         if(ready){              
+  //           proceed()
+  //           console.log(to)
+  //         }
+  //     }
+  //   )
+  // }      
+  
+  // else if(!to.meta.needsAuth){
+  //   store.state.loading = true
+  // } 
+  // else{    
+  //   store.state.loading = false
+  // }  
   proceed() 
   
   
   
   function proceed(){
     if(to.meta.needsAuth && !auth.state.user.api_token){    
+      console.log(1)
       next({name: 'LoginDistributor'});
       
     }    
     else if(!to.meta.needsAuth && auth.state.user.api_token){
+      console.log(1)
       if(auth.state.user.role == 'trader'){
+        console.log(1)
         next({name: 'Dashboard'});
       }   
       else{
+        console.log(1)
         next({name: 'Catalog'});
       } 
       
     }
     else{
       if(to.meta.role == 'distributor' && auth.state.user.role == 'trader'){
+        console.log(1)
         next({name: 'Dashboard'});
       }
-      else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){
+      else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){        
         console.log(1)
         next({name: 'Catalog'});
       }
       else{
+        console.log(1)
         next();
       }     
     }

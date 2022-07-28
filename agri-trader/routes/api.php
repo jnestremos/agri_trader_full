@@ -16,6 +16,7 @@ use App\Models\Farm;
 use App\Models\FarmOwner;
 use App\Models\Produce;
 use App\Models\ProduceTrader;
+use App\Models\ProduceYield;
 use App\Models\Project;
 use App\Models\ProjectStatus;
 use App\Models\Trader;
@@ -336,36 +337,66 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['middleware' => ['role:distributor']], function () {
 
         Route::get('/catalog', function () {
-            $filteredContracts = Contract::select('*')->whereNotIn('project_status_id', [1, 3])->groupBy('produce_id');
+            //$filteredContracts = Contract::select('*')->whereNotIn('project_status_id', [1, 3])->groupBy('produce_id');
             $contracts = Contract::all();
             $projects = [];
-            $produces = [];
+            $produces = Produce::paginate(8);
+            $farm_produces = DB::table('farm_produce')->get();
+            $produce_yields = ProduceYield::all();
             foreach($contracts as $contract){
                 $project = $contract->project()->first();
-                $produce = $contract->produce()->first();
-                array_push($projects, $project);
-                array_push($produces, $produce);
+                if($project->project_status_id != '1' || $project->project_status_id != '3' || $project->project_status_id != '4' 
+                || $project->project_status_id != '5'){
+                    array_push($projects, $project);
+                }
+                //$produce = $contract->produce()->first();
+                //array_push($produces, $produce);
             }
-            if(count($filteredContracts->get()) > 8){
-                return response([
-                    'filteredContracts' => $filteredContracts->paginate(8),
-                    'contracts' => $contracts,
-                    'projects' => $projects,
-                    'produces' => $produces
-                ], 200);
-            }
-            else{
-                return response([
-                    'filteredContracts' => $filteredContracts->get(),
-                    'contracts' => $contracts,
-                    'projects' => $projects,
-                    'produces' => $produces
-                ], 200);
-            }
+            return response([
+                'produces' => $produces,                
+                'produce_trader' => ProduceTrader::all(),                
+                'contracts' => $contracts,
+                'projects' => $projects,                
+                'farm_produce' => $farm_produces,
+                'produce_yields' => $produce_yields,
+            ], 200);
+        });
+
+        Route::get('/project/{id}', function($id){
+            $produce_trader_id = Contract::find($id)->produce_trader_id;
+            return response([
+                'contract' => Contract::find($id),
+                'project' => Contract::find($id)->project()->first(),
+                'allProjects' => Contract::where('produce_trader_id', $produce_trader_id)
+            ], 200);
         });
 
 
         Route::prefix('bid/project')->group(function () {
+            Route::get('/{id}', function($id){
+                $contract = Contract::find($id);
+                $trader = $contract->trader()->first();
+                $project = $contract->project()->first();
+                return response([
+                    'trader_name' => $trader->trader_firstName . ' ' . $trader->trader_lastName,
+                    'prod_name' => $contract->produce_trader()->first()->prod_name,
+                    'trader_contactNum' => $trader->trader_contactNum()->first()->trader_contactNum,
+                    'project_completionDate' => $project->project_completionDate,
+                    'project_commenceDate' => $project->project_commenceDate,
+                    'trader_email' => $contract->trader->first()->user()->first()->email,
+                    'project_floweringStart' => $project->project_floweringStart,
+                    'project_floweringEnd' => $project->project_floweringEnd,
+                    'project_fruitBuddingStart' => $project->project_fruitBuddingStart,
+                    'project_fruitBuddingEnd' => $project->project_fruitBuddingEnd,
+                    'project_devFruitStart' => $project->project_devFruitStart,
+                    'project_devFruitEnd' => $project->project_devFruitEnd,
+                    'project_harvestableStart' => $project->project_harvestableStart,
+                    'project_harvestableEnd' => $project->project_harvestableEnd,
+                    'contract_estimatedHarvest' => $contract->contract_estimatedHarvest,
+                    'contract_estimatedPrice' => $contract->contract_estimatedPrice,
+                    'project_images' => $project->project_image()->get()
+                ], 200);
+            });
             Route::controller(ProjectBidController::class)->group(function () {
                 Route::post('/add', 'addProjectBid');
             });

@@ -135,6 +135,10 @@ export default {
             this.readyApp(); 
           })          
         })                    
+      })
+      .catch((err) => {
+        console.log(err)
+        this.$router.push({ name:'Farms' })
       })                                   
     },
     mounted(){      

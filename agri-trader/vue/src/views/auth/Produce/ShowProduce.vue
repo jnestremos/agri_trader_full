@@ -18,14 +18,14 @@
         <div v-if="getProduceDetails.produce_numOfGrades > 1">
            <div class="d-flex">
             <h4 class="me-5">A: 150.00</h4>
-            <h4>B: 120.00</h4>
+            <h4>&NonBreakingSpace; B: 120.00</h4>
           </div> 
           <h4>C: 100.00</h4>                 
         </div>
         <h4 v-else>100.00</h4>
       </div>
     </div>
-    <div style="width:100%: height:70%; clear:left;">
+    <div style="width:100%; height:65%; clear:left;">
       <table id="example" class="table table-striped" style="width:100%: height:100%;">
         <thead>
             <tr>
@@ -52,24 +52,27 @@ export default {
         this.readyApp()
         .then(() => {
             this.fetchProduce(this.$route.params.id) 
-            new DataTable('#example', {
-              scrollY: 400,
-              pageLength: 2
-            })            
-            // document.getElementById('example').DataTable({
-            //     scrollY: 400
-            // });
-         })         
+            .then(() => {
+              new DataTable('#example', {
+                scrollY: 400,
+                pageLength: 2
+              })  
+            })
+          .catch((err) => {
+              console.log(err)
+              this.$router.push({ name: 'AllProduces' })
+            })                                               
+         })                 
     },    
     computed: {
         ...mapGetters(['getProduceDetails'])
     },
     methods: {
         ...mapActions(['readyApp', 'fetchProduce'])
-    }
+    },    
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>

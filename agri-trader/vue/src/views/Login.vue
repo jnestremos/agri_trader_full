@@ -1,8 +1,5 @@
 <template>
-  <div class="login">
-    <div v-if="error">
-      {{ error }}
-    </div>
+  <div class="login"> 
     <div class="container-fluid">
       <div class="row">
         <div class="col-6 text-black vh-100" style="background-color:green">
@@ -41,7 +38,7 @@
 <script>
 // @ is an alias to /src
 import { mapActions } from 'vuex'
-
+import auth from '../store/modules/Auth/auth'
 export default {
   name: 'Login',
   data(){
@@ -50,7 +47,7 @@ export default {
         email: '',
         password: '',     
       },
-      error: null                     
+      errors: null                     
     }
   },
   methods:{
@@ -58,10 +55,18 @@ export default {
     loginUser(){
       this.login(this.data)   
       .then(() => {
-        this.$router.push({name: 'Dashboard'})
+        if(auth.state.user.role == 'trader'){
+          this.$router.push({name: 'Dashboard'})
+        }
+        else{
+          this.$router.push({name: 'Catalog'})
+        }        
       })       
       .catch((err) => {
-        this.error = err.response.data.error
+        this.errors = err.response.data.errors
+        for(var error in this.errors){
+            this.$toastr.e(this.errors[error][0])
+        } 
       })  
     }
   }
