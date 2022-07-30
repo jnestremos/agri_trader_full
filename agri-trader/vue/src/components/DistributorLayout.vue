@@ -22,7 +22,7 @@
             </ul>
         </div>
     </div>
-    <div class="container-fluid" style="width:100vw; height:87vh;">
+    <div class="container-fluid p-0 m-0" style="width:100vw; height:87vh;">
         <router-view></router-view>
     </div>    
   </div>

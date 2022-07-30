@@ -373,7 +373,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
         Route::prefix('bid/project')->group(function () {
-            Route::get('/{id}', function($id){
+            Route::get('/{id}', function($id){          
                 $contract = Contract::find($id);
                 $trader = $contract->trader()->first();
                 $project = $contract->project()->first();
