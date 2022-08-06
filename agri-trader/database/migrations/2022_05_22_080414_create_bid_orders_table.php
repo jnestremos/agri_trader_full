@@ -28,6 +28,7 @@ return new class extends Migration
             $table->double('order_finalPrice')->nullable();
             $table->double('order_finalTotal')->nullable();
             $table->date('order_dpDueDate')->nullable();
+            $table->double('order_dpAmount')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

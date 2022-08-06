@@ -25,7 +25,7 @@
           <li><router-link to="/projects">Projects</router-link></li>
           <li><router-link to="/produces">Produces</router-link></li>
           <li><router-link to="/farms">Farms and Owners</router-link></li>
-          <li>Bid Orders</li>
+          <li><router-link to="/bid/orders">Bid Orders</router-link></li>
           <li>Delivery</li>
           <li>Sales Income Report</li>
           <li>Profit Sharing Report</li>

@@ -16,6 +16,9 @@ import AddProject from '../views/auth/Project/AddProject.vue'
 import Catalog from '../views/auth/Catalog/Catalog.vue'
 import BidOrderProgress from '../views/auth/BidOrder/BidOrderProgress.vue'
 import ShowBidOrder from '../views/auth/BidOrder/ShowBidOrder.vue'
+import BidOrderHistory from '../views/auth/BidOrder/BidOrderHistory.vue'
+import AllBidOrders from '../views/auth/BidOrder/trader/AllBidOrders.vue'
+import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -97,6 +100,18 @@ const routes = [
         meta: {needsAuth : true, role:'trader'},
         component: AddProject
       },
+      {
+        path: '/bid/orders',
+        name: 'AllBidOrders', 
+        meta: {needsAuth: true, role:'trader'},
+        component: AllBidOrders
+      },
+      {
+        path: '/bid/orders/:id',
+        name: 'ShowBidOrder',
+        meta: {needsAuth: true, role:'trader'},
+        component: BidOrderDetails
+      }
     ]
   }, 
   {
@@ -128,6 +143,12 @@ const routes = [
         meta: {needsAuth: true, role: 'distributor'},
         component: ShowBidOrder
       },
+      {
+        path: '/bid_order/history',
+        name: 'BidOrderHistory',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: BidOrderHistory
+      }
     ]
   }, 
   {

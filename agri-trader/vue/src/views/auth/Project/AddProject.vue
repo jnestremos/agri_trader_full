@@ -338,6 +338,11 @@ export default {
           this.project_harvestableEnd = null          
         },
         sendProject(){
+          this.data.contract_estimatedSales = parseFloat(this.data.contract_estimatedSales).toFixed(2)
+          this.data.contract_estimatedPrice = parseFloat(this.data.contract_estimatedPrice).toFixed(2)
+          this.data.contract_estimatedHarvest = parseFloat(this.data.contract_estimatedHarvest).toFixed(2)
+          this.data.contract_ownerShare = parseFloat(this.data.contract_ownerShare).toFixed(2)
+          this.data.contract_traderShare = parseFloat(this.data.contract_traderShare).toFixed(2)
           this.addProject(this.data)
           .then(() => {
             this.$router.push({ name: 'AllProjects' })

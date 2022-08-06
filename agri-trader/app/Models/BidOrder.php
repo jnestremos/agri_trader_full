@@ -24,6 +24,7 @@ class BidOrder extends Model
         'order_finalPrice',
         'order_finalTotal',
         'order_dpDueDate',
+        'order_dpAmount'
     ];
 
 

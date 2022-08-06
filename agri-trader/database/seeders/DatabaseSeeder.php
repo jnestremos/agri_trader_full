@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LaratrustSeeder::class,
             RiceSeeder::class,
-            CornSeeder::class,
+            //CornSeeder::class,
             //CoconutSeeder::class,
             //SugarcaneSeeder::class,
             BananaSeeder::class,

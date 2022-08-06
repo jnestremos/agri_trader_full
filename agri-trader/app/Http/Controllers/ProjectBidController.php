@@ -17,17 +17,17 @@ class ProjectBidController extends Controller
         $order = $request->validate([
             'trader_id' => 'required|exists:traders,user_id',
             'project_id' => 'required|exists:projects,id',
-            'order_grade' => 'required|string',
-            'order_dateNeededFrom' => 'required|date:after:now',
+            'order_grade' => 'string|nullable',
+            'order_dateNeededFrom' => 'required|date|after:now',
             'order_dateNeededTo' => 'required|date|after:order_dateNeededFrom',
             'order_initialPrice' => 'required|numeric',
             'project_bid_minQty' => 'required|numeric|lt:project_bid_maxQty',
             'project_bid_maxQty' => 'required|numeric',
-            'project_bid_total' => 'required|numeric'
+            'project_bid_total' => 'required'
         ]);
 
-        $yield = ProduceYield::where([['project_id', $request->project_id], ['produce_yield_class', '=', $request->order_grade]])->first();
-        if (!$order || !$yield) {
+        //$yield = ProduceYield::where([['project_id', $request->project_id], ['produce_yield_class', '=', $request->order_grade]])->first();
+        if (!$order) {
             return response([
                 'error' => 'Invalid Order!'
             ], 400);
@@ -63,10 +63,11 @@ class ProjectBidController extends Controller
             $bidOrder = BidOrder::find($id);
             if ($user->hasRole('trader')) {
                 $order = $request->validate([
-                    'order_negotiatedPrice' => 'required|numeric',
+                    'order_negotiatedPrice' => 'required|numeric|gt:0',
                     'order_datePlaced' => 'required|date', //from created_at table
-                    'project_bid_total' => 'required|numeric',
-                    'order_dpDueDate' => 'required|date|after:order_datePlaced'
+                    'project_bid_total' => 'required',
+                    'order_dpDueDate' => 'required|date|after:order_datePlaced',
+                    'order_dpAmount' => 'required|numeric'
                 ]);
 
                 if (!$order) {
@@ -85,6 +86,7 @@ class ProjectBidController extends Controller
                     $bidOrder->order_dpDueDate = $request->order_dpDueDate;
                     $bidOrder->order_negotiatedPrice = $request->order_negotiatedPrice;
                     $bidOrder->bid_order_status_id = 2;
+                    $bidOrder->order_dpAmount = $request->order_dpAmount;
                     $bidOrder->save();
                 }
 

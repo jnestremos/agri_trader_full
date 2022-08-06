@@ -22,7 +22,7 @@ export default new Vuex.Store({
     readyApp({ commit }){
       setTimeout(() => {
         commit('appReady')
-      }, 4000)
+      }, 5000)
       return Promise.resolve('success')
     }
   },

@@ -51,9 +51,10 @@
                                                                 <h3>{{ getFarmName(proj) }}</h3>
                                                             </div>                                                                                
                                                             <h5 class="d-flex">Expected Harvest Date: <p class="ms-3">{{ getHarvestDate(proj) }}</p></h5>
-                                                            <h5 class="d-flex">Expected Kilos Harvested: <p class="ms-3">{{ getHarvestKilos(proj) + ' kgs' }}</p></h5>                                                                                            
+                                                            <h5 class="d-flex">Expected Kilos Harvested: <p class="ms-3">{{ getHarvestKilos(proj).toFixed(2) + ' kgs' }}</p></h5>                                                                                            
                                                             <h5 class="d-flex">Asking Price: <p class="ms-3">{{ getPrice(proj).toFixed(2) }}</p></h5>                                                                                            
                                                             <h5 class="d-flex">Fruit Stage: <p class="ms-3">{{ getStage(proj) }}</p></h5>                                                            
+                                                            <h5 class="d-flex">Class: <p class="ms-3">{{ getClass(proj) ? getClass(proj) : 'No Class Indicated' }}</p></h5>                                                            
                                                         </div>                       
                                                     </div>
                                                 </div>                                                               
@@ -142,13 +143,11 @@ export default {
         triggerModal(id){            
             this.$bvModal.show(`modal-${id}`)
         },
-        getProjects(produce){
+        getProjects(produce){            
            var prodTraderObj = this.getProduceTrader.filter((p) => {
                 return parseInt(produce.id) === parseInt(p.produce_id)
             })
-
             var result = []
-
             prodTraderObj.forEach((prod) => {
                 var farmProdObj = this.getFarmProducess.filter((p) => {
                     return parseInt(prod.id) === parseInt(p.produce_trader_id)
@@ -157,9 +156,8 @@ export default {
                     result.push(farmProd)
                 })                                
                 
-            })
+            })            
             var contracts = []
-
             result.forEach((farmProd) => {
                 var contractObj = this.getContractss.filter((p) => {
                     return parseInt(farmProd.farm_id) === parseInt(p.farm_id) && parseInt(farmProd.produce_trader_id) === parseInt(p.produce_trader_id)
@@ -167,10 +165,8 @@ export default {
                 contractObj.forEach((contract) => {
                     contracts.push(contract)
                 })
-            })
-            
-            var projects = []
-
+            })            
+            var projects = []            
             contracts.forEach((contract) => {
                 var projectObj = this.getProjectss.filter((p) => {
                     return parseInt(contract.id) === parseInt(p.contract_id)
@@ -179,7 +175,6 @@ export default {
                     projects.push(project)
                 })
             })
-
             return projects          
         },
         getOnHand(produce){
@@ -330,7 +325,31 @@ export default {
                 }                                
             }            
             return stage ?? 'No Stage Set By Trader'  
-        },  
+        },
+        getClass(proj){
+            var projObj = this.getProjectss.filter((c) => {
+                return parseInt(c.id) === parseInt(proj.id)
+            })
+            var contractObj = this.getContractss.filter((c) => {
+                return parseInt(c.id) === parseInt(projObj[0].contract_id)
+            })
+            var prodTraderObj = this.getProduceTrader.filter((p) => {
+                return parseInt(p.id) === parseInt(contractObj[0].produce_trader_id)
+            })
+            var arr = prodTraderObj[0].prod_name.split(' ')
+            var container = null 
+            if(arr.indexOf('(Class')){
+                for(var i = 0; i < arr.length; i++) {
+                    if(arr[i] == '(Class'){                    
+                        container = arr[i].substring(1, arr[i].length) + ' ' + arr[i + 1].substring(0, 1)                                    
+                        arr.pop()
+                        arr.pop()                    
+                        return container             
+                    }                                                          
+                }                
+            }           
+            return null
+        },
         redirectToBidOrder(p){   
             var contractObj = null
             if(p.produce_inventory_qtyOnHand){

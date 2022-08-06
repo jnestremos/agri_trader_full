@@ -23,8 +23,9 @@
       </div>
     </div>
     <div style="position:absolute; right:15%; top:5%">
-      <h3>Progress currently Harvestable Stage</h3>
-      <div class="d-flex justify-content-between align-items-baseline">
+      <h3 v-if="currentStage">Progress currently {{ currentStage }} Stage</h3>
+      <h3 v-else>No Stage Indicated by Trader</h3>
+      <div class="d-flex justify-content-between align-items-baseline" v-if="currentStage">
         <p>Stage Start: {{ currentStage ? getStageStart() : '' }}</p>
         <p class="ms-3">Current Date: {{ new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDate() }}</p>
         <p class="ms-3">Stage End: {{ currentStage ? getStageEnd() : '' }}</p>
@@ -48,11 +49,11 @@
       </b-carousel>     
       <div class="d-flex justify-content-between align-items-baseline" style="width:15%;">
         <h4>Asking Price: </h4>
-        <h5>{{ getProgressData.contract_estimatedPrice.toFixed(2) }}</h5>
+        <h5 v-if="getProgressData.contract_estimatedPrice">{{ getProgressData.contract_estimatedPrice.toFixed(2) }}</h5>
       </div>
       <div class="d-flex justify-content-between align-items-baseline" style="width:15%;">
         <h4>Estimated Harvest:</h4>
-        <h5>{{ getProgressData.contract_estimatedHarvest.toFixed(2) }}</h5>
+        <h5 v-if="getProgressData.contract_estimatedHarvest">{{ getProgressData.contract_estimatedHarvest.toFixed(2) }}</h5>
       </div>
       <button type="button" class="btn btn-success" style="position:absolute; bottom:2%; right:5%" @click="proceedToBid()">PROCEED TO BID</button>
     </div>  
@@ -68,7 +69,7 @@ export default {
       this.fetchProjectProgress(this.$route.params.id)
       .then(() => {  
         var keys = Object.keys(this.getProgressData);          
-        var dateKeys = keys.splice(7,8)             
+        var dateKeys = keys.splice(9,8)             
         var dates = []  
         for(var i = 0; i < dateKeys.length; i = i + 2){
           if(this.getProgressData[dateKeys[i]] && this.getProgressData[dateKeys[i+1]]){                           
@@ -104,7 +105,7 @@ export default {
         getStages(){                    
           var stages = []
           var keys = Object.keys(this.getProgressData);          
-          var dateKeys = keys.splice(7,8)   
+          var dateKeys = keys.splice(9,8)   
           var check = false          
           for(var i = 0; i < dateKeys.length; i = i + 2){
             if(this.getProgressData[dateKeys[i]]){
@@ -134,7 +135,19 @@ export default {
                 console.log(checkStartDate)              
                 if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){
                   console.log(dateKeys[i])
-                  this.currentStage =  dateKeys[i]   
+                  this.currentStage =  dateKeys[i] 
+                if(dateKeys[i] == 'project_floweringStart'){
+                  this.currentStage =  'Flowering'                                      
+                }
+                else if(dateKeys[i] == 'project_fruitBuddingStart'){
+                  this.currentStage =  'Fruit Budding'                                                   
+                }
+                else if(dateKeys[i] == 'project_devFruitStart'){
+                  this.currentStage =  'Developing Fruit'                                              
+                }
+                else if(dateKeys[i] == 'project_harvestableStart'){
+                  this.currentStage =  'Harvestable'                                                  
+                }                    
                   check = true
                 }                                                                
               }                        
@@ -144,7 +157,7 @@ export default {
       },
       getStageEnd(){
           var keys = Object.keys(this.getProgressData);              
-          var dateKeys = keys.splice(7,8)
+          var dateKeys = keys.splice(9,8)
           for(var i = 0; i < dateKeys.length; i = i + 2){
             if(dateKeys[i] == this.currentStage){
               return this.getProgressData[dateKeys[i+1]]
@@ -153,7 +166,7 @@ export default {
       },                       
       getStageStart(){
           var keys = Object.keys(this.getProgressData);              
-          var dateKeys = keys.splice(7,8)
+          var dateKeys = keys.splice(9,8)
           for(var i = 0; i < dateKeys.length; i = i + 2){
             if(dateKeys[i] == this.currentStage){
               return this.getProgressData[dateKeys[i]]
@@ -193,7 +206,7 @@ export default {
         }
         else{    
           var keys = Object.keys(this.getProgressData);              
-          var dateKeys = keys.splice(7,8)
+          var dateKeys = keys.splice(9,8)
           for(var i = 0; i < dateKeys.length; i = i + 2){                
               if(this.getProgressData[dateKeys[i]] != null){                  
                   var year = this.getProgressData[dateKeys[i]].split('-')[0]
@@ -213,7 +226,7 @@ export default {
           }                          
           return false                                    
         }
-      },               
+      },          
     },
     data(){
       return {
