@@ -5,7 +5,7 @@
     </div>          
     <div class="container-fluid w-100" style="height:90%;">    
         <div style="width:100%; height:100%;" class="pb-5">
-            <form action="" class="d-flex flex-column justify-content-between" style="height:100%; position:relative; z-index: 999;" @submit.prevent="sendOwner()">
+            <form action="" class="d-flex flex-column justify-content-between" style="height:100%; position:relative; z-index: 9;" @submit.prevent="sendOwner()">
                 <div class="d-flex align-items-center w-100">
                     <label for="firstName" class="form-label me-4" style="width:5%;">First Name:</label>
                     <input type="text" name="firstName" style="width:30%;" class="form-control" v-model="owner.firstName">

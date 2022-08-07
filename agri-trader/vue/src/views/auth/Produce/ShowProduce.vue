@@ -44,7 +44,7 @@
   </div>
 </template>
 <script>
-import DataTable from 'datatables.net-bs5'
+import DataTable from 'datatables.net-bs4'
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: "ShowProduce",
