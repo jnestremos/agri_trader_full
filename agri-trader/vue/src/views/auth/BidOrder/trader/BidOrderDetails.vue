@@ -27,15 +27,15 @@
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Trader's Price:</h5>
-                <p v-if="getOrder.contract">{{ getOrder.contract.contract_estimatedPrice.toFixed(2) }}</p>
+                <p v-if="getOrder.contract">{{ getOrder.contract.contract_estimatedPrice ? getOrder.contract.contract_estimatedPrice.toFixed(2) : '' }}</p>
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Asking Price:</h5>
-                <p v-if="getOrder.bidOrder">{{ getOrder.bidOrder.order_initialPrice.toFixed(2) }}</p>
+                <p v-if="getOrder.bidOrder">{{ getOrder.bidOrder.order_initialPrice ? getOrder.bidOrder.order_initialPrice.toFixed(2) : '' }}</p>
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Estimated Harvest Qty:</h5>
-                <p v-if="getOrder.contract">{{ getOrder.contract.contract_estimatedHarvest.toFixed(2) + ' kgs'}}</p>
+                <p v-if="getOrder.contract">{{ getOrder.contract.contract_estimatedHarvest ? getOrder.contract.contract_estimatedHarvest.toFixed(2) + ' kgs' : ''}}</p>
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Quantity Needed:</h5>
@@ -59,13 +59,13 @@
                 <h5 class="me-3">Negotiated Price:</h5>
                 <h5 class="me-3">Php</h5>
                 <input type="number" v-if="bid_order_status_id == 1" class="form-control" style="width:150px;" min="0" v-model="data.order_negotiatedPrice" @keyup="resetAmountPercentage($event)" @change="resetAmountPercentage($event)">
-                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_negotiatedPrice.toFixed(2) }}</h5>
+                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_negotiatedPrice ?  getOrder.bidOrder.order_negotiatedPrice.toFixed(2) : '' }}</h5>
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">First Payment:</h5>
                 <h5 class="me-3">Php</h5>                
                 <input v-if="(getOrder.project_bid || getOrder.on_hand_bid) && bid_order_status_id == 1" id="amount" type="number" class="form-control me-3" style="width:150px;" v-model="data.order_dpAmount" @keyup="validateAmount($event)">
-                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount.toFixed(2) }}</h5>                
+                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount ? getOrder.bidOrder.order_dpAmount.toFixed(2) : '' }}</h5>                
                 <input v-if="bid_order_status_id == 1" type="number" class="form-control" id="percentage" style="width:150px;" min="0" max="100" value="50.00" @keyup="validatePercent($event)">
                 <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getPercentage }}</h5>
             </div>
