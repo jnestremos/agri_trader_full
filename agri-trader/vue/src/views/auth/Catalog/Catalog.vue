@@ -278,29 +278,27 @@ export default {
                     var year1 = proj[dateKeys[i+1]].split('-')[0]
                     var month1 = proj[dateKeys[i+1]].split('-')[1]
                     var day1 = proj[dateKeys[i+1]].split('-')[2]
-                    if(isBefore(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0)) || 
-                    isEqual(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))){
-
-                        if(isAfter(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0)) ||
-                    (isEqual(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0)))){
-
-                            if(pattern1.test(dateKeys[i])){
-                                stage = "Flowering"
-                                break
-                            }
-                            else if(pattern2.test(dateKeys[i])){
-                                stage = "Fruit Budding"
-                                break
-                            }
-                            else if(pattern3.test(dateKeys[i])){
-                                stage = "Developing Fruit"
-                                break
-                            }
-                            else if(pattern4.test(dateKeys[i])){
-                                stage = "Harvestable"
-                                break
-                            }                        
+                    var checkStartDate = isBefore(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
+                    var checkEndDate = isAfter(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
+                    var isStartEqual = isEqual(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
+                    var isEndEqual = isEqual(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))                    
+                    if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){
+                        if(pattern1.test(dateKeys[i])){
+                            stage = "Flowering"
+                            break
                         }
+                        else if(pattern2.test(dateKeys[i])){
+                            stage = "Fruit Budding"
+                            break
+                        }
+                        else if(pattern3.test(dateKeys[i])){
+                            stage = "Developing Fruit"
+                            break
+                        }
+                        else if(pattern4.test(dateKeys[i])){
+                            stage = "Harvestable"
+                            break
+                        }                                            
                     }
                     else{
                         if(i != 0){
@@ -320,6 +318,9 @@ export default {
                                 stage = "Harvestable"
                                 break
                             }                             
+                        }
+                        else{
+                            return 'No Stage Set By Trader'
                         }
                     }                    
                 }                                

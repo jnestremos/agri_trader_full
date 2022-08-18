@@ -54,7 +54,7 @@ class BidOrder extends Model
     }
     public function bid_order_account()
     {
-        return $this->hasMany(BidOrderAccount::class, 'bid_order_account_id');
+        return $this->hasMany(BidOrderAccount::class);
     }
     public function refund()
     {

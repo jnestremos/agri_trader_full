@@ -24,7 +24,9 @@ use App\Models\Project;
 use App\Models\ProjectBid;
 use App\Models\ProjectStatus;
 use App\Models\Trader;
+use App\Models\TraderContactNumber;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -120,9 +122,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 ], 200);
             });
 
-            Route::get('/produces/all/{farm_id}', function($farm_id){            
+            Route::get('/produces/all/{farm_id}', function($farm_id){      
+                $farm_produces = DB::table('farm_produce')->where('farm_id', $farm_id)->get();
+                $produces = [];
+                foreach($farm_produces as $farm_produce){
+                    $produce = ProduceTrader::find($farm_produce->produce_trader_id)->produce()->first();
+                    array_push($produces, $produce);
+                }
                 return response([                    
-                    'produces' => DB::table('farm_produce')->where('farm_id', $farm_id)->get()
+                    'farm_produces' => $farm_produces,
+                    'produces' => $produces
                 ], 200);
             });
 
@@ -362,6 +371,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $contract = $bidOrder->project()->first()->contract()->first();
                 $project_bid = null;
                 $on_hand_bid = null;
+                $bid_order_acc = $bidOrder->bid_order_account()->latest()->first();
                 if($bidOrder->project_bid()->first()){
                     $project_bid = $bidOrder->project_bid()->first();
                 }
@@ -376,6 +386,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'contract' => $contract,
                     'project_bid' => $project_bid,
                     'on_hand_bid' => $on_hand_bid,
+                    'bid_order_acc' => $bid_order_acc,
                     'distributor_contactNum' => $distributor->distributor_contactNum()->get()
                 ], 200);
             });
@@ -417,10 +428,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $farm_produces = DB::table('farm_produce')->get();
             $produce_yields = ProduceYield::all();
             foreach($contracts as $contract){
-                $project = $contract->project()->first();
-                if($project->project_status_id != '1' && $project->project_status_id != '3' && $project->project_status_id != '4' 
-                && $project->project_status_id != '5'){
-                    array_push($projects, $project);
+                $project = $contract->project()->where('project_floweringStart', '<=', Carbon::now())->first();
+                if($project){
+                    if($project->project_status_id != '1' && $project->project_status_id != '3' && $project->project_status_id != '4' 
+                    && $project->project_status_id != '5'){
+                        array_push($projects, $project);
+                    }
                 }
                 //$produce = $contract->produce()->first();
                 //array_push($produces, $produce);
@@ -432,6 +445,48 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'projects' => $projects,                
                 'farm_produce' => $farm_produces,
                 'produce_yields' => $produce_yields,
+            ], 200);
+        });
+
+        Route::get('/bid/history/{email}', function($email){
+            $distributor = Distributor::where('distributor_email', $email)->first();
+            $orders = BidOrder::where('distributor_id', $distributor->id)->get();
+            $produces = [];
+            $project_bids = [];
+            $on_hand_bids = [];
+            $projects = [];
+            $contracts = [];
+            $traders = [];
+            $trader_contactNums = [];
+            $bid_order_accs = [];
+            foreach($orders as $order){
+                $project_bid = $order->project_bid()->first();
+                $on_hand_bid = $order->on_hand_bid()->first();
+                $project = $order->project()->first();
+                $contract = $project->contract()->first();
+                $trader = $order->trader()->first();
+                $produce = $contract->produce_trader()->first();
+                $contactNums = $trader->trader_contactNum()->get();
+                $bid_order_acc = $order->bid_order_account()->latest()->first();
+                array_push($produces, $produce);
+                array_push($project_bids, $project_bid);
+                array_push($on_hand_bids, $on_hand_bid);
+                array_push($projects, $project);
+                array_push($contracts, $contract);
+                array_push($traders, $trader);
+                array_push($trader_contactNums, $contactNums);
+                array_push($bid_order_accs, $bid_order_acc);
+            }
+            return response([
+                'orders' => BidOrder::where('distributor_id', $distributor->id)->get(),
+                'produces' => $produces,
+                'project_bids' => $project_bids,
+                'on_hand_bids' => $on_hand_bids,
+                'projects' => $projects,
+                'contracts' => $contracts,
+                'traders' => $traders,                
+                'trader_contactNums' => $trader_contactNums,
+                'bid_order_accs' => $bid_order_accs
             ], 200);
         });
 

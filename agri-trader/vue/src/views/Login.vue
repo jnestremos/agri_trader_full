@@ -51,16 +51,20 @@ export default {
     }
   },
   methods:{
-    ...mapActions(['login']),
+    ...mapActions(['login', 'logout']),
     loginUser(){
-      this.login(this.data)   
+      this.login(this.data)        
       .then(() => {
-        if(auth.state.user.role == 'trader'){
+        if(auth.state.user.role == 'trader' && this.$route.name == 'LoginTrader'){
           this.$router.push({name: 'Dashboard'})
         }
-        else{
+        else if(auth.state.user.role == 'distributor' && this.$route.name == 'LoginDistributor'){
           this.$router.push({name: 'Catalog'})
-        }        
+        } 
+        else{
+          this.logout()
+          this.$toastr.e('Unauthorized access!')
+        }       
       })       
       .catch((err) => {
         this.errors = err.response.data.errors

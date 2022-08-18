@@ -24,7 +24,7 @@
     </div>
     <div style="position:absolute; right:15%; top:5%">
       <h3 v-if="currentStage">Progress currently {{ currentStage }} Stage</h3>
-      <h3 v-else>No Stage Indicated by Trader</h3>
+      <h3 v-else>Stage Not In Progress</h3>
       <div class="d-flex justify-content-between align-items-baseline" v-if="currentStage">
         <p>Stage Start: {{ currentStage ? getStageStart() : '' }}</p>
         <p class="ms-3">Current Date: {{ new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDate() }}</p>
@@ -33,7 +33,7 @@
     </div>
     <div style="width:100%; height:2vh;" v-if="getDates" class="mb-4">     
       <div class="d-flex mx-auto" :style="{'width': '100%'}" style="height:100%; position:relative; z-index: 1; background:grey">        
-        <div v-for="(stage, i) in getStages()" :key="i" :style="[i == 0 ? {'border-left':'2px solid black'} : {}, i == getStages().length - 1 ? {'border-right':'2px solid black'} : {}, {'width': '100%'}]" style="height:100%;"></div>        
+        <div v-for="(stage, i) in stages" :key="i" :style="[i == 0 ? {'border-left':'2px solid black'} : {}, i == stages.length - 1 ? {'border-right':'2px solid black'} : {}, {'width': '100%'}]" style="height:100%;"></div>        
         <div id="progress" v-b-tooltip.hover :title="((currentDate / dateTotal) * 100).toFixed(2) +'%'" style="position:absolute; z-index: 1; height:100%; left:0; height:100%; border-left: 2px solid black;" class="d-flex mx-auto" :style="{'width': (currentDate / dateTotal) * 100 +'%'}"></div>
       </div>           
     </div>  
@@ -69,12 +69,12 @@ export default {
       this.fetchProjectProgress(this.$route.params.id)
       .then(() => {  
         var keys = Object.keys(this.getProgressData);          
-        var dateKeys = keys.splice(9,8)             
+        var dateKeys = keys.splice(8,8)                     
         var dates = []  
-        for(var i = 0; i < dateKeys.length; i = i + 2){
-          if(this.getProgressData[dateKeys[i]] && this.getProgressData[dateKeys[i+1]]){                           
-            dates.push(dateKeys[i])
-            dates.push(dateKeys[i+1])
+        for(var ii = 0; ii < dateKeys.length; ii = ii + 2){
+          if(this.getProgressData[dateKeys[ii]] && this.getProgressData[dateKeys[ii+1]]){                           
+            dates.push(dateKeys[ii])
+            dates.push(dateKeys[ii+1])
           }            
         }   
         if(dates.length > 0){          
@@ -86,101 +86,106 @@ export default {
             end: new Date(end)
           }).length
 
-          this.currentDate += eachDayOfInterval({
-            start: new Date(start),
-            end: new Date()
-          }).length          
-        }        
-                                  
+          if(!isBefore(new Date().setHours(8,0,0,0), new Date(start).setHours(8,0,0,0))){           
+            this.currentDate += eachDayOfInterval({
+              start: new Date(start),
+              end: new Date()
+            }).length              
+          }
+        }
+        var stages = []        
+        var check = false                   
+        for(var i = 0; i < dateKeys.length; i = i + 2){            
+          if(this.getProgressData[dateKeys[i]]){
+            var year = this.getProgressData[dateKeys[i]].split('-')[0]
+            var month = this.getProgressData[dateKeys[i]].split('-')[1]
+            var day = this.getProgressData[dateKeys[i]].split('-')[2]
+            var year1 = this.getProgressData[dateKeys[i+1]].split('-')[0]
+            var month1 = this.getProgressData[dateKeys[i+1]].split('-')[1]
+            var day1 = this.getProgressData[dateKeys[i+1]].split('-')[2]  
+            var checkStartDate = isBefore(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
+            var checkEndDate = isAfter(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
+            var isStartEqual = isEqual(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
+            var isEndEqual = isEqual(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
+            if(dateKeys[i] == 'project_floweringStart'){
+              stages.push(dateKeys[i])                                      
+            }
+            else if(dateKeys[i] == 'project_fruitBuddingStart'){
+              stages.push(dateKeys[i])                                                    
+            }
+            else if(dateKeys[i] == 'project_devFruitStart'){
+              stages.push(dateKeys[i])                                                   
+            }
+            else if(dateKeys[i] == 'project_harvestableStart'){
+              stages.push(dateKeys[i])                                                    
+            }
+            if(!check){                          
+              if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){                  
+                this.currentStage =  dateKeys[i] 
+              if(dateKeys[i] == 'project_floweringStart'){
+                this.currentStage =  'Flowering'                                      
+              }
+              else if(dateKeys[i] == 'project_fruitBuddingStart'){
+                this.currentStage =  'Fruit Budding'                                                   
+              }
+              else if(dateKeys[i] == 'project_devFruitStart'){
+                this.currentStage =  'Developing Fruit'                                              
+              }
+              else if(dateKeys[i] == 'project_harvestableStart'){
+                this.currentStage =  'Harvestable'                                                  
+              }                    
+                check = true
+              }                                                                
+            }                        
+          }          
+        }
+        this.stages = stages                                                  
         this.readyApp()
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
         this.$router.push({ name:'Catalog' })
       })
       
     },
     methods: {
         ...mapActions(['readyApp', 'fetchProjectProgress']),
-        getStages(){                    
-          var stages = []
-          var keys = Object.keys(this.getProgressData);          
-          var dateKeys = keys.splice(9,8)   
-          var check = false          
-          for(var i = 0; i < dateKeys.length; i = i + 2){
-            if(this.getProgressData[dateKeys[i]]){
-              var year = this.getProgressData[dateKeys[i]].split('-')[0]
-              var month = this.getProgressData[dateKeys[i]].split('-')[1]
-              var day = this.getProgressData[dateKeys[i]].split('-')[2]
-              var year1 = this.getProgressData[dateKeys[i+1]].split('-')[0]
-              var month1 = this.getProgressData[dateKeys[i+1]].split('-')[1]
-              var day1 = this.getProgressData[dateKeys[i+1]].split('-')[2]  
-              var checkStartDate = isBefore(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
-              var checkEndDate = isAfter(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
-              var isStartEqual = isEqual(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
-              var isEndEqual = isEqual(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
-              if(dateKeys[i] == 'project_floweringStart'){
-                stages.push(dateKeys[i])                                      
-              }
-              else if(dateKeys[i] == 'project_fruitBuddingStart'){
-                stages.push(dateKeys[i])                                                    
-              }
-              else if(dateKeys[i] == 'project_devFruitStart'){
-                stages.push(dateKeys[i])                                                   
-              }
-              else if(dateKeys[i] == 'project_harvestableStart'){
-                stages.push(dateKeys[i])                                                    
-              }
-              if(!check){  
-                console.log(checkStartDate)              
-                if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){
-                  console.log(dateKeys[i])
-                  this.currentStage =  dateKeys[i] 
-                if(dateKeys[i] == 'project_floweringStart'){
-                  this.currentStage =  'Flowering'                                      
-                }
-                else if(dateKeys[i] == 'project_fruitBuddingStart'){
-                  this.currentStage =  'Fruit Budding'                                                   
-                }
-                else if(dateKeys[i] == 'project_devFruitStart'){
-                  this.currentStage =  'Developing Fruit'                                              
-                }
-                else if(dateKeys[i] == 'project_harvestableStart'){
-                  this.currentStage =  'Harvestable'                                                  
-                }                    
-                  check = true
-                }                                                                
-              }                        
-            }          
-          }
-          return stages         
-      },
-      getStageEnd(){
-          var keys = Object.keys(this.getProgressData);              
-          var dateKeys = keys.splice(9,8)
-          for(var i = 0; i < dateKeys.length; i = i + 2){
-            if(dateKeys[i] == this.currentStage){
-              return this.getProgressData[dateKeys[i+1]]
+        getStageEnd(){
+            if(this.currentStage == 'Flowering'){
+              return this.getProgressData.project_floweringEnd
             }
-          }
-      },                       
-      getStageStart(){
-          var keys = Object.keys(this.getProgressData);              
-          var dateKeys = keys.splice(9,8)
-          for(var i = 0; i < dateKeys.length; i = i + 2){
-            if(dateKeys[i] == this.currentStage){
-              return this.getProgressData[dateKeys[i]]
+            else if(this.currentStage == 'Fruit Budding'){
+              return this.getProgressData.project_fruitBuddingEnd
             }
-          }
-      },
-      proceedToBid(){
-        this.$router.push({ path: `/bid_order/project/${this.$route.params.id}` })
-      }                       
+            else if(this.currentStage == 'Developing Fruit'){
+              return this.getProgressData.project_devFruitEnd
+            }
+            else{
+              return this.getProgressData.project_harvestableEnd
+            }
+        },                       
+        getStageStart(){
+            if(this.currentStage == 'Flowering'){
+              return this.getProgressData.project_floweringStart
+            }
+            else if(this.currentStage == 'Fruit Budding'){
+              return this.getProgressData.project_fruitBuddingStart
+            }
+            else if(this.currentStage == 'Developing Fruit'){
+              return this.getProgressData.project_devFruitStart
+            }
+            else{
+              return this.getProgressData.project_harvestableStart
+            }
+        },
+        proceedToBid(){
+          this.$router.push({ path: `/bid_order/project/${this.$route.params.id}` })
+        }                       
     },
     computed: {
       ...mapGetters(['getProgressData']),
       getProgressDate(){
-        if(!this.getProgressData.project_commenceDate){
+        if(!this.getProgressData.project_harvestableEnd){
           var harvestDate = add(new Date(this.getProgressData.project_commenceDate), {
               weeks: 1
           })
@@ -188,7 +193,7 @@ export default {
           return formattedDate                    
         }
         else{
-          return this.getProgressData.project_commenceDate
+          return this.getProgressData.project_harvestableEnd
         }
       },
       getDates(){
@@ -206,9 +211,9 @@ export default {
         }
         else{    
           var keys = Object.keys(this.getProgressData);              
-          var dateKeys = keys.splice(9,8)
+          var dateKeys = keys.splice(8,8)          
           for(var i = 0; i < dateKeys.length; i = i + 2){                
-              if(this.getProgressData[dateKeys[i]] != null){                  
+              if(this.getProgressData[dateKeys[i]] != null){                                                  
                   var year = this.getProgressData[dateKeys[i]].split('-')[0]
                   var month = this.getProgressData[dateKeys[i]].split('-')[1]
                   var day = this.getProgressData[dateKeys[i]].split('-')[2]
@@ -232,7 +237,8 @@ export default {
       return {
         dateTotal: -1,
         currentDate: -1,
-        currentStage: null
+        currentStage: null,
+        stages: null
       }
     }
 }

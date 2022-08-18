@@ -22,6 +22,7 @@ const state = {
     project: null,
     farms: null,
     produces: null,
+    farm_produces: null,
     owners: null,
     farm_list: null,
     owner_list: null,
@@ -41,6 +42,9 @@ const getters = {
         return state.farms
     },
     getProducesForProject(){
+        return state.farm_produces
+    },
+    getTimeOfHarvest(){
         return state.produces
     },
     getOwnersForProject(){
@@ -175,6 +179,7 @@ const mutations = {
     },
     setAllProducesForProject(state, data){
         state.produces = data.produces
+        state.farm_produces = data.farm_produces
     },
     asd(){
         console.log(1)

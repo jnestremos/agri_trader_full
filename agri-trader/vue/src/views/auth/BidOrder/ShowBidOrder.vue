@@ -14,7 +14,7 @@
           </div>           -->
         </div>
         <!-- <a href="">Upcoming Projects</a> -->
-      </div>
+      </div>      
       <p>{{ getProgressData.prod_class }}</p>
       <p>Transaction # 123-345-546</p>
       <div class="d-flex align-items-baseline justify-content-between" style="width:60%;">
@@ -64,7 +64,7 @@
       <div class="d-flex align-items-baseline justify-content-between" style="width:60%;">
         <div class="d-flex align-items-baseline">
           <h5 class="me-2">Asking Price: </h5>
-          <input type="number" class="form-control" style="width:150px;" v-model="data.order_initialPrice">
+          <input type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getProgressData.contract_estimatedPrice)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
         </div>
         <div class="d-flex align-items-baseline">
           <h5 class="form-h5 me-2">Expected Dates Needed: </h5>
@@ -75,9 +75,9 @@
       <div class="d-flex align-items-baseline mt-3">
         <h5 class="me-4">Quantity Needed:</h5>
         <div class="d-flex align-items-baseline">
-          <input type="number" class="form-control me-4" id="minQty" style="width:100px;" value="1" min="1" @change="setMinQty($event)" onkeydown="return false">
+          <input type="number" class="form-control me-4" id="minQty" style="width:100px;" step="0.5" value="1" min="1" @change="setMinQty($event)" onkeydown="return false">
           <h5 class="me-4">To</h5>
-          <input type="number" class="form-control" id="maxQty" style="width:100px;" value="5" min="1" @change="setMaxQty($event)" onkeydown="return false">
+          <input type="number" class="form-control" id="maxQty" style="width:100px;" step="0.5" value="5" min="1" @change="setMaxQty($event)" onkeydown="return false">
         </div>
       </div>
       <div class="d-flex align-items-baseline justify-content-between mt-3" style="width:60%">
@@ -105,7 +105,7 @@ export default {
         this.fetchProjectProgress(this.$route.params.id)
         .then(() => {
           var keys = Object.keys(this.getProgressData);          
-          var dateKeys = keys.splice(9,8)   
+          var dateKeys = keys.splice(8,8)   
           var check = false          
           for(var i = 0; i < dateKeys.length; i = i + 2){
             if(this.getProgressData[dateKeys[i]]){
@@ -119,10 +119,8 @@ export default {
               var checkEndDate = isAfter(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
               var isStartEqual = isEqual(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
               var isEndEqual = isEqual(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))              
-              if(!check){  
-                console.log(checkStartDate)              
-                if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){
-                  console.log(dateKeys[i])
+              if(!check){                             
+                if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){                  
                   this.currentStage =  dateKeys[i] 
                 if(dateKeys[i] == 'project_floweringStart'){
                   this.currentStage =  'Flowering'                                      
@@ -149,6 +147,16 @@ export default {
           }          
           this.data.project_id = this.$route.params.id
           this.data.trader_id = this.getProgressData.trader_id
+          if(!this.getProgressData.project_harvestableEnd){
+            var harvestDate = add(new Date(this.getProgressData.project_commenceDate), {
+                weeks: 1
+            })
+            var formattedDate = format(harvestDate, 'yyyy-MM-dd');       
+            this.data.exp_dateHarvest = formattedDate                 
+          }
+          else{
+            this.data.exp_dateHarvest = this.getProgressData.project_harvestableEnd
+          }                  
           this.readyApp()
         })        
         
@@ -157,17 +165,17 @@ export default {
         ...mapActions(['readyApp', 'fetchProjectProgress' ,'sendBidOrder']),
         setMinQty(e){
           var maxQty = document.getElementById("maxQty")          
-          this.data.project_bid_minQty = parseInt(e.target.value)
-          maxQty.value = parseInt(e.target.value) + 5            
-          this.data.project_bid_maxQty = parseInt(maxQty.value)
+          this.data.project_bid_minQty = parseFloat(e.target.value)
+          maxQty.value = parseFloat(e.target.value) + 4            
+          this.data.project_bid_maxQty = parseFloat(maxQty.value)
           this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)  
         },
         setMaxQty(e){
           var minQty = document.getElementById("minQty")
-          if(parseInt(e.target.value) <= parseInt(minQty.value)){
-            e.target.value = parseInt(minQty.value) + 5
+          if(parseFloat(e.target.value) <= parseFloat(minQty.value)){
+            e.target.value = parseFloat(minQty.value) + 4
           }        
-          this.data.project_bid_maxQty = parseInt(e.target.value)
+          this.data.project_bid_maxQty = parseFloat(e.target.value)
           this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)          
         },
         sendBid(){
@@ -175,7 +183,7 @@ export default {
           .then(() => {
             this.$toastr.s('Bid Order Sent Successfully!')
             setTimeout(() => {
-              this.$router.push({ name: 'Catalog' })
+              this.$router.push({ name: 'BidOrderHistory' })
             }, 5000)            
           })
           .catch((err) => {
@@ -192,12 +200,17 @@ export default {
               this.$toastr.e(this.errors.toString())
             }            
           })
+        },
+        setTotal(){
+          var minTotal = parseFloat(parseFloat(this.data.order_initialPrice) * parseFloat(this.data.project_bid_minQty)).toFixed(2)
+          var maxTotal = parseFloat(parseFloat(this.data.order_initialPrice) * parseFloat(this.data.project_bid_maxQty)).toFixed(2)
+          this.data.project_bid_total = minTotal + ' - ' + maxTotal
         }
     },
     computed:{
       ...mapGetters(['getProgressData']),
       getProgressDate(){
-        if(!this.getProgressData.project_commenceDate){
+        if(!this.getProgressData.project_harvestableEnd){
           var harvestDate = add(new Date(this.getProgressData.project_commenceDate), {
               weeks: 1
           })
@@ -205,7 +218,7 @@ export default {
           return formattedDate                    
         }
         else{
-          return this.getProgressData.project_commenceDate
+          return this.getProgressData.project_harvestableEnd
         }
       },      
     },
@@ -214,6 +227,7 @@ export default {
         currentStage: null,
         errors: null,
         data: {
+          exp_dateHarvest: null,
           order_grade: null,
           project_id: null,
           trader_id: null,

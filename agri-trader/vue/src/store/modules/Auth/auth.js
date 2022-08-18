@@ -6,7 +6,8 @@ const state = {
     user : {
         api_token : sessionStorage.getItem('api_token'),
         role: sessionStorage.getItem('user_role'),
-        name: sessionStorage.getItem('name')
+        name: sessionStorage.getItem('name'),
+        email: sessionStorage.getItem('email')
     },    
 };
 
@@ -54,15 +55,18 @@ const mutations = {
     setToken: (state, data) => {
         state.user.api_token = data.token        
         state.user.role = data.role
-        state.user.name = data.name        
+        state.user.name = data.name   
+        state.user.email = data.user.email     
         sessionStorage.setItem('api_token', data.token)                       
         sessionStorage.setItem('user_role', data.role)                       
-        sessionStorage.setItem('name', data.name)                       
+        sessionStorage.setItem('name', data.name)          
+        sessionStorage.setItem('email', data.user.email)             
     },
     logoutUser: () => {
         state.user.api_token = null        
         state.user.role = null        
         state.user.name = null        
+        state.user.email = null        
         sessionStorage.clear()
     },      
 };

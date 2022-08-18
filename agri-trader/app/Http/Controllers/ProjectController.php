@@ -31,7 +31,7 @@ class ProjectController extends Controller
             'contract_traderShare' => 'required|gt:0.00',
             'contractShare_type' => 'required',
             'contractShare_amount' => 'required|gt:0.00',            
-            'project_commenceDate' => 'required|date|after:now',
+            'project_commenceDate' => 'required|date|after:now|before:project_floweringStart',
             'project_floweringStart' => 'date|nullable',
             'project_floweringEnd' => 'date|nullable',
             'project_fruitBuddingStart' => 'date|nullable',
@@ -54,35 +54,35 @@ class ProjectController extends Controller
         //     'result' => $request->all()
         // ], 200);
 
-        if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
-        || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
-        || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
-        || ($request->project_fruitBuddingStart != null && $request->project_fruitBuddingEnd == null)
-        || ($request->project_devFruitStart == null && $request->project_devFruitEnd != null)
-        || ($request->project_devFruitStart != null && $request->project_devFruitEnd == null)
-        || ($request->project_harvestableStart == null && $request->project_harvestableEnd != null)
-        || ($request->project_harvestableStart != null && $request->project_harvestableEnd == null)){
+        // if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
+        // || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
+        // || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
+        // || ($request->project_fruitBuddingStart != null && $request->project_fruitBuddingEnd == null)
+        // || ($request->project_devFruitStart == null && $request->project_devFruitEnd != null)
+        // || ($request->project_devFruitStart != null && $request->project_devFruitEnd == null)
+        // || ($request->project_harvestableStart == null && $request->project_harvestableEnd != null)
+        // || ($request->project_harvestableStart != null && $request->project_harvestableEnd == null)){
             
-            return response([                
-                'error' => 'One of the dates fields has been missed out!'
-            ], 400);
+        //     return response([                
+        //         'error' => 'One of the dates fields has been missed out!'
+        //     ], 400);
 
-        }
+        // }
 
-        if(
-            Carbon::create($request->project_floweringStart)->greaterThan(Carbon::create($request->project_floweringEnd))
-            || Carbon::create($request->project_floweringEnd)->greaterThan(Carbon::create($request->project_fruitBuddingStart))
-            || Carbon::create($request->project_fruitBuddingStart)->greaterThan(Carbon::create($request->project_fruitBuddingEnd))
-            || Carbon::create($request->project_fruitBuddingEnd)->greaterThan(Carbon::create($request->project_devFruitStart))
-            || Carbon::create($request->project_devFruitStart)->greaterThan(Carbon::create($request->project_devFruitEnd))
-            || Carbon::create($request->project_devFruitEnd)->greaterThan(Carbon::create($request->project_harvestableStart))            
-            || Carbon::create($request->project_harvestableStart)->greaterThan(Carbon::create($request->project_harvestableEnd))
-            || Carbon::create($request->project_harvestableEnd)->greaterThan(Carbon::create($request->project_commenceDate))){
+        // if(
+        //     Carbon::create($request->project_floweringStart)->greaterThan(Carbon::create($request->project_floweringEnd))
+        //     || Carbon::create($request->project_floweringEnd)->greaterThan(Carbon::create($request->project_fruitBuddingStart))
+        //     || Carbon::create($request->project_fruitBuddingStart)->greaterThan(Carbon::create($request->project_fruitBuddingEnd))
+        //     || Carbon::create($request->project_fruitBuddingEnd)->greaterThan(Carbon::create($request->project_devFruitStart))
+        //     || Carbon::create($request->project_devFruitStart)->greaterThan(Carbon::create($request->project_devFruitEnd))
+        //     || Carbon::create($request->project_devFruitEnd)->greaterThan(Carbon::create($request->project_harvestableStart))            
+        //     || Carbon::create($request->project_harvestableStart)->greaterThan(Carbon::create($request->project_harvestableEnd))
+        //     || Carbon::create($request->project_commenceDate)->greaterThan(Carbon::create($request->project_floweringStart))){
             
-                return response([
-                    'error' => 'Invalid Date Input!'
-                ], 400);
-        }
+        //         return response([
+        //             'error' => 'Invalid Date Input!'
+        //         ], 400);
+        // }
 
         $share = ContractShare::create([
             'contractShare_type' => $request->contractShare_type,
@@ -172,37 +172,37 @@ class ProjectController extends Controller
             ], 200);
         }
 
-        if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
-        || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
-        || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
-        || ($request->project_fruitBuddingStart != null && $request->project_fruitBudding == null)
-        || ($request->project_devFruitStart == null && $request->project_devFruitEnd != null)
-        || ($request->project_devFruitStart != null && $request->project_devFruitEnd == null)
-        || ($request->project_harvestableStart == null && $request->project_harvestableEnd != null)
-        || ($request->project_harvestableStart != null && $request->project_harvestableEnd == null)){
+        // if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
+        // || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
+        // || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
+        // || ($request->project_fruitBuddingStart != null && $request->project_fruitBudding == null)
+        // || ($request->project_devFruitStart == null && $request->project_devFruitEnd != null)
+        // || ($request->project_devFruitStart != null && $request->project_devFruitEnd == null)
+        // || ($request->project_harvestableStart == null && $request->project_harvestableEnd != null)
+        // || ($request->project_harvestableStart != null && $request->project_harvestableEnd == null)){
             
-            return response([
-                'error' => 'One of the dates fields has been missed out!'
-            ], 400);
+        //     return response([
+        //         'error' => 'One of the dates fields has been missed out!'
+        //     ], 400);
 
-        }
+        // }
 
-        $commenceDate = Project::find($id)->project_commenceDate;
+        // $commenceDate = Project::find($id)->project_commenceDate;
 
-        if(
-            Carbon::create($request->project_floweringStart)->greaterThan(Carbon::create($request->project_floweringEnd))
-            || Carbon::create($request->project_floweringEnd)->greaterThan(Carbon::create($request->project_fruitBuddingStart))
-            || Carbon::create($request->project_fruitBuddingStart)->greaterThan(Carbon::create($request->project_fruitBuddingEnd))
-            || Carbon::create($request->project_fruitBuddingEnd)->greaterThan(Carbon::create($request->project_devFruitStart))
-            || Carbon::create($request->project_devFruitStart)->greaterThan(Carbon::create($request->project_devFruitEnd))
-            || Carbon::create($request->project_devFruitEnd)->greaterThan(Carbon::create($request->project_harvestableStart))            
-            || Carbon::create($request->project_harvestableStart)->greaterThan(Carbon::create($request->project_harvestableEnd))
-            || Carbon::create($request->project_harvestableEnd)->greaterThan(Carbon::create($commenceDate))){
+        // if(
+        //     Carbon::create($request->project_floweringStart)->greaterThan(Carbon::create($request->project_floweringEnd))
+        //     || Carbon::create($request->project_floweringEnd)->greaterThan(Carbon::create($request->project_fruitBuddingStart))
+        //     || Carbon::create($request->project_fruitBuddingStart)->greaterThan(Carbon::create($request->project_fruitBuddingEnd))
+        //     || Carbon::create($request->project_fruitBuddingEnd)->greaterThan(Carbon::create($request->project_devFruitStart))
+        //     || Carbon::create($request->project_devFruitStart)->greaterThan(Carbon::create($request->project_devFruitEnd))
+        //     || Carbon::create($request->project_devFruitEnd)->greaterThan(Carbon::create($request->project_harvestableStart))            
+        //     || Carbon::create($request->project_harvestableStart)->greaterThan(Carbon::create($request->project_harvestableEnd))
+        //     || Carbon::create($request->project_harvestableEnd)->greaterThan(Carbon::create($commenceDate))){
             
-                return response([
-                    'error' => 'Invalid Date Input!'
-                ], 400);
-        }
+        //         return response([
+        //             'error' => 'Invalid Date Input!'
+        //         ], 400);
+        // }
 
         Project::find($id)->update([
             'project_status_id' => $request->project_status_id,

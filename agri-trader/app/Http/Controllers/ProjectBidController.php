@@ -18,7 +18,8 @@ class ProjectBidController extends Controller
             'trader_id' => 'required|exists:traders,user_id',
             'project_id' => 'required|exists:projects,id',
             'order_grade' => 'string|nullable',
-            'order_dateNeededFrom' => 'required|date|after:now',
+            'exp_dateHarvest' => 'date|required',
+            'order_dateNeededFrom' => 'required|date|after:exp_dateHarvest',
             'order_dateNeededTo' => 'required|date|after:order_dateNeededFrom',
             'order_initialPrice' => 'required|numeric',
             'project_bid_minQty' => 'required|numeric|lt:project_bid_maxQty',
@@ -126,10 +127,11 @@ class ProjectBidController extends Controller
                         'bid_order_acc_paymentMethod' => 'required|string',
                         'bid_order_acc_type' => 'required|string',
                         'bid_order_acc_amount' => 'required|numeric',
-                        'bid_order_acc_bankName'  => 'nullable|string',
-                        'bid_order_acc_accNum' => 'nullable|string',
-                        'bid_order_acc_accName' => 'nullable|string',
+                        'bid_order_acc_bankName'  => 'required_if:bid_order_acc_paymentMethod,==,Bank',
+                        'bid_order_acc_accNum' => 'required_if:bid_order_acc_paymentMethod,==,Bank',
+                        'bid_order_acc_accName' => 'required_if:bid_order_acc_paymentMethod,==,Bank',
                         'bid_order_acc_remarks' => 'nullable|string',
+                        'bid_order_acc_datePaid' => 'required|date'
                     ]);
 
                     if (!$order) {
@@ -137,6 +139,15 @@ class ProjectBidController extends Controller
                             'error' => 'Invalid Order!'
                         ], 400);
                     }
+                    $datePaid = new Carbon($request->bid_order_acc_datePaid);
+                    $datePlaced = new Carbon(BidOrder::find($id)->created_at);
+                    $dpDueDate = new Carbon(BidOrder::find($id)->order_dpDueDate);
+                    
+                    if($datePaid->isBefore($datePlaced) || $datePaid->isAfter($dpDueDate)){
+                        return response([
+                            'error' => 'Invalid Date!'
+                        ], 400);
+                    }                    
 
                     BidOrderAccount::create([
                         'bid_order_id' => $id,
@@ -147,7 +158,7 @@ class ProjectBidController extends Controller
                         'bid_order_acc_accName' => $request->bid_order_acc_accName,
                         'bid_order_acc_amount' => $request->bid_order_acc_amount,
                         'bid_order_acc_remarks' => $request->bid_order_acc_remarks,
-                        'bid_order_acc_datePaid' => Carbon::now(),
+                        'bid_order_acc_datePaid' => $request->bid_order_acc_datePaid,
                     ]);
 
                     return response([

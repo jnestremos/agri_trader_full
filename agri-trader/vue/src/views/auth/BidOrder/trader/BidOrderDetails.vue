@@ -3,7 +3,7 @@
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Bidding Confirmation</h3>
     </div>    
-    <form @submit.prevent="approveProjectOrder()" action="" class="container-fluid w-100 d-flex p-1 m-0" style="height:90%; position:relative">      
+    <form @submit.prevent="sendOrder()" action="" class="container-fluid w-100 d-flex p-1 m-0" style="height:90%; position:relative">      
         <div class="container-fluid m-0 p-3 d-flex flex-column h-100 justify-content-between" style="width:50%;">
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Status:</h5>
@@ -67,12 +67,11 @@
                 <input v-if="(getOrder.project_bid || getOrder.on_hand_bid) && bid_order_status_id == 1" id="amount" type="number" class="form-control me-3" style="width:150px;" v-model="data.order_dpAmount" @keyup="validateAmount($event)">
                 <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount ? getOrder.bidOrder.order_dpAmount.toFixed(2) : '' }}</h5>                
                 <input v-if="bid_order_status_id == 1" type="number" class="form-control" id="percentage" style="width:150px;" min="0" max="100" value="50.00" @keyup="validatePercent($event)">
-                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getPercentage }}</h5>
+                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getPercentage + '%' }}</h5>
             </div>
             <div class="d-flex align-items-baseline">
-                <h5 class="me-3">Due Date of First Payment:</h5>
-                <input type="date" v-if="bid_order_status_id == 1" class="form-control me-3" style="width:150px;" v-model="data.order_dpDueDate" onkeydown="return false">
-                <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpDueDate }}</h5>
+                <h5 class="me-3">Due Date of First Payment:</h5>                                
+                <p>{{ getOrder.bidOrder.order_dpDueDate ? getOrder.bidOrder.order_dpDueDate : data.order_dpDueDate }}</p>
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Total (Original):</h5>
@@ -80,15 +79,29 @@
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Total (Updated):</h5>
-                <p v-if="getOrder.project_bid || getOrder.on_hand_bid">{{ getTotal }}</p>
+                <p v-if="getOrder.project_bid ||  getOrder.on_hand_bid">{{ getTotal }}</p>
                 <input type="text" name="" id="" hidden v-model="data.project_bid_total">
+            </div>
+            <div v-if="bid_order_status_id > 2">
+                <div class="d-flex align-items-baseline">
+                    <h5 class="me-3">Payment Method:</h5>
+                    <p v-if="getOrder.bid_order_acc">{{ getOrder.bid_order_acc.bid_order_acc_paymentMethod }}</p>                
+                </div>
+                <div class="d-flex align-items-baseline">
+                    <h5 class="me-3">Account:</h5>
+                    <p v-if="getOrder.bid_order_acc" style="word-spacing:15px">{{ getOrder.bid_order_acc.bid_order_acc_amount + " " + getPercentage + '%' }}</p>                
+                </div>
+                <div class="d-flex align-items-baseline">
+                    <h5 class="me-3">Date Paid:</h5>
+                    <p v-if="getOrder.bid_order_acc">{{ getOrder.bid_order_acc.bid_order_acc_datePaid }}</p>                
+                </div>                
             </div>
             <div class="d-flex align-items-baseline">
                 <h5 class="me-3">Transacted by:</h5>
                 <p>Joshua Estremos</p>
             </div>
         </div> 
-        <input type="submit" class="btn btn-success" :value="bid_order_status_id == 1 ? 'Post' : 'Edit'" style="position:absolute; bottom:3%; right:10%; width:100px;">               
+        <input v-if="bid_order_status_id != 2 && bid_order_status_id <= 3" type="submit" class="btn btn-success" :value="bid_order_status_id == 1 ? 'Post' : 'Confirm'" style="position:absolute; bottom:3%; right:10%;">               
     </form>
         
   </div>
@@ -123,6 +136,11 @@ export default {
             }
             this.data.project_bid_total = total        
             this.data.order_dpAmount = parseFloat(totall - (totall * 0.5)).toFixed(2)     
+            var dpDueDate = add(new Date(), {
+                weeks: 2
+            })
+            var formattedDate = format(dpDueDate, 'yyyy-MM-dd')
+            this.data.order_dpDueDate = formattedDate
             this.readyApp()
         })
         .catch((err) => {
@@ -131,7 +149,7 @@ export default {
         })
     },
     methods:{
-        ...mapActions(['readyApp', 'fetchOrder', 'approveProjectBid']),
+        ...mapActions(['readyApp', 'fetchOrder', 'approveProjectBid', 'approveFirstPayment']),
         getStatus(){
             if(this.getOrder.bidOrder.bid_order_status_id == 1){                
                 return 'For Approval'
@@ -224,23 +242,37 @@ export default {
             percentage.value = '50.00'
             this.data.order_dpAmount = parseFloat(amount.value).toFixed(2)                                                    
         },         
-        approveProjectOrder(){
-            this.approveProjectBid(this.data)
-            .then(() => {
-                this.$router.push({ name: 'AllBidOrders' })
-            })
-            .catch((err) => {
-                this.errors = err.response.data.errors
-                for(var error in this.errors){
-                    this.$toastr.e(this.errors[error][0])
-                }                
-            })
+        sendOrder(){
+            if(this.bid_order_status_id == 3){
+                this.approveFirstPayment(this.$route.params.id)
+                .then(() => {
+                    this.$router.push({ name: 'AllBidOrders' })
+                })
+                .catch((err) => {
+                    this.errors = err.response.data.errors
+                    for(var error in this.errors){
+                        this.$toastr.e(this.errors[error][0])
+                    }                
+                })                
+            }
+            else{
+                this.approveProjectBid(this.data)
+                .then(() => {
+                    this.$router.push({ name: 'AllBidOrders' })
+                })
+                .catch((err) => {
+                    this.errors = err.response.data.errors
+                    for(var error in this.errors){
+                        this.$toastr.e(this.errors[error][0])
+                    }                
+                })
+            }
         }        
     },
     computed: {
         ...mapGetters(['getOrder']),
         getProgressDate(){
-            if(!this.getOrder.project.project_commenceDate){
+            if(!this.getOrder.project.project_harvestableEnd){
                 var harvestDate = add(new Date(this.getOrder.project.project_commenceDate), {
                     weeks: 1
                 })
@@ -248,7 +280,7 @@ export default {
                 return formattedDate                    
             }
             else{
-                return this.getOrder.project.project_commenceDate
+                return this.getOrder.project.project_harvestableEnd
             }
         },
         getTotal(){
@@ -280,7 +312,7 @@ export default {
             else{
                 total = (this.getOrder.on_hand_bid.on_hand_bid_qty * this.data.order_negotiatedPrice).toFixed(2)
             }
-            return parseFloat((parseFloat(this.getOrder.bidOrder.order_dpAmount) / total) * 100).toFixed(2)
+            return parseFloat((parseFloat(this.getOrder.bidOrder.order_dpAmount) / total) * 100)
         },                    
     },
     data(){

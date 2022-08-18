@@ -75,7 +75,7 @@
                <label for="stage1" class="form-label ms-2">Flowering:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_floweringStart" v-model="data.project_floweringStart" id="project_floweringStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_floweringStart" @change="fillDates($event)" v-model="data.project_floweringStart" id="project_floweringStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
               <input type="date" onkeydown="return false" name="project_floweringEnd" v-model="data.project_floweringEnd" id="project_floweringEnd" class="form-control" style="width:200px" disabled>
@@ -87,7 +87,7 @@
                <label for="stage2" class="form-label ms-2">Fruit Budding:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_fruitBuddingStart" v-model="data.project_fruitBuddingStart" id="project_fruitBuddingStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_fruitBuddingStart" @change="fillDates($event)" v-model="data.project_fruitBuddingStart" id="project_fruitBuddingStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
               <input type="date" onkeydown="return false" name="project_fruitBuddingEnd" v-model="data.project_fruitBuddingEnd" id="project_fruitBuddingEnd" class="form-control" style="width:200px" disabled>
@@ -99,7 +99,7 @@
                <label for="stage3" class="form-label ms-2">Developing Fruit:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_devFruitStart" v-model="data.project_devFruitStart" id="project_devFruitStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_devFruitStart" @change="fillDates($event)" v-model="data.project_devFruitStart" id="project_devFruitStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
               <input type="date" onkeydown="return false" name="project_devFruitEnd" v-model="data.project_devFruitEnd" id="project_devFruitEnd" class="form-control" style="width:200px" disabled>
@@ -111,7 +111,7 @@
                <label for="stage4" class="form-label ms-2">Harvestable:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_harvestableStart" v-model="data.project_harvestableStart" id="project_harvestableStart" class="form-control" style="width:200px" disabled>
+              <input type="date" onkeydown="return false" name="project_harvestableStart" @change="fillDates($event)" v-model="data.project_harvestableStart" id="project_harvestableStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
               <input type="date" onkeydown="return false" name="project_harvestableEnd" v-model="data.project_harvestableEnd" id="project_harvestableEnd" class="form-control" style="width:200px" disabled>
@@ -125,6 +125,7 @@
 </template>
 
 <script>
+import { add, format, sub } from 'date-fns'
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: "AddProject",
@@ -136,6 +137,7 @@ export default {
         .then(() => {
           this.data.produce_trader_id = this.getProducesForProject[0].produce_trader_id
           this.owner_name = this.getOwnersForProject[0].owner_firstName + ' ' + this.getOwnersForProject[0].owner_lastName
+          this.maxDays = this.getTimeOfHarvest[0].prod_timeOfHarvest.split('-')[1].split(' ')[0]          
           this.readyApp()
         })
       })      
@@ -176,18 +178,20 @@ export default {
           else{
             this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - parseFloat(newVal)).toFixed(2)
             this.data.contract_ownerShare = parseFloat(newVal).toFixed(2)
-          }
-          
-        }
-        
-      },
+          }          
+        }      
+      },    
       'stage1'(newVal){
         var project_floweringStart = document.getElementById('project_floweringStart')
-        var project_floweringEnd = document.getElementById('project_floweringEnd')
+        var project_fruitBuddingStart = document.getElementById('project_fruitBuddingStart')
+        var project_devFruitStart = document.getElementById('project_devFruitStart')
+        var project_harvestableStart = document.getElementById('project_harvestableStart')        
         var checkboxes = document.querySelectorAll('input[type="checkbox"]')        
         if(newVal){
           project_floweringStart.disabled = false
-          project_floweringEnd.disabled = false
+          project_fruitBuddingStart.disabled = true
+          project_devFruitStart.disabled = true
+          project_harvestableStart.disabled = true
           this.stage2 = true
           checkboxes[1].disabled = true
           this.stage3 = true
@@ -198,10 +202,7 @@ export default {
         else{
           this.data.project_floweringStart = null
           this.data.project_floweringEnd = null
-          project_floweringStart.disabled = true
-          project_floweringEnd.disabled = true
-          project_floweringStart.value = null
-          project_floweringEnd.value = null
+          project_floweringStart.disabled = true          
           this.stage2 = false
           checkboxes[1].disabled = false
           this.stage3 = false
@@ -210,25 +211,30 @@ export default {
           checkboxes[3].disabled = false 
         }        
       },
-      'stage2'(newVal){
+      'stage2'(newVal){        
         var project_fruitBuddingStart = document.getElementById('project_fruitBuddingStart')
-        var project_fruitBuddingEnd = document.getElementById('project_fruitBuddingEnd')
+        var project_devFruitStart = document.getElementById('project_devFruitStart')
+        var project_harvestableStart = document.getElementById('project_harvestableStart')        
         var checkboxes = document.querySelectorAll('input[type="checkbox"]')        
-        if(newVal){
-          project_fruitBuddingStart.disabled = false
-          project_fruitBuddingEnd.disabled = false
+        if(newVal){                    
           this.stage3 = true
           checkboxes[2].disabled = true
           this.stage4 = true          
-          checkboxes[3].disabled = true           
-        }
+          checkboxes[3].disabled = true  
+          project_harvestableStart.disabled = true   
+          if(this.stage1){
+            project_fruitBuddingStart.disabled = true
+          } 
+          else{
+            project_fruitBuddingStart.disabled = false
+            project_devFruitStart.disabled = true
+            project_harvestableStart.disabled = true
+          }        
+        }       
         else{
           this.data.project_fruitBuddingStart = null
           this.data.project_fruitBuddingEnd = null
-          project_fruitBuddingStart.disabled = true
-          project_fruitBuddingEnd.disabled = true
-          project_fruitBuddingStart.value = null
-          project_fruitBuddingEnd.value = null
+          project_fruitBuddingStart.disabled = true          
           this.stage3 = false
           checkboxes[2].disabled = false
           this.stage4 = false          
@@ -237,39 +243,42 @@ export default {
       },
       'stage3'(newVal){
         var project_devFruitStart = document.getElementById('project_devFruitStart')
-        var project_devFruitEnd = document.getElementById('project_devFruitEnd')
+        var project_harvestableStart = document.getElementById('project_harvestableStart')        
         var checkboxes = document.querySelectorAll('input[type="checkbox"]')        
-        if(newVal){
-          project_devFruitStart.disabled = false
-          project_devFruitEnd.disabled = false
+        if(newVal){                  
           this.stage4 = true          
-          checkboxes[3].disabled = true           
-        }
+          checkboxes[3].disabled = true  
+          project_harvestableStart.disabled = true     
+          if(this.stage2){
+            project_devFruitStart.disabled = true
+          } 
+          else{
+            project_devFruitStart.disabled = false
+            project_harvestableStart.disabled = true
+          }      
+        }       
         else{
           this.data.project_devFruitStart = null
           this.data.project_devFruitEnd = null
-          project_devFruitStart.disabled = true
-          project_devFruitEnd.disabled = true
-          project_devFruitStart.value = null
-          project_devFruitEnd.value = null
+          project_devFruitStart.disabled = true          
           this.stage4 = false          
           checkboxes[3].disabled = false                    
         }
       },
       'stage4'(newVal){
         var project_harvestableStart = document.getElementById('project_harvestableStart')
-        var project_harvestableEnd = document.getElementById('project_harvestableEnd')
         if(newVal){
-          project_harvestableStart.disabled = false
-          project_harvestableEnd.disabled = false
+          if(this.stage3){
+            project_harvestableStart.disabled = true
+          }
+          else{
+            project_harvestableStart.disabled = false
+          }                    
         }
-        else{          
+        else{                 
           this.data.project_harvestableStart = null
           this.data.project_harvestableEnd = null
           project_harvestableStart.disabled = true
-          project_harvestableEnd.disabled = true
-          project_harvestableStart.value = null
-          project_harvestableEnd.value = null
         }
       },
     },
@@ -361,10 +370,77 @@ export default {
               this.$toastr.e(this.errors.toString())
             }
           })
+        },
+        fillDates(e){      
+          var stages = [            
+            'project_floweringEnd', 
+            'project_fruitBuddingStart', 
+            'project_fruitBuddingEnd', 
+            'project_devFruitStart',
+            'project_devFruitEnd',
+            'project_harvestableStart',
+            'project_harvestableEnd'
+          ]            
+          var interval = null   
+          interval = Math.round((parseInt(this.maxDays) - 20) / 7);          
+                    
+          var year = parseInt(e.target.value.split('-')[0])
+          var month = parseInt(e.target.value.split('-')[1])
+          var day = parseInt(e.target.value.split('-')[2])
+          var currDay = new Date(year, month-1, day, 0, 0, 0, 0) 
+          console.log(currDay)
+          var formattedDate = null; 
+          var prevDay = null;
+          if(e.target.id != 'project_floweringStart'){            
+            console.log(interval)
+            for(var i = stages.indexOf(e.target.id); i >= 0; i--){
+              if(i == stages.indexOf(e.target.id)){
+                console.log(currDay)
+                formattedDate = format(new Date(currDay), 'yyyy-MM-dd') 
+                this.data[stages[i]] = formattedDate                           
+              }
+              else{
+                if(prevDay){
+                  prevDay = sub(prevDay, {
+                    days: interval
+                  }) 
+                }
+                else{
+                  prevDay = sub(currDay, {
+                    days: interval
+                  })                  
+                }
+                formattedDate = format(new Date(prevDay), 'yyyy-MM-dd') 
+                this.data[stages[i]] = formattedDate                
+              }                         
+            }
+            prevDay = sub(prevDay, {
+              days: interval
+            })
+            formattedDate = format(new Date(prevDay), 'yyyy-MM-dd') 
+            this.data.project_floweringStart = formattedDate                          
+            for(var ii = stages.indexOf(e.target.id) + 1; ii < stages.length; ii++){
+              currDay = add(currDay, {
+                days: interval
+              })
+              formattedDate = format(new Date(currDay), 'yyyy-MM-dd')
+              this.data[stages[ii]] = formattedDate                                      
+            }
+          } 
+          else{
+            console.log(interval)                                                        
+            stages.forEach((stage) => {             
+              currDay = add(currDay, {
+                days: interval
+              })
+              formattedDate = format(new Date(currDay), 'yyyy-MM-dd')
+              this.data[stage] = formattedDate
+            })
+          }      
         }
     },
     computed: {
-      ...mapGetters(['getFarmsForProject', 'getProducesForProject', 'getOwnersForProject'])
+      ...mapGetters(['getFarmsForProject', 'getProducesForProject', 'getOwnersForProject', 'getTimeOfHarvest'])
     },
     data(){
       return{
@@ -394,7 +470,8 @@ export default {
         stage2: false,
         stage3: false,
         stage4: false,
-        errors: null
+        errors: null,
+        maxDays: null
       }
     }
 }

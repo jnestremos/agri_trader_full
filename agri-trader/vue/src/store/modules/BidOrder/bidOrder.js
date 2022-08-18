@@ -45,7 +45,19 @@ const state = {
         contract: null,
         project_bid: null,
         on_hand_bid: null,
-        distributor_contactNum: null
+        distributor_contactNum: null,
+        bid_order_acc: null
+    },
+    order_history: {
+        orders: null,
+        project_bids: null,
+        on_hand_bids: null,
+        produces:  null,
+        contracts: null,
+        projects: null,
+        traders: null,
+        trader_contactNums: null,
+        bid_order_accs: null
     },
     distributors: null,
     contracts: null,
@@ -82,6 +94,9 @@ const getters = {
     },
     getOrder(){
         return state.order
+    },
+    getOrderHistory(){
+        return state.order_history
     }
 }
 
@@ -130,7 +145,38 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    fetchBidHistory({ commit }, email){
+        return axiosClient.get(`/bid/history/${email}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setOrderHistory', res.data)
+        })
+    },
+    updateStatus({ commit }, id){
+        return axiosClient.put(`bid/project/${id}/approve`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
+    firstPayment({ commit }, data){
+        var id = data.id
+        delete data['id']
+        return axiosClient.post(`bid/project/${id}/payment`, data)
+        .then((res) => {
+          console.log(res.data)  
+          commit('asd')
+        })
+    },
+    approveFirstPayment({ commit }, id){
+        return axiosClient.post(`bid/project/${id}/payment`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
     }
+    
 }
 
 const mutations = {
@@ -215,6 +261,7 @@ const mutations = {
         state.order.project_bid = data.project_bid
         state.order.on_hand_bid = data.on_hand_bid
         state.order.distributor_contactNum = data.distributor_contactNum
+        state.order.bid_order_acc = data.bid_order_acc
         var arr = data.produce.prod_name.split(' ')
         var container = null            
         if(arr.indexOf('(Class')){            
@@ -229,6 +276,18 @@ const mutations = {
             }
         }
         state.order.produce = data.produce    
+    },
+    setOrderHistory: (state, data) => {
+        state.order_history.orders = data.orders
+        state.order_history.projects = data.projects
+        state.order_history.contracts = data.contracts
+        state.order_history.project_bids = data.project_bids
+        state.order_history.on_hand_bids = data.on_hand_bids
+        state.order_history.produces = data.produces
+        state.order_history.trader_contactNums = data.trader_contactNums
+        state.order_history.traders = data.traders
+        state.order_history.bid_order_accs = data.bid_order_accs
+                       
     } 
 }
 
