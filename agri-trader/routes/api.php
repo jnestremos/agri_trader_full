@@ -391,6 +391,58 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 ], 200);
             });
         });
+
+        Route::get('/harvest/{id}/details', function($id) {
+            $yield = ProduceYield::where('project_id', $id)->get();
+            $bidOrders = BidOrder::where([['project_id', $id], ['bid_order_status_id', 4 ]])->get(); 
+            $distributors = [];
+            $project_bids = [];
+            $on_hand_bids = [];
+            $contactNums = [];
+            foreach($bidOrders as $bidOrder) {
+                array_push($distributors, $bidOrder->distributor()->first());
+                array_push($contactNums, $bidOrder->distributor()->first()->distributor_contactNum()->first());                
+                if($bidOrder->project_bid()->first()){
+                    array_push($project_bids, $bidOrder->project_bid()->first());
+                }
+                if($bidOrder->on_hand_bid()->first()){
+                    array_push($on_hand_bids, $bidOrder->on_hand_bid()->first());
+                } 
+            }
+            $produce = $bidOrders[0]->project()->first()->contract()->first()->produce_trader()->first()->produce()->first();
+            $produce_trader = $bidOrders[0]->project()->first()->contract()->first()->produce_trader()->first();
+            $farm = $bidOrders[0]->project()->first()->contract()->first()->farm()->first();
+            $farm_owner = $farm->farm_owner()->first();
+            if(count($yield) > 0){
+                return response([
+                    'project_harvestableEnd' => $yield[0]->project()->first()->project_harvestableEnd,
+                    'farm_owner' => $farm_owner,
+                    'yield' => $yield,
+                    'produce' => $produce,
+                    'produce_trader' => $produce_trader,
+                    'farm' => $farm,
+                    'bid_orders' => $bidOrders,
+                    'distributors' => $distributors,
+                    'dist_contactNums' => $contactNums,
+                    'project_bids' => $project_bids,
+                    'on_hand_bids' => $on_hand_bids
+                ], 200);
+            } 
+            return response([
+                'project_harvestableEnd' => Project::find($id)->project_harvestableEnd,
+                'farm_owner' => $farm_owner,
+                'yield' => $yield,
+                'produce' => $produce,
+                'produce_trader' => $produce_trader,
+                'farm' => $farm,
+                'bid_orders' => $bidOrders,
+                'distributors' => $distributors,
+                'dist_contactNums' => $contactNums,
+                'project_bids' => $project_bids,
+                'on_hand_bids' => $on_hand_bids
+            ], 200);             
+                                    
+        });
         
 
 

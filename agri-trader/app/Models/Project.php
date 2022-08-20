@@ -44,7 +44,7 @@ class Project extends Model
     }
     public function produce_yield()
     {
-        return $this->hasOne(ProduceYield::class, 'produce_yield_id');
+        return $this->hasOne(ProduceYield::class);
     }
     public function project_image(){
         return $this->hasMany(ProjectImage::class);

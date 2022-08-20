@@ -17,6 +17,7 @@ import Catalog from '../views/auth/Catalog/Catalog.vue'
 import BidOrderProgress from '../views/auth/BidOrder/BidOrderProgress.vue'
 import ShowBidOrder from '../views/auth/BidOrder/ShowBidOrder.vue'
 import BidOrderHistory from '../views/auth/BidOrder/BidOrderHistory.vue'
+import HarvestDetails from '../views/auth/Harvest/HarvestDetails.vue'
 import AllBidOrders from '../views/auth/BidOrder/trader/AllBidOrders.vue'
 import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
 import AuthLayout from '../components/AuthLayout.vue'
@@ -111,6 +112,12 @@ const routes = [
         name: 'ShowBidOrder',
         meta: {needsAuth: true, role:'trader'},
         component: BidOrderDetails
+      },
+      {
+        path: '/harvest/:id',
+        name: HarvestDetails,
+        meta: {needsAuth: true, role:'trader'},
+        component: HarvestDetails
       }
     ]
   }, 

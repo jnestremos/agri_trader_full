@@ -6,6 +6,7 @@ import produce from './modules/Produce/produce'
 import project from './modules/Project/project'
 import catalog from './modules/Catalog/catalog'
 import bidOrder from './modules/BidOrder/bidOrder'
+import harvest from './modules/Harvest/harvest'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -37,6 +38,7 @@ export default new Vuex.Store({
     produce,
     project,
     catalog,
-    bidOrder
+    bidOrder,
+    harvest
   },
 })
