@@ -27,6 +27,10 @@ class Trader extends Model
     {
         return $this->hasOne(TraderAddress::class, 'trader_id');
     }
+    public function messages()
+    {
+        return $this->belongsToMany(Message::class, 'messages', 'trader_id', 'distributor_id');
+    }
     public function produces()
     {
         return $this->belongsToMany(Produce::class, 'produce_trader', 'trader_id', 'produce_id');

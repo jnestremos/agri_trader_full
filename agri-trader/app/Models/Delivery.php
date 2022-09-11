@@ -14,7 +14,8 @@ class Delivery extends Model
         'delivery_status',
         'delivery_receivedBy',
         'delivery_contactNum',
-        'delivery_date'
+        'delivery_date',
+        'delivery_receivedDate'
     ];
 
     public function bid_order()

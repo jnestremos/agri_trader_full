@@ -61,10 +61,10 @@
                         <div class="" style="position: absolute; top:7%; left:8%; width:90%; height:80%">
                             <div class="d-flex mb-2 align-items-center">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:25px;" class="me-3"/>
-                                <h3>{{ produce.prod_name }}</h3>
+                                <h3>{{ produce.prod_name + ' ' + produce.prod_type }}</h3>
                             </div>                                                                                
                             <h5 class="d-flex">Time to Harvest: <p class="ms-3">{{ produce.prod_timeOfHarvest }}</p></h5>
-                            <h5 class="d-flex" v-if="produce.produce_numOfGrades > 1">Grades: <p class="ms-3">A, B, C</p></h5>                          
+                            <h5 class="d-flex" v-if="getNumOfGrades(produce) > 1">Grades: <p class="ms-3">A, B, C</p></h5>                          
                             <h5 class="d-flex" v-else>Grades: <p class="ms-3">None</p></h5>                          
                         </div>                       
                     </div>
@@ -91,7 +91,7 @@
              <div class="w-100">
                 <div class="row">
                   <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
-                    <div class="produce d-flex justify-content-center align-items-center" v-b-tooltip.hover :title="produce.produce_inventory_qtyOnHand + ' kgs'" style="height:100%; border-radius: 20px; cursor:default">                                                            
+                    <div class="produce d-flex justify-content-center align-items-center" v-b-tooltip.hover :title="produce.on_hand_qty + ' kgs'" style="height:100%; border-radius: 20px; cursor:default">                                                            
                       <p class="mt-2" style="font-weight:bold; text-align: center; font-size:0.8rem">{{  produce.prod_name }}</p>                                                                                                                                                                                               
                     </div>                      
                   </div>                  
@@ -147,8 +147,7 @@ export default {
          this.assignProduce()                   
         }
         this.id = null                
-      })     
-               
+      })              
     },
     watch: {  
       id(newVal, oldVal){        
@@ -168,7 +167,7 @@ export default {
       },      
     },
     computed:{
-      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces', 'getFarmProduces'])
+      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces', 'getFarmProduces', 'getProduceTraderr'])
     },
     methods:{
       ...mapActions(['readyApp', 'fetchFarm', 'fetchAllProduces', 'produceSelection', 'addProduceToFarm', 'fetchFarmProduces']), 
@@ -204,12 +203,18 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+      },
+      getNumOfGrades(produce){
+        var prodTraderObj = this.getProduceTraderr.filter((p) => {
+          return parseInt(produce.id) === parseInt(p.produce_id)
+        })
+        return prodTraderObj[0].produce_numOfGrades
       }
     }
 }
 </script>
 
-<style>
+<style scoped>
 .grid{  
   width:95%;      
   display:grid;

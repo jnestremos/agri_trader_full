@@ -27,7 +27,7 @@
             <td v-if="order.order_initialPrice">{{ order.order_initialPrice.toFixed(2) }}</td>
             <td>{{ getTotal(order) }}</td>
             <td style="border-right: 2px solid black; text-align:right"><button class="btn btn-success" @click="triggerModal(order)">View Details</button></td>
-            <b-modal no-close-on-esc no-close-on-backdrop size="lg" centered :id="`modal-${order.id}`" :title="getProduceName(order)" hide-footer>
+            <b-modal no-close-on-esc no-close-on-backdrop size="lg" centered :id="`modal-${order.id}`" :title="getProduceName(order)" hide-footer>              
               <div style="width:100%; position:relative" class="p-1">
                 <div class="d-flex align-items-baseline justify-content-between" style="width:100%;">              
                   <div class="d-flex align-items-baseline w-50">
@@ -37,7 +37,7 @@
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
                       <h5 class="me-3">Date Updated:</h5>
-                      <p>{{ order.updated_at.split('T')[0] }}</p> 
+                      <p>{{ isProjectOrOnHand(order) == 'Project' ? order.updated_at.split('T')[0] : getUpdatedDate(order) }}</p> 
                     </div>                  
                   </div>
                 </div>
@@ -48,7 +48,7 @@
                   </div>                                 
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
-                      <h5 class="me-3">Expected Date of Harvest:</h5>
+                      <h5 class="me-3">{{ isProjectOrOnHand(order) == 'Project' ? 'Expected Date of Harvest:' : 'Last Date of Harvest:' }}</h5>
                       <p>{{ getHarvestDate(order) }}</p> 
                     </div>                  
                   </div>
@@ -73,8 +73,14 @@
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
                       <h5 class="me-3">Trader's Price:</h5>
-                      <p>{{ getTraderPrice(order) }}</p> 
+                      <p>{{ getTraderPrice(order) + ' per kg' }}</p> 
                     </div>                  
+                  </div>
+                </div>
+                <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id != 4 && isProjectOrOnHand(order) == 'Project'">
+                  <div class="d-flex align-items-baseline w-50">
+                    <h5 class="me-3">Estimated Harvest:</h5>
+                    <p>{{ getHarvest(order) + ' kgs' }}</p> 
                   </div>
                 </div>
                 <div :class="order.bid_order_status_id != 4 ? 'd-flex align-items-baseline' : 'd-flex align-items-baseline justify-content-between'">
@@ -82,7 +88,7 @@
                     <h5 class="me-3">Farm Originated:</h5>
                     <p>{{ getFarmName(order) }}</p> 
                   </div>                 
-                  <div v-if="order.bid_order_status_id == 4" class="d-flex align-items-baseline w-50">
+                  <div v-if="order.bid_order_status_id == 4 && isProjectOrOnHand(order) == 'Project'" class="d-flex align-items-baseline w-50">
                     <h5 class="me-3">Date Refundable (100%):</h5>
                     <p>{{ getRefundDate(order, 100) }}</p> 
                   </div>                 
@@ -90,7 +96,7 @@
                   <p v-if="order.bid_order_status_id != 4">{{ getFarmName(order) }}</p>                
                 </div>
                 <div :class="order.bid_order_status_id != 4 ? 'd-flex align-items-baseline' : 'd-flex align-items-baseline justify-content-between'">
-                  <div v-if="order.bid_order_status_id == 4" class="d-flex align-items-baseline w-50">
+                  <div v-if="order.bid_order_status_id == 4 && isProjectOrOnHand(order) == 'Project'" class="d-flex align-items-baseline w-50">
                     <h5 class="me-3">Estimated Harvest:</h5>
                     <p>{{ getHarvest(order) + ' kgs' }}</p> 
                   </div>                 
@@ -98,8 +104,8 @@
                     <h5 class="me-3">Date Refundable (50%):</h5>
                     <p>{{ getRefundDate(order, 50) }}</p> 
                   </div>                
-                  <h5 v-if="order.bid_order_status_id != 4" class="me-3">Estimated Harvest:</h5>
-                  <p v-if="order.bid_order_status_id != 4">{{ getHarvest(order) + ' kgs' }}</p>                
+                  <h5 v-if="order.bid_order_status_id != 4 && isProjectOrOnHand == 'Project'" class="me-3">Estimated Harvest:</h5>
+                  <p v-if="order.bid_order_status_id != 4 && isProjectOrOnHand == 'Project'">{{ getHarvest(order) + ' kgs' }}</p>                
                 </div>
                 <div class="d-flex align-items-baseline mt-3">
                   <h5 class="me-3">Expected Dates Needed:</h5>
@@ -107,32 +113,34 @@
                 </div>
                 <div class="d-flex align-items-baseline justify-content-between mt-4" style="width:100%;">              
                   <div class="d-flex align-items-baseline w-50">
-                    <h5 class="me-3">Asking Price:</h5>
-                    <p>{{ order.order_initialPrice.toFixed(2) }}</p> 
+                    <h5 class="me-3">Distributor's Initial Price:</h5>
+                    <p>{{ order.order_initialPrice.toFixed(2) + ' per kg'}}</p> 
                   </div>                                 
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
-                      <h5 class="me-3">Quantity Needed:</h5>
-                      <p>{{ getQty(order) + ' kgs' }}</p> 
+                      <h5 class="me-3">{{ order.order_finalPrice ? 'Quantity to be Delivered' : 'Quantity Needed' }}:</h5>
+                      <p>{{ getQty(order) + ' kg/s' }}</p> 
                     </div>                  
                   </div>
                 </div>              
-                <div class="d-flex align-items-baseline justify-content-between" style="width:100%;">              
-                  <div class="d-flex align-items-baseline w-50">
-                    <h5 class="me-3">Minimum Price:</h5>
-                    <p>{{ getMinPrice(order) }}</p> 
-                  </div>                                 
+                <div v-if="order.bid_order_status_id != 5" class="d-flex align-items-baseline justify-content-between" style="width:100%;">                                                                
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
-                      <h5 class="me-3">Maximum Price:</h5>
-                      <p>{{ getMaxPrice(order) }}</p> 
+                      <h5 class="me-3">Total Initial Price:</h5>
+                      <p>{{ getInitTotal(order) }}</p> 
+                    </div>                  
+                  </div>
+                  <div class="d-flex align-items-baseline w-50">
+                    <div class="d-flex align-items-baseline">
+                      <h5 class="me-3">Total Negotiated Price:</h5>
+                      <p>{{ getTotal(order) }}</p> 
                     </div>                  
                   </div>
                 </div> 
                 <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id != 1">              
                   <div class="d-flex align-items-baseline w-50">
                     <h5 class="me-3">Negotiated Price:</h5>
-                    <p>{{ order.order_negotiatedPrice.toFixed(2) }}</p> 
+                    <p>{{ order.order_negotiatedPrice.toFixed(2) + ' per kg' }}</p> 
                   </div>                                 
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
@@ -141,30 +149,45 @@
                     </div>                  
                   </div>
                 </div>
-                <div class="d-flex align-items-baseline" v-if="order.bid_order_status_id != 1">
-                  <h5 class="me-3">Due Date of First Payment:</h5>
-                  <p>{{ order.order_dpDueDate }}</p>                
-                </div>                 
-                <div class="d-flex align-items-center justify-content-end" style="position:absolute; bottom:0; right:5%;" v-if="order.bid_order_status_id != 1">     
-                  <button class="btn btn-success" @click="setStatus(order)">{{ order.bid_order_status_id == 2 ? 'Confirm' : order.bid_order_status_id == 4 ? 'Refund Advanced Order' : 'Pay Amount' }}</button>
+                <div class="d-flex align-items-baseline" v-if="order.bid_order_status_id != 1 && (order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate)">
+                  <h5 class="me-3">{{ getDpDueDate(order) != order.order_dpDueDate ? 'Date of First Payment:' : 'Due Date of First Payment:' }}</h5>
+                  <p>{{ getDpDueDate(order) }}</p>                
+                </div>
+                <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id == 5">
+                  <div class="d-flex align-items-baseline w-50">
+                    <h5 class="me-3">Final Negotiated Price:</h5>
+                    <p>{{ order.order_finalPrice.toFixed(2) + ' per kg' }}</p> 
+                  </div>
+                </div>                                 
+                <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id == 5">
+                  <div class="d-flex align-items-baseline w-50">
+                    <h5 class="me-3">Delivery Dispatch Date:</h5>
+                    <p>{{ getDateDispatch(order) }}</p> 
+                  </div>
+                </div>                                 
+                <div class="d-flex align-items-center justify-content-end" style="position:absolute; bottom:0; right:5%;" v-if="order.bid_order_status_id != 1 && order.bid_order_status_id != 6">     
+                  <button class="btn btn-success me-3" v-if="(isProjectOrOnHand(order) == 'Project' && order.bid_order_status_id == 4) || (isProjectOrOnHand(order) == 'OnHand' && order.bid_order_status_id == 5)">Refund</button>
+                  <button class="btn btn-success" v-if="getDpDueDate(order) == order.order_dpDueDate || order.bid_order_status_id == 5" @click="setStatus(order)">{{ order.bid_order_status_id == 2 ? 'Confirm' : order.bid_order_status_id == 4 ? 'Refund Advanced Order' : 'Pay Amount' }}</button>
                 </div> 
                 <div class="d-flex align-items-baseline justify-content-between mt-3" style="width:100%;" v-if="order.bid_order_status_id > 2">              
-                  <div :class="order.bid_order_status_id == 4 ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline justify-content-between w-50'">
+                  <div :class="order.bid_order_status_id == 4 || (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || order.bid_order_status_id == 6 ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline justify-content-between w-50'">
                     <h5 class="me-3">Mode of Payment:</h5>
-                    <select v-if="order.bid_order_status_id != 4" name="bid_order_acc_paymentMethod" id="" class="form-select ms-2" style="width:150px" @change="setPaymentMethod($event)">
+                    <select v-if="((order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5)" name="bid_order_acc_paymentMethod" id="" class="form-select ms-2" style="width:150px" @change="setPaymentMethod($event)">
                       <option value="Cash" selected>Cash</option>
                       <option value="Bank">Bank</option>
                     </select>
                     <p v-else>{{ getPaymentMethod(order) }}</p> 
-                  </div>                                 
+                  </div> 
                   <div class="d-flex align-items-baseline w-50 ps-5">
                     <div class="d-flex align-items-baseline">
                       <h5 class="me-3">Amount:</h5>
-                      <p>{{ order.order_dpAmount.toFixed(2) + ` (${getPercentage(order)}%)` }}</p> 
+                      <p>{{ order.order_finalPrice ? 
+                      getRemainingBalance(order).toFixed(2) 
+                      : order.order_dpAmount.toFixed(2) + ` (${getPercentage(order)}%)` }}</p> 
                     </div>                  
                   </div>
                 </div>
-                <div v-if="order.bid_order_status_id == 4 && getPaymentMethod(order) == 'Bank'">
+                <div v-if="((order.bid_order_status_id == 4 || order.bid_order_status_id == 6) && (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || (getPaymentMethod(order) == 'Bank' && order.bid_order_status_id != 5))">
                   <div class="d-flex align-items-baseline w-50">
                       <h5 class="me-3">Bank Name:</h5>
                       <p>{{ getBankName(order) }}</p>                  
@@ -178,7 +201,13 @@
                       <p>{{ getAccName(order) }}</p>                  
                   </div>                  
                 </div>                                
-                <div v-if="payment_data.bid_order_acc_paymentMethod == 'Bank' && order.bid_order_status_id == 3">
+                <div v-else-if="((order.bid_order_status_id == 4 || order.bid_order_status_id == 6) && (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || (getPaymentMethod(order) == 'Cash' && order.bid_order_status_id != 5))">                  
+                  <div class="d-flex align-items-baseline w-50">
+                      <h5 class="me-3">Payer Name:</h5>
+                      <p>{{ getAccName(order) }}</p>                  
+                  </div>                  
+                </div>                                
+                <div v-if="payment_data.bid_order_acc_paymentMethod == 'Bank' && (order.bid_order_status_id == 3 || order.bid_order_status_id == 5)">
                   <div class="d-flex align-items-baseline justify-content-between w-50">
                     <h5 class="me-3">Bank Name:</h5>
                     <input type="text" name="bid_order_acc_bankName" id="" class="form-control" style="width:150px" v-model="payment_data.bid_order_acc_bankName">              
@@ -186,15 +215,39 @@
                   <div class="d-flex align-items-baseline justify-content-between w-50">
                     <h5 class="me-3">Account Number:</h5>
                     <input type="text" name="bid_order_acc_accNum" id="" class="form-control" style="width:150px" v-model="payment_data.bid_order_acc_accNum">              
-                  </div>                  
-                  <div class="d-flex align-items-baseline justify-content-between w-50">
-                    <h5 class="me-3">Account Name:</h5>
-                    <input type="text" name="bid_order_acc_accName" id="" class="form-control" style="width:150px" v-model="payment_data.bid_order_acc_accName">              
+                  </div>                                    
+                </div>
+                <div v-if="(order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5">
+                  <div class="d-flex align-items-baseline justify-content-between w-100">
+                    <div class="d-flex align-items-baseline justify-content-between w-50">
+                      <h5 class="me-3">Account Name:</h5>
+                      <input type="text" name="bid_order_acc_accName" id="" class="form-control" style="width:150px" v-model="payment_data.bid_order_acc_accName">                             
+                    </div>
+                    <div class="d-flex align-items-baseline w-50 ps-5" v-if="order.bid_order_status_id == 5">
+                      <h5 class="me-3">Received By:</h5>
+                      <input type="text" name="delivery_receivedBy" id="" class="form-control" style="width:150px" v-model="payment_data.delivery_receivedBy">              
+                    </div>                  
+                  </div>                
+                  <div class="d-flex align-items-baseline justify-content-between w-100" v-if="order.bid_order_status_id == 5">
+                    <div class="d-flex align-items-baseline w-50">
+                    </div>
+                    <div class="d-flex align-items-baseline w-50 ps-5">
+                      <h5 class="me-1">Contact Num:</h5>
+                      <input type="text" name="delivery_contactNum" id="" class="form-control" style="width:150px" v-model="payment_data.delivery_contactNum">              
+                    </div>
                   </div>                  
                 </div>
-                <div v-if="order.bid_order_status_id > 2" :class="order.bid_order_status_id == 4 ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline justify-content-between w-50'">
+                <!-- <div v-else-if="order.bid_order_status_id != 1 && order.bid_order_status_id != 2">
+                  <div class="d-flex align-items-baseline justify-content-between w-100">
+                    <div class="d-flex align-items-baseline w-50">
+                      <h5 class="me-3">Account Name:</h5>
+                      <p>{{ getAccName(order) }}</p>
+                    </div>                                     
+                  </div>
+                </div>                                                 -->
+                <div v-if="order.bid_order_status_id > 2" :class="(order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5 ? 'd-flex align-items-baseline justify-content-between w-50' : (order.bid_order_status_id == 4 || order.bid_order_status_id == 6) ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline w-50'">
                   <h5 class="me-3">Date Paid:</h5>
-                  <input v-if="order.bid_order_status_id == 3" type="date" name="bid_order_acc_datePaid" id="" onkeydown="return false" class="form-control" style="width:150px" v-model="payment_data.bid_order_acc_datePaid">              
+                  <input v-if="(order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5" type="date" class="form-control" style="width:150px;" v-model="payment_data.bid_order_acc_datePaid">              
                   <p v-else>{{ getDatePaid(order) }}</p> 
                 </div>                                            
               </div>            
@@ -229,7 +282,10 @@ export default {
           bid_order_acc_accNum: null,
           bid_order_acc_accName: null,
           bid_order_acc_remarks: null,
-          bid_order_acc_datePaid: new Date().toISOString().split('T')[0]          
+          bid_order_acc_datePaid: new Date().toISOString().split('T')[0],
+          delivery_receivedBy: null,
+          delivery_contactNum: null,
+          bid_type: null          
         },
         errors: null
       }
@@ -241,22 +297,64 @@ export default {
           this.payment_data.bid_order_acc_bankName = null
           this.payment_data.bid_order_acc_accNum = null
           this.payment_data.bid_order_acc_accName = null         
+          this.payment_data.delivery_receivedBy = null         
+          this.payment_data.delivery_contactNum = null         
         }                 
       })      
     },
     methods:{
-        ...mapActions(['readyApp', 'fetchBidHistory', 'updateStatus', 'firstPayment']),
-        getProduceName(order){             
-          var projectObj = this.getOrderHistory.projects.filter((p) => {          
-            return parseInt(order.project_id) === parseInt(p.id)
-          })             
-          var contractObj = this.getOrderHistory.contracts.filter((c) => {
-            return parseInt(projectObj[0].contract_id) === parseInt(c.id)
+        ...mapActions([
+          'readyApp', 
+          'fetchBidHistory', 
+          'updateProjectStatus', 
+          'updateOnHandStatus', 
+          'firstPayment', 
+          'finalPayment'
+        ]),
+        getProduceName(order){                      
+          var prodTraderObj = this.getOrderHistory.produce_trader.filter((p) => {
+            return parseInt(p.id) === parseInt(order.produce_trader_id)
           })
-          var prodObj = this.getOrderHistory.produces.filter((p) => {
-            return parseInt(p.id) === parseInt(contractObj[0].produce_trader_id)
+          var prodObj = this.getOrderHistory.produces.filter((pp) => {
+            return parseInt(prodTraderObj[0].produce_id) === parseInt(pp.id)
           })
-          return prodObj[0].prod_name
+          console.log(prodObj)
+          var arr = prodTraderObj[0].prod_name.split(' ')
+          if(arr.indexOf('(Class)')){
+            arr.splice(arr.indexOf('(Class)') - 1, 0, prodObj[0].prod_type)
+            return arr.join(' ')
+          }
+          else{
+            return prodTraderObj[0].prod_name + ' ' + prodObj[0].prod_type
+          }        
+        },
+        isProjectOrOnHand(order){
+          var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
+            return parseInt(order.id) === parseInt(p.bid_order_id)
+          }) 
+          var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
+            return parseInt(order.id) === parseInt(o.bid_order_id)
+          })          
+          if(projectBidObj[0]){           
+            return 'Project'
+          } 
+          else if(onHandBidObj[0]){            
+            return 'OnHand'
+          }
+        },
+        getUpdatedDate(order){
+          if(this.isProjectOrOnHand(order) == 'OnHand'){
+            var projObj = this.getOrderHistory.projects.filter((p) => {
+              return parseInt(order.project_id) === parseInt(p.id)
+            })                       
+            var contractObj = this.getOrderHistory.contracts.filter((c) => {
+              return parseInt(projObj[0].contract_id) === parseInt(c.id)
+            })                                 
+            var farmProdObj = this.getOrderHistory.farm_produce.filter((pp) => {
+              return parseInt(contractObj[0].farm_id) === parseInt(pp.farm_id) && parseInt(order.produce_trader_id) === parseInt(pp.produce_trader_id)
+            })            
+            return farmProdObj[0].updated_at.split(' ')[0] // stopped on for approval on hand bid on history
+          }
         },
         getBidType(order){
           var projectObj = this.getOrderHistory.projects.filter((p) => {
@@ -266,40 +364,37 @@ export default {
             return parseInt(projectObj[0].contract_id) === parseInt(c.id)
           })          
           var string = null  
-          if(this.getOrderHistory.project_bids.length > 0){
-            var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
-              return parseInt(order.id) === parseInt(p.bid_order_id)
-            })
-            if(projectBidObj[0]){
-              string = contractObj[0].farm_name + ' Project'
-            }            
+          var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
+            return parseInt(order.id) === parseInt(p.bid_order_id)
+          }) 
+          var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
+            return parseInt(order.id) === parseInt(o.bid_order_id)
+          }) 
+          if(projectBidObj[0]){
+            string = contractObj[0].farm_name + ' Project'
           } 
-          else if(this.getOrderHistory.on_hand_bids.length > 0){
-            var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
-              return parseInt(order.id) === parseInt(o.bid_order_id)
-            })
-            if(onHandBidObj[0]){
-              string = contractObj[0].farm_name + ' On-Hand'           
-            }            
-          }      
+          if(onHandBidObj[0]){
+            string = contractObj[0].farm_name + ' On-Hand'           
+          }                                           
           return string       
         },
         getQty(order){
-          if(this.getOrderHistory.project_bids.length > 0){
+          if(order.bid_order_status_id != 5){
             var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
-                return parseInt(order.id) === parseInt(p.bid_order_id)
-              })
-            if(projectBidObj[0]){
-              return projectBidObj[0].project_bid_minQty + ' - ' + projectBidObj[0].project_bid_maxQty
-            }            
-          }
-          else if(this.getOrderHistory.on_hand_bids.length > 0){
+              return parseInt(order.id) === parseInt(p.bid_order_id)
+            }) 
             var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
               return parseInt(order.id) === parseInt(o.bid_order_id)
-            })
+            }) 
+            if(projectBidObj[0]){
+              return projectBidObj[0].project_bid_minQty + ' - ' + projectBidObj[0].project_bid_maxQty
+            }  
             if(onHandBidObj[0]){
               return onHandBidObj[0].on_hand_bid_qty
-            }            
+            }                                                        
+          }
+          else{
+            return order.order_finalQty
           }
         },
         getStatus(order){
@@ -329,31 +424,47 @@ export default {
             }          
         },
         getTraderPrice(order){
-          var projectObj = this.getOrderHistory.projects.filter((p) => {
-            return parseInt(order.project_id) === parseInt(p.id)
-          })
-          var contractObj = this.getOrderHistory.contracts.filter((c) => {
-            return parseInt(projectObj[0].contract_id) === parseInt(c.id)
-          })
-          return contractObj[0].contract_estimatedPrice.toFixed(2)          
-        },        
-        getTotal(order){
-          if(this.getOrderHistory.project_bids.length > 0){
+          if(this.isProjectOrOnHand(order) == 'Project'){
+            var projectObj = this.getOrderHistory.projects.filter((p) => {
+              return parseInt(order.project_id) === parseInt(p.id)
+            })
+            var contractObj = this.getOrderHistory.contracts.filter((c) => {
+              return parseInt(projectObj[0].contract_id) === parseInt(c.id)
+            })
+            return contractObj[0].contract_estimatedPrice.toFixed(2)
+          }
+          else{            
+            return order.order_traderPrice.toFixed(2)
+          }
+          
+        },
+        getInitTotal(order){
+          if(this.isProjectOrOnHand(order) == 'Project'){
             var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
               return parseInt(order.id) === parseInt(p.bid_order_id)
             })
-            if(projectBidObj[0]){
-              return projectBidObj[0].project_bid_total
-            }            
+            return (order.order_initialPrice * projectBidObj[0].project_bid_minQty).toFixed(2) + ' - ' + (order.order_initialPrice * projectBidObj[0].project_bid_maxQty).toFixed(2)
           }
-          else if(this.getOrderHistory.on_hand_bids.length > 0){
+          else{
             var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
               return parseInt(order.id) === parseInt(o.bid_order_id)
             }) 
-            if(onHandBidObj[0]){
-              return onHandBidObj[0].on_hand_total.toFixed(2)
-            }                       
+            return (order.order_initialPrice * onHandBidObj[0].on_hand_bid_qty).toFixed(2)
           }
+        },       
+        getTotal(order){         
+          var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
+            return parseInt(order.id) === parseInt(p.bid_order_id)
+          })
+          var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
+            return parseInt(order.id) === parseInt(o.bid_order_id)
+          })            
+          if(projectBidObj[0]){
+            return projectBidObj[0].project_bid_total
+          } 
+          if(onHandBidObj[0]){
+            return onHandBidObj[0].on_hand_bid_total.toFixed(2)
+          }                                
         },
         getHarvest(order){
           var projectObj = this.getOrderHistory.projects.filter((p) => {
@@ -364,20 +475,35 @@ export default {
           })
           return contractObj[0].contract_estimatedHarvest.toFixed(2)    
         },
-        getHarvestDate(order) {    
-          var projectObj = this.getOrderHistory.projects.filter((p) => {
-            return parseInt(order.project_id) === parseInt(p.id)
-          })                  
-          if(projectObj[0].project_harvestableEnd){                   
-              return projectObj[0].project_harvestableEnd
-          }
-          else {
-              var harvestDate = add(new Date(projectObj[0].project_commenceDate), {
-                  weeks: 1
-              })
-              var formattedDate = format(harvestDate, 'yyyy-MM-dd');       
-              return formattedDate
-          }                        
+        getHarvestDate(order) { 
+          if(this.isProjectOrOnHand(order) == 'Project'){
+            var projectObj = this.getOrderHistory.projects.filter((p) => {
+              return parseInt(order.project_id) === parseInt(p.id)
+            })                  
+            if(projectObj[0].project_harvestableEnd){                   
+                return projectObj[0].project_harvestableEnd
+            }
+            else {
+                var harvestDate = add(new Date(projectObj[0].project_commenceDate), {
+                    weeks: 1
+                })
+                var formattedDate = format(harvestDate, 'yyyy-MM-dd');       
+                return formattedDate
+            }            
+          }  
+          else{
+            var projObj = this.getOrderHistory.projects.filter((pp) => {
+              return parseInt(order.project_id) === parseInt(pp.id)
+            })
+            var contractObj = this.getOrderHistory.contracts.filter((c) => {
+              return parseInt(projObj[0].contract_id) === parseInt(c.id)
+            })
+            var farmProdObj = this.getOrderHistory.farm_produce.filter((ppp) => {
+              return parseInt(contractObj[0].farm_id) === parseInt(ppp.farm_id) && parseInt(ppp.produce_trader_id) === parseInt(order.produce_trader_id)
+            })            
+            return farmProdObj[0].prod_lastDateOfHarvest
+          } 
+                        
         },
         getTraderName(order){
           var traderObj = this.getOrderHistory.traders.filter((t) => {
@@ -411,32 +537,30 @@ export default {
             return parseInt(projectObj[0].contract_id) === parseInt(c.id)
           })
           return contractObj[0].farm_name          
-        },  
-        getMinPrice(order){
-          if(this.getOrderHistory.project_bids.length > 0){
-            var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
-                return parseInt(order.id) === parseInt(p.bid_order_id)
-              })
-            if(projectBidObj[0]){
-              var minPrice = parseFloat(projectBidObj[0].project_bid_total.split(' - ')[0]).toFixed(2)
-              return minPrice
-            }            
-          }          
-        },        
-        getMaxPrice(order){
-          if(this.getOrderHistory.project_bids.length > 0){
-            var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
-                return parseInt(order.id) === parseInt(p.bid_order_id)
-              })
-            if(projectBidObj[0]){
-              var maxPrice = parseFloat(projectBidObj[0].project_bid_total.split(' - ')[1]).toFixed(2)
-              return maxPrice
-            }            
-          }           
-        },
+        },          
+        // getMaxPrice(order){
+        //   if(this.isProjectOrOnHand(order) == 'Project'){
+        //     var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
+        //         return parseInt(order.id) === parseInt(p.bid_order_id)
+        //       })
+        //     if(projectBidObj[0]){
+        //       var maxPrice = parseFloat(projectBidObj[0].project_bid_total.split(' - ')[1]).toFixed(2)
+        //       return maxPrice
+        //     }            
+        //   }
+        //   else{
+        //     var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
+        //       return parseInt(order.id) === parseInt(o.bid_order_id)
+        //     })
+        //     var prodYieldObj = this.getOrderHistory.produce_yields.filter((y) => {
+        //       return parseInt(order.project_id) === parseInt(y.project_id) && parseInt(order.produce_trader_id) === parseInt(y.produce_trader_id)
+        //     })
+        //     var maxPrice = parseFloat(prodYieldObj[0].produce_yield_price * )
+        //   }           
+        // },
         getPercentage(order){
           var total = null
-          if(this.getOrderHistory.project_bids.length > 0){
+          if(this.isProjectOrOnHand(order) == 'Project'){
             var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
               return parseInt(order.id) === parseInt(p.bid_order_id)
             })
@@ -444,7 +568,7 @@ export default {
               total = parseFloat(parseFloat(order.order_negotiatedPrice) * parseFloat(projectBidObj[0].project_bid_maxQty))         
             }            
           }
-          else if(this.getOrderHistory.on_hand_bids.length > 0){
+          else{
             var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
               return parseInt(order.id) === parseInt(o.bid_order_id)
             }) 
@@ -457,23 +581,39 @@ export default {
         triggerModal(order){
           this.$bvModal.show(`modal-${order.id}`);
         },
-        setStatus(order){       
+        setStatus(order){             
           if(order.bid_order_status_id == 2){
-            this.updateStatus(order.id)
-            .then(() => {
-              setTimeout(() => {
-                this.$toastr.s('Status Updated!')
-              }, 5000)
-              location.reload();
-            })
-            .catch((err) => {
-              console.error(err)
-            })
+            if(this.isProjectOrOnHand(order) == 'Project'){
+              this.updateProjectStatus(order.id)
+              .then(() => {
+                setTimeout(() => {
+                  this.$toastr.s('Status Updated!')
+                }, 5000)
+                location.reload();
+              })
+              .catch((err) => {
+                console.error(err)
+              })
+            }
+            else{
+              this.updateOnHandStatus(order.id)
+              .then(() => {
+                setTimeout(() => {
+                  this.$toastr.s('Status Updated!')
+                }, 5000)
+                location.reload();
+              })
+              .catch((err) => {
+                console.error(err)
+              })
+            }
           } 
           else if(order.bid_order_status_id == 3){
+            console.log(order.bid_order_status_id)
             this.payment_data.id = order.id
             this.payment_data.bid_order_acc_amount = order.order_dpAmount.toFixed(2)
             this.payment_data.bid_order_acc_type = 'First Payment'
+            this.payment_data.bid_type = this.isProjectOrOnHand(order)
             this.firstPayment(this.payment_data)
             .then(() => {
               setTimeout(() => {
@@ -488,8 +628,48 @@ export default {
                 this.$toastr.e(this.errors[error][0])
               }              
             })
+          }
+          else if(order.bid_order_status_id == 5){
+            console.log(1)
+            this.payment_data.id = order.id
+            this.payment_data.bid_order_acc_amount = this.getRemainingBalance(order).toFixed(2)
+            this.payment_data.bid_order_acc_type = 'Final Payment'
+            this.payment_data.bid_type = this.isProjectOrOnHand(order)
+            this.finalPayment(this.payment_data)
+            .then(() => {
+              setTimeout(() => {
+                this.$toastr.s('Final Payment Delivered!')
+              }, 5000)              
+              location.reload()
+            })
+            .catch((err) => {
+              console.log(err)
+              this.errors = err.response.data.errors
+              for(var error in this.errors){
+                this.$toastr.e(this.errors[error][0])
+              }              
+            })            
           }            
-
+        },
+        getRemainingBalance(order){
+          var result = (order.order_finalPrice * order.order_finalQty) - order.order_dpAmount 
+          return result < 0 ? 0 : result
+        },
+        getDpDueDate(order){
+          var bidOrderAccObj = this.getOrderHistory.bid_order_accs.filter((o) => {
+            if(o){
+              return parseInt(order.id) === parseInt(o.bid_order_id);
+            }
+          })
+          var bidOrder = bidOrderAccObj.filter((o) => {
+            return o.bid_order_acc_type === 'First Payment'
+          })
+          if(bidOrder.length > 0){
+            return bidOrder[0].bid_order_acc_datePaid
+          }
+          else{
+            return order.order_dpDueDate
+          }
         },
         setPaymentMethod(e){
           this.payment_data.bid_order_acc_paymentMethod = e.target.value
@@ -505,8 +685,10 @@ export default {
             if(o){
               return parseInt(order.id) === parseInt(o.bid_order_id);
             }
-          })                   
-          return bidOrderAccObj[0].bid_order_acc_paymentMethod
+          })
+          if(bidOrderAccObj.length > 0){
+            return bidOrderAccObj[0].bid_order_acc_paymentMethod
+          }                           
         },
         getDatePaid(order){
           var bidOrderAccObj = this.getOrderHistory.bid_order_accs.filter((o) => {
@@ -514,7 +696,9 @@ export default {
               return parseInt(order.id) === parseInt(o.bid_order_id);
             }
           })
-          return bidOrderAccObj[0].bid_order_acc_datePaid   
+          if(bidOrderAccObj.length > 0){
+            return bidOrderAccObj[0].bid_order_acc_datePaid   
+          }        
         },
         getRefundDate(order, percentage){
           var date = null
@@ -556,8 +740,16 @@ export default {
               return parseInt(order.id) === parseInt(o.bid_order_id);
             }
           })
-          return bidOrderAccObj[0].bid_order_acc_accName      
+          if(bidOrderAccObj.length > 0){
+            return bidOrderAccObj[0].bid_order_acc_accName    
+          }          
         },
+        getDateDispatch(order){
+          var deliveryObj = this.getOrderHistory.deliveries.filter((d) => {
+            return parseInt(order.id) === parseInt(d.bid_order_id)
+          })
+          return deliveryObj[0].delivery_date
+        }
     },
     computed: {
       ...mapGetters(['getOrderHistory'])

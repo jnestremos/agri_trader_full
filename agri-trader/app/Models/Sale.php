@@ -11,6 +11,7 @@ class Sale extends Model
 
     protected $fillable = [
         'bid_order_id',
+        'project_id',
         'sale_type',
         'sale_qty',
         'sale_stockLeft',
@@ -21,5 +22,9 @@ class Sale extends Model
     public function bid_order()
     {
         return $this->belongsTo(BidOrder::class, 'bid_order_id');
+    }
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
     }
 }

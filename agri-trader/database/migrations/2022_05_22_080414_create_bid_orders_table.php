@@ -18,10 +18,12 @@ return new class extends Migration
             $table->foreignId('trader_id')->constrained('traders')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('distributor_id')->constrained('distributors')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('project_id')->constrained('projects')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('produce_trader_id')->constrained('produce_trader')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('bid_order_status_id')->constrained('bid_order_statuses')->onUpdate('cascade')->onDelete('cascade');
             $table->char('order_grade')->nullable();
             $table->date('order_dateNeededTo');
             $table->date('order_dateNeededFrom');
+            $table->double('order_traderPrice');
             $table->double('order_initialPrice');
             $table->double('order_negotiatedPrice')->nullable();
             $table->double('order_finalQty')->nullable();

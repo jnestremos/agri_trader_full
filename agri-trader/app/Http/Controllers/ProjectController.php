@@ -21,7 +21,8 @@ class ProjectController extends Controller
         $project = $request->validate([
             //'trader_id' => 'required',
             'farm_id' => 'required|exists:farms,id',
-            'produce_trader_id' => 'required|exists:produce_trader,id',
+            // 'produce_trader_id' => 'required|exists:produce_trader,id',
+            'produce_id' => 'required|exists:produces,id',
             'project_status_id' => 'required|exists:project_statuses,id',
             // 'project_stageImg' => 'image',           
             'contract_estimatedHarvest' => 'required|gt:0.00',
@@ -31,29 +32,70 @@ class ProjectController extends Controller
             'contract_traderShare' => 'required|gt:0.00',
             'contractShare_type' => 'required',
             'contractShare_amount' => 'required|gt:0.00',            
-            'project_commenceDate' => 'required|date|after:now|before:project_floweringStart',
+            'project_commenceDate' => 'required|date|after:now',
             'project_floweringStart' => 'date|nullable',
             'project_floweringEnd' => 'date|nullable',
             'project_fruitBuddingStart' => 'date|nullable',
             'project_fruitBuddingEnd' => 'date|nullable',
             'project_devFruitStart' => 'date|nullable',
             'project_devFruitEnd' => 'date|nullable',
-            'project_harvestableStart' => 'date|nullable',
-            'project_harvestableEnd' => 'date|nullable',
+            'project_harvestableStart' => 'date|required',
+            'project_harvestableEnd' => 'date|required',
+            'startStage' => 'required'
         ]);
-        $result1 = ProduceTrader::find($request->produce_trader_id);
+        $result1 = ProduceTrader::where('produce_id', $request->produce_id)->first();
         $trader = Trader::where('user_id', auth()->id())->first();
-        $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_trader_id', '=', $request->produce_trader_id]])->first(); 
+        $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_id', '=', $request->produce_id]])->first(); 
         if (!$project || !($result1->trader_id == $trader->id) || !$result2) {
             return response([
                 'error' => 'Unavailable Produce for that Farm!'
             ], 400);
         }
+        // if (!$project || !$result2) {
+        //     return response([
+        //         'error' => 'Unavailable Produce for that Farm!'
+        //     ], 400);
+        // }
 
         // return response([
         //     'result' => $request->all()
-        // ], 200);
-
+        // ], 200);        
+        if($request->startStage == 1){            
+            $commenceDate = Carbon::create($request->project_commenceDate);
+            $startDate = Carbon::create($request->project_floweringStart);
+            if($commenceDate->greaterThan($startDate)){
+                return response([
+                    'error' => 'Invalid Date Input Under Flowering!'
+                ], 400);
+            }
+        }
+        else if($request->startStage == 2){
+            $commenceDate = Carbon::create($request->project_commenceDate);
+            $startDate = Carbon::create($request->project_fruitBuddingStart);
+            if($commenceDate->greaterThan($startDate)){
+                return response([
+                    'error' => 'Invalid Date Input Under Fruit Budding!'
+                ], 400);
+            }
+        }
+        else if($request->startStage == 3){
+            $commenceDate = Carbon::create($request->project_commenceDate);
+            $startDate = Carbon::create($request->project_devFruitStart);
+            if($commenceDate->greaterThan($startDate)){
+                return response([
+                    'error' => 'Invalid Date Input Under Developing Fruit!'
+                ], 400);
+            }
+        }
+        else if($request->startStage == 4){
+            $commenceDate = Carbon::create($request->project_commenceDate);
+            $startDate = Carbon::create($request->project_harvestableStart);
+            if($commenceDate->greaterThan($startDate)){
+                return response([
+                    'error' => 'Invalid Date Input Under Harvestable!'
+                ], 400);
+            }
+        }
         // if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
         // || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
         // || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
@@ -103,9 +145,9 @@ class ProjectController extends Controller
             'trader_id' => $trader->id,
             'farm_id' => $farm->id,
             'contract_share_id' => $share->id,
-            'produce_trader_id' => $request->produce_trader_id,
+            // 'produce_trader_id' => $request->produce_trader_id,
             'project_status_id' => $request->project_status_id,
-            'produce_id' => ProduceTrader::find($request->produce_trader_id)->produce_id,
+            'produce_id' => $request->produce_id,
             'farm_name' => $farm->farm_name,
             'contract_estimatedHarvest' => $request->contract_estimatedHarvest,
             'contract_estimatedPrice' => $request->contract_estimatedPrice,

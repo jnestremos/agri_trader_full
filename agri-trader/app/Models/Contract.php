@@ -15,7 +15,7 @@ class Contract extends Model
         'trader_id',
         'farm_id',
         'contract_share_id',
-        'produce_trader_id',
+        // 'produce_trader_id',
         'project_status_id',
         'produce_id',
         'farm_name',
@@ -45,8 +45,8 @@ class Contract extends Model
     {
         return $this->belongsTo(ContractShare::class);
     }
-    public function produce_trader(){
-        return $this->belongsTo(ProduceTrader::class);
-    }
+    // public function produce_trader(){
+    //     return $this->belongsTo(ProduceTrader::class);
+    // }
     
 }

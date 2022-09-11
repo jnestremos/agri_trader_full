@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\BidOrder;
 use App\Models\BidOrderAccount;
+use App\Models\Message;
 use App\Models\OnHandBid;
+use App\Models\ProduceTrader;
 use App\Models\ProduceYield;
+use App\Models\Project;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,9 +18,11 @@ class OnHandBidController extends Controller
     public function addOnHandBid(Request $request)
     {
         $order = $request->validate([
-            'trader_id' => 'required',
-            'project_id' => 'required',
-            'order_grade' => 'required|string',
+            'trader_id' => 'required|exists:traders,id',
+            'project_id' => 'required|exists:projects,id',
+            'produce_trader_id' => 'required|exists:produce_trader,id',
+            'order_grade' => 'string|nullable',
+            'order_traderPrice' => 'required|numeric',
             'order_dateNeededFrom' => 'required|date:after:now',
             'order_dateNeededTo' => 'required|date|after:order_dateNeededFrom',
             'order_initialPrice' => 'required|numeric',
@@ -25,8 +30,8 @@ class OnHandBidController extends Controller
             'on_hand_bid_total' => 'required|numeric'
         ]);
 
-        $yield = ProduceYield::where([['project_id', $request->project_id], ['produce_yield_class', '=', $request->order_grade]])->first();
-        if (!$order || !$yield) {
+        // $yield = ProduceYield::where([['project_id', $request->project_id], ['produce_yield_class', '=', $request->order_grade]])->first();
+        if (!$order) {
             return response([
                 'error' => 'Invalid Order!'
             ], 400);
@@ -35,8 +40,10 @@ class OnHandBidController extends Controller
         $newOrder = BidOrder::create([
             'trader_id' => $request->trader_id,
             'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
+            'produce_trader_id' => $request->produce_trader_id,
             'bid_order_status_id' => 1,
             'order_grade' => $request->order_grade,
+            'order_traderPrice' => $request->order_traderPrice,
             'project_id' => $request->project_id,
             'order_dateNeededFrom' => $request->order_dateNeededFrom,
             'order_dateNeededTo' => $request->order_dateNeededTo,
@@ -47,6 +54,13 @@ class OnHandBidController extends Controller
             'bid_order_id' => $newOrder->id,
             'on_hand_bid_qty' => $request->on_hand_bid_qty,
             'on_hand_bid_total' => $request->on_hand_bid_total,
+        ]);
+
+        Message::create([
+            'trader_id' => $request->trader_id,
+            'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
+            'message_sentBy' => 'distributor',
+            'message_body' => "Hello there!\nI am interested in bidding your ".ProduceTrader::find($request->produce_trader_id)->prod_name." for".$request->project_bid_maxQty." kg/kgs\nfrom ".Project::find($request->project_id)->contract()->first()->farm_name.". Please consider this offer and we're hoping for bidding negotiations here. Thank you!"
         ]);
 
         return response([
@@ -60,10 +74,11 @@ class OnHandBidController extends Controller
             $bidOrder = BidOrder::find($id);
             if ($user->hasRole('trader')) {
                 $order = $request->validate([
-                    'order_negotiatedPrice' => 'required|numeric',
+                    'order_negotiatedPrice' => 'required|numeric|gt:0',
                     'order_datePlaced' => 'required|date', //from created_at table
                     'on_hand_bid_total' => 'required|numeric',
-                    'order_dpDueDate' => 'required|date|after:order_datePlaced'
+                    'order_dpDueDate' => 'required|date|after:order_datePlaced',
+                    'order_dpAmount' => 'required|numeric'
                 ]);
 
                 if (!$order) {
@@ -83,6 +98,7 @@ class OnHandBidController extends Controller
                     $bidOrder->order_dpDueDate = $request->order_dpDueDate;
                     $bidOrder->order_negotiatedPrice = $request->order_negotiatedPrice;
                     $bidOrder->bid_order_status_id = 2;
+                    $bidOrder->order_dpAmount = $request->order_dpAmount;
                     $bidOrder->save();
                 }
                 return response([
@@ -121,15 +137,30 @@ class OnHandBidController extends Controller
                         'bid_order_acc_paymentMethod' => 'required|string',
                         'bid_order_acc_type' => 'required|string',
                         'bid_order_acc_amount' => 'required|numeric',
-                        'bid_order_acc_bankName'  => 'nullable|string',
-                        'bid_order_acc_accNum' => 'nullable|string',
-                        'bid_order_acc_accName' => 'nullable|string',
+                        'bid_order_acc_bankName'  => 'required_if:bid_order_acc_paymentMethod,==,Bank',
+                        'bid_order_acc_accNum' => 'required_if:bid_order_acc_paymentMethod,==,Bank',
+                        'bid_order_acc_accName' => 'required',
                         'bid_order_acc_remarks' => 'nullable|string',
+                        'bid_order_acc_datePaid' => 'required|date'
                     ]);
 
                     if (!$order) {
                         return response([
                             'error' => 'Invalid Order!'
+                        ], 400);
+                    }
+                    $datePaid = new Carbon($request->bid_order_acc_datePaid);
+                    $datePlaced = new Carbon(BidOrder::find($id)->created_at);
+                    $dpDueDate = new Carbon(BidOrder::find($id)->order_dpDueDate);
+                    $datePlaced->hour = 0;
+                    $datePlaced->minute = 0;
+                    $datePlaced->second = 0;
+                    $dpDueDate->hour = 0;
+                    $dpDueDate->minute = 0;
+                    $dpDueDate->second = 0;             
+                    if($datePaid->isBefore($datePlaced) || $datePaid->isAfter($dpDueDate)){
+                        return response([
+                            'error' => 'Invalid Date!'
                         ], 400);
                     }
 
@@ -142,7 +173,15 @@ class OnHandBidController extends Controller
                         'bid_order_acc_accName' => $request->bid_order_acc_accName,
                         'bid_order_acc_amount' => $request->bid_order_acc_amount,
                         'bid_order_acc_remarks' => $request->bid_order_acc_remarks,
-                        'bid_order_acc_datePaid' => Carbon::now(),
+                        'bid_order_acc_datePaid' => $request->bid_order_acc_datePaid,
+                    ]);
+
+                    $trader = BidOrder::find($id)->project()->first()->contract()->first()->trader()->first();
+                    Message::create([
+                        'trader_id' => $trader->id,
+                        'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
+                        'message_sentBy' => 'distributor',
+                        'message_body' => "First Payment for Bid Order # ".$id." has been already sent! Please check and verify with your account whether the payment has been received or not."                        
                     ]);
 
                     return response([

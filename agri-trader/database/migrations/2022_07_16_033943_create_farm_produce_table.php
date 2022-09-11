@@ -16,8 +16,11 @@ return new class extends Migration
         Schema::create('farm_produce', function (Blueprint $table) {
             $table->foreignId('farm_id')->constrained('farms')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('produce_trader_id')->constrained('produce_trader')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('produce_inventory_id')->nullable()->constrained('produce_inventories')->onUpdate('cascade')->onDelete('cascade');
-            $table->double('produce_inventory_qtyOnHand')->default('0');
+            $table->foreignId('produce_id')->constrained('produces')->onUpdate('cascade')->onDelete('cascade');
+            // $table->foreignId('produce_inventory_id')->nullable()->constrained('produce_inventories')->onUpdate('cascade')->onDelete('cascade');
+            $table->double('on_hand_latestPrice')->default('0');
+            $table->double('on_hand_qty')->default('0');
+            $table->date('prod_lastDateOfHarvest')->nullable();
             $table->string('farm_name')->nullable();            
             $table->string('prod_name')->nullable();            
             $table->timestamps();

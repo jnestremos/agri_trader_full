@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\BidOrder;
 use App\Models\BidOrderAccount;
+use App\Models\Message;
+use App\Models\ProduceTrader;
 use App\Models\ProduceYield;
+use App\Models\Project;
 use App\Models\ProjectBid;
 use App\Models\User;
 use Carbon\Carbon;
@@ -13,10 +16,11 @@ use Illuminate\Http\Request;
 class ProjectBidController extends Controller
 {
     public function addProjectBid(Request $request)
-    {
+    {        
         $order = $request->validate([
-            'trader_id' => 'required|exists:traders,user_id',
+            'trader_id' => 'required|exists:traders,id',
             'project_id' => 'required|exists:projects,id',
+            'produce_trader_id' => 'required|exists:produce_trader,id',
             'order_grade' => 'string|nullable',
             'exp_dateHarvest' => 'date|required',
             'order_dateNeededFrom' => 'required|date|after:exp_dateHarvest',
@@ -33,16 +37,36 @@ class ProjectBidController extends Controller
                 'error' => 'Invalid Order!'
             ], 400);
         }
-
+        // $produces = ProduceTrader::find($request->produce_trader_id)->produce_trader()->get();        
+        // if(count($produces) > 0){
+        //    for($i = 0; $i < count($produces); $i){
+        //         if($request->produce_trader_id == $produces[$i]->id){
+        //             if($i == 0){
+        //                 $request->order_grade = 'A';
+        //                 break;
+        //             }
+        //             else if($i == 1){
+        //                 $request->order_grade = 'B';
+        //                 break;
+        //             }
+        //             else if($i == 2){
+        //                 $request->order_grade = 'C';
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
         $newOrder = BidOrder::create([
             'trader_id' => $request->trader_id,
             'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
             'bid_order_status_id' => 1,
             'order_grade' => $request->order_grade,
             'project_id' => $request->project_id,
+            'produce_trader_id' => $request->produce_trader_id,
             'order_dateNeededFrom' => $request->order_dateNeededFrom,
             'order_dateNeededTo' => $request->order_dateNeededTo,
-            'order_initialPrice' => $request->order_initialPrice
+            'order_initialPrice' => $request->order_initialPrice,
+            'order_traderPrice' => Project::find($request->project_id)->contract()->first()->contract_estimatedPrice
         ]);
 
         ProjectBid::create([
@@ -50,6 +74,13 @@ class ProjectBidController extends Controller
             'project_bid_minQty' => $request->project_bid_minQty,
             'project_bid_maxQty' => $request->project_bid_maxQty,
             'project_bid_total' => $request->project_bid_total,
+        ]);
+
+        Message::create([
+            'trader_id' => $request->trader_id,
+            'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
+            'message_sentBy' => 'distributor',
+            'message_body' => "Hello there!\nI am interested in bidding your ".ProduceTrader::find($request->produce_trader_id)->prod_name." for".$request->project_bid_maxQty." kg/kgs\nfrom ".Project::find($request->project_id)->contract()->first()->farm_name.". Please consider this offer and we're hoping for bidding negotiations here. Thank you!"
         ]);
 
         return response([
@@ -129,7 +160,7 @@ class ProjectBidController extends Controller
                         'bid_order_acc_amount' => 'required|numeric',
                         'bid_order_acc_bankName'  => 'required_if:bid_order_acc_paymentMethod,==,Bank',
                         'bid_order_acc_accNum' => 'required_if:bid_order_acc_paymentMethod,==,Bank',
-                        'bid_order_acc_accName' => 'required_if:bid_order_acc_paymentMethod,==,Bank',
+                        'bid_order_acc_accName' => 'required',
                         'bid_order_acc_remarks' => 'nullable|string',
                         'bid_order_acc_datePaid' => 'required|date'
                     ]);
@@ -142,8 +173,13 @@ class ProjectBidController extends Controller
                     $datePaid = new Carbon($request->bid_order_acc_datePaid);
                     $datePlaced = new Carbon(BidOrder::find($id)->created_at);
                     $dpDueDate = new Carbon(BidOrder::find($id)->order_dpDueDate);
-                    
-                    if($datePaid->isBefore($datePlaced) || $datePaid->isAfter($dpDueDate)){
+                    $datePlaced->hour = 0;
+                    $datePlaced->minute = 0;
+                    $datePlaced->second = 0;
+                    $dpDueDate->hour = 0;
+                    $dpDueDate->minute = 0;
+                    $dpDueDate->second = 0;             
+                    if($datePaid->isBefore($datePlaced) || $datePaid->isAfter($dpDueDate) || $datePaid->equalTo($dpDueDate)){
                         return response([
                             'error' => 'Invalid Date!'
                         ], 400);
@@ -159,6 +195,13 @@ class ProjectBidController extends Controller
                         'bid_order_acc_amount' => $request->bid_order_acc_amount,
                         'bid_order_acc_remarks' => $request->bid_order_acc_remarks,
                         'bid_order_acc_datePaid' => $request->bid_order_acc_datePaid,
+                    ]);
+                    $trader = BidOrder::find($id)->project()->first()->contract()->first()->trader()->first();
+                    Message::create([
+                        'trader_id' => $trader->id,
+                        'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
+                        'message_sentBy' => 'distributor',
+                        'message_body' => "First Payment for Bid Order # ".$id." has been already sent! Please check and verify with your account whether the payment has been received or not."                        
                     ]);
 
                     return response([

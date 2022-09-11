@@ -18,8 +18,13 @@ import BidOrderProgress from '../views/auth/BidOrder/BidOrderProgress.vue'
 import ShowBidOrder from '../views/auth/BidOrder/ShowBidOrder.vue'
 import BidOrderHistory from '../views/auth/BidOrder/BidOrderHistory.vue'
 import HarvestDetails from '../views/auth/Harvest/HarvestDetails.vue'
+import DeliveryDetails from '../views/auth/Delivery/DeliveryDetails.vue'
 import AllBidOrders from '../views/auth/BidOrder/trader/AllBidOrders.vue'
 import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
+import ChangeBidOrder from '../views/auth/BidOrder/trader/ChangeBidOrder.vue'
+import TraderMessaging from '../views/auth/Messaging/trader/TraderMessaging.vue'
+import DistMessaging from '../views/auth/Messaging/DistMessaging.vue'
+import ProduceInventory from '../views/auth/ProduceInventory/ProduceInventory.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -114,10 +119,34 @@ const routes = [
         component: BidOrderDetails
       },
       {
+        path: '/bid/orders/:id/renegotiate',
+        name: 'ChangeBidOrder',
+        meta: {needsAuth: true, role:'trader'},
+        component: ChangeBidOrder
+      },
+      {
         path: '/harvest/:id',
         name: HarvestDetails,
         meta: {needsAuth: true, role:'trader'},
         component: HarvestDetails
+      },
+      {
+        path: '/delivery/:id',
+        name: 'DeliveryDetails',
+        meta: {needsAuth: true, role:'trader'},
+        component: DeliveryDetails
+      },
+      {
+        path: '/messages/:id/trader',
+        name: 'TraderMessaging',
+        meta: {needsAuth: true, role:'trader'},
+        component: TraderMessaging
+      },
+      {
+        path: '/harvest/inventory/:id',
+        name: 'ProduceInventory',
+        meta: {needsAuth: true, role:'trader'},
+        component: ProduceInventory
       }
     ]
   }, 
@@ -145,7 +174,7 @@ const routes = [
         component: ShowBidOrder
       },
       {
-        path: '/bid_order/on_hand/:id',
+        path: '/bid_order/on_hand/:farm_id/:produce_trader_id',
         name: 'BidOrderOnHand',
         meta: {needsAuth: true, role: 'distributor'},
         component: ShowBidOrder
@@ -155,7 +184,13 @@ const routes = [
         name: 'BidOrderHistory',
         meta: {needsAuth: true, role: 'distributor'},
         component: BidOrderHistory
-      }
+      },
+      {
+        path: '/messages/:id/dist',
+        name: 'DistMessaging',
+        meta: {needsAuth: true, role:'distributor'},
+        component: DistMessaging
+      },
     ]
   }, 
   {

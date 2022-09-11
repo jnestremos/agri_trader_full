@@ -17,9 +17,9 @@
                         width:85%;">
                             <div class="d-flex mb-4">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
-                                <h4 class="mb-4">{{ getOwnerList[i].owner_firstName + ' ' + getOwnerList[i].owner_lastName }} - {{ getDateList[i].project_commenceDate }} - {{100 - parseInt(getShareList[i].contractShare_amount) + "/" + getShareList[i].contractShare_amount }}</h4>
+                                <h4 class="mb-4">{{ getName(p) }} - {{ getCommenceDate(p)}} &nbsp; {{100 - getShareAmount(p) + "% / " + getShareAmount(p) + '%' }}</h4>
                             </div>                                                                
-                            <h4 class="d-flex">Produce: <p class="ms-3">{{ getProduceList[i].prod_name }}</p></h4>
+                            <h4 class="d-flex">Produce: <p class="ms-3">{{ getProduceName(p) }}</p></h4>
                             <h4 class="d-flex">Estimated Harvest (in kg): <p class="ms-3">{{ p.contract_estimatedHarvest + ' kg'}}</p></h4>
                         </div>                                                
                     </div>
@@ -108,12 +108,45 @@ export default {
         },  
         showProject(id){
             this.$router.push({ path: `/projects/${id}` })
-        }                              
+        },
+        getName(contract){
+            var farmObj = this.getFarmList.filter((f) => {
+                return parseInt(f.id) === parseInt(contract.farm_id)
+            })
+            var distObj = this.getOwnerList.filter((o) => {
+                return parseInt(o.id) === farmObj[0].farm_owner_id
+            })            
+            return distObj[0].owner_firstName + ' ' + distObj[0].owner_lastName
+        },
+        getCommenceDate(contract){
+            var projObj = this.getDateList.filter((p) => {
+                return parseInt(p.contract_id) === parseInt(contract.id)
+            })
+            return projObj[0].project_commenceDate
+        },                              
+        getShareAmount(contract){
+            var shareObj = this.getShareList.filter((s) => {
+                return parseInt(contract.contract_share_id) === parseInt(s.id)
+            })
+            return parseFloat(shareObj[0].contractShare_amount)
+        },
+        getShareType(contract){
+            var shareObj = this.getShareList.filter((s) => {
+                return parseInt(contract.contract_share_id) === parseInt(s.id)
+            })
+            return shareObj[0].contractShare_typpe
+        },
+        getProduceName(contract){
+            var prodObj = this.getProduceList.filter((p) => {
+                return parseInt(contract.produce_id) === parseInt(p.id)
+            })
+            return prodObj[0].prod_name
+        }
     }
 }
 </script>
 
-<style>
+<style scoped>
 
 .project{
     background-color:greenyellow;

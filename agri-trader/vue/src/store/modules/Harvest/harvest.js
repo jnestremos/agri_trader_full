@@ -13,7 +13,8 @@ const state = {
         on_hand_bids: null,
         project_bids: null,
         distributors: null,
-        project: null
+        contract: null,
+        produce_list: null,
     }
 }
 
@@ -32,10 +33,10 @@ const actions = {
         })
     },
     sendHarvestDetails({ commit }, data){
-        if(!(state.harvest_details.produce_trader.produce_numOfGrades > 1)){
+        if(!(state.harvest_details.produce_trader[0].produce_numOfGrades > 1)){
             data.produce_yield_qtyHarvested = data.produce_yield_qtyHarvested[0]            
             data.produce_yield_price = data.produce_yield_price[0]
-        }        
+        }                
         return axiosClient.post(`yield/add`, data)
         .then((res) => {
             console.log(res.data)
@@ -57,7 +58,8 @@ const mutations = {
         state.harvest_details.on_hand_bids = data.on_hand_bids
         state.harvest_details.project_bids = data.project_bids
         state.harvest_details.distributors = data.distributors
-        state.harvest_details.projects = data.projects
+        state.harvest_details.contract = data.contract
+        state.harvest_details.produce_list = data.produce_list
     },
     asd: () => {
         console.log(1)

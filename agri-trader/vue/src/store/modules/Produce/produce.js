@@ -21,7 +21,8 @@ const state = {
         produce_yield_dateHarvestTo: null
     },
     produces: null,
-    filtered_produces: []
+    filtered_produces: [],
+    produce_trader: null
 }
 
 const getters = {
@@ -39,6 +40,9 @@ const getters = {
     },
     getFilteredProduces(){
         return state.filtered_produces
+    },
+    getProduceTraderr(){
+        return state.produce_trader
     }    
 }
 
@@ -122,6 +126,7 @@ const mutations = {
     },
     setFilteredProduces: (state, data) => {
         state.filtered_produces = data.produces
+        state.produce_trader = data.produce_trader
     },
     setProduceOptions: (state, data) => {
         state.produces = data.produces

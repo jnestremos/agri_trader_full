@@ -18,6 +18,10 @@ class Distributor extends Model
     {
         return $this->hasMany(DistributorContactNumber::class, 'distributor_id');
     }
+    public function messages()
+    {
+        return $this->belongsToMany(Message::class, 'messages', 'distributor_id', 'trader_id');
+    }
     public function distributor_address()
     {
         return $this->hasOne(DistributorAddress::class, 'distributor_id');

@@ -24,7 +24,7 @@ class ProduceYield extends Model
     {
         return $this->belongsTo(Project::class);
     }
-    public function produce()
+    public function produce_trader()
     {
         return $this->belongsTo(ProduceTrader::class, 'produce_trader_id');
     }

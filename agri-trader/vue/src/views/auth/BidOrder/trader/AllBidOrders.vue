@@ -70,15 +70,9 @@ export default {
             console.log(contractObj)
             return contractObj[0].farm_name
         },
-        getProduceName(order){
-            var projObj = this.getOrderProjects.filter((p) => {
-                return parseInt(p.id) === parseInt(order.project_id)
-            })
-            var contractObj = this.getOrderContracts.filter((c) => {
-                return parseInt(c.id) === parseInt(projObj[0].contract_id)
-            })
+        getProduceName(order){        
             var prodObj = this.getOrderProduces.filter((p) => {
-                return parseInt(p.id) === parseInt(contractObj[0].produce_trader_id)
+                return parseInt(p.id) === parseInt(order.produce_trader_id)
             })
             return prodObj[0].prod_name
         },

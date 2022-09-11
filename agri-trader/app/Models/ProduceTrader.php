@@ -39,5 +39,9 @@ class ProduceTrader extends Model
     {
         return $this->hasMany(ProduceYield::class);
     }
+    public function bid_order()
+    {
+        return $this->hasMany(BidOrder::class);
+    }
 
 }

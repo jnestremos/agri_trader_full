@@ -17,7 +17,9 @@ const state = {
     projects: null,
     produce_trader: null,
     farm_produces: null,
-    produce_yields: null
+    produce_yields: null,
+    produce_inventories: null,
+    traders: null
 }
 
 const getters = {
@@ -39,7 +41,12 @@ const getters = {
     getProduceYields(){
         return state.produce_yields
     },    
-    
+    getProduceInventories(){
+        return state.produce_inventories
+    },    
+    getTraderss(){
+        return state.traders
+    }
 }
 
 
@@ -87,6 +94,8 @@ const mutations = {
         state.produce_trader = data.produce_trader 
         state.farm_produces = data.farm_produce
         state.produce_yields = data.produce_yields
+        state.produce_inventories = data.produce_inventories
+        state.traders = data.traders
     },
 }
 

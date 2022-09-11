@@ -6,7 +6,7 @@ const state = {
     progress_data: {
         trader_id: null,
         trader_name: null,
-        prod_name: null,
+        prod_name: null,        
         prod_class: null,
         trader_contactNum: null,
         project_completionDate: null,
@@ -23,7 +23,9 @@ const state = {
         contract_estimatedPrice: null,
         contract_estimatedHarvest: null,
         project_images: null,
-        farm_name: null
+        farm_name: null,
+        produce_trader: null,
+        prod_type: null,
     },
     order_data: {
         orders: [],
@@ -36,6 +38,16 @@ const state = {
         prev_page_url: null,
         total: null,
         links: null        
+    },
+    on_hand_data: {
+        selectedProduce: null,
+        farm_produce: null,  
+        contract: null,  
+        trader: null,  
+        produce_yields: null,  
+        trader_contactNum: null,  
+        produce: null,
+        produce_inventories: null,
     },
     order:{
         produce: null,
@@ -52,12 +64,16 @@ const state = {
         orders: null,
         project_bids: null,
         on_hand_bids: null,
-        produces:  null,
+        produce_trader: null,
         contracts: null,
         projects: null,
         traders: null,
         trader_contactNums: null,
-        bid_order_accs: null
+        bid_order_accs: null,
+        produces: null,
+        deliveries: null,
+        farm_produce: null,
+        produce_yields: null
     },
     distributors: null,
     contracts: null,
@@ -70,6 +86,9 @@ const state = {
 const getters = {
     getProgressData(){
         return state.progress_data
+    },
+    getOnHandData(){
+        return state.on_hand_data
     },
     getOrderData(){
         return state.order_data
@@ -108,8 +127,22 @@ const actions = {
             commit('setProjectt', res.data)
         })
     },
-    sendBidOrder({ commit }, data){
+    fetchOnHandDetails({ commit }, data){
+        return axiosClient.get(`/bid/onhand/${data.farm_id}/${data.produce_trader_id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setOnHandData', res.data)
+        })
+    },
+    sendBidOrderProject({ commit }, data){
         return axiosClient.post(`/bid/project/add`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
+    sendBidOrderOnHand({ commit }, data){
+        return axiosClient.post(`/bid/onhand/add`, data)
         .then((res) => {
             console.log(res.data)
             commit('asd')
@@ -146,6 +179,13 @@ const actions = {
             commit('asd')
         })
     },
+    approveOnHandBid({ commit }, data){
+        return axiosClient.put(`/bid/onhand/${data.id}/approve`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
     fetchBidHistory({ commit }, email){
         return axiosClient.get(`/bid/history/${email}`)
         .then((res) => {
@@ -153,8 +193,15 @@ const actions = {
             commit('setOrderHistory', res.data)
         })
     },
-    updateStatus({ commit }, id){
+    updateProjectStatus({ commit }, id){        
         return axiosClient.put(`bid/project/${id}/approve`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
+    updateOnHandStatus({ commit }, id){        
+        return axiosClient.put(`bid/onhand/${id}/approve`)
         .then((res) => {
             console.log(res.data)
             commit('asd')
@@ -163,20 +210,72 @@ const actions = {
     firstPayment({ commit }, data){
         var id = data.id
         delete data['id']
-        return axiosClient.post(`bid/project/${id}/payment`, data)
-        .then((res) => {
-          console.log(res.data)  
-          commit('asd')
-        })
+        if(data.bid_type == 'Project'){
+            return axiosClient.post(`bid/project/${id}/payment`, data)
+            .then((res) => {
+                console.log(res.data)  
+                commit('asd')
+            })
+        }
+        else if(data.bid_type == 'OnHand'){
+            return axiosClient.post(`bid/onhand/${id}/payment`, data)
+            .then((res) => {
+                console.log(res.data)  
+                commit('asd')
+            })
+        }
+    },
+    finalPayment({ commit }, data){
+        var id = data.id
+        delete data['id']
+        if(data.bid_type == 'Project'){
+            return axiosClient.put(`bid/project/${id}/deliver`, data)
+            .then((res) => {
+              console.log(res.data)  
+              commit('asd')
+            })
+        }
+        else if(data.bid_type == 'OnHand'){
+            return axiosClient.put(`bid/onhand/${id}/deliver`, data)
+            .then((res) => {
+              console.log(res.data)  
+              commit('asd')
+            })
+        }
     },
     approveFirstPayment({ commit }, id){
-        return axiosClient.post(`bid/project/${id}/payment`)
-        .then((res) => {
-            console.log(res.data)
-            commit('asd')
-        })
-    }
-    
+        if(getters.getOrder().project_bid){
+            return axiosClient.post(`bid/project/${id}/payment`)
+            .then((res) => {
+                console.log(res.data)
+                commit('asd')
+            })
+        }
+        else{
+            return axiosClient.post(`bid/onhand/${id}/payment`)
+            .then((res) => {
+                console.log(res.data)
+                commit('asd')
+            })
+        }
+
+    },
+    approveFinalPayment({ commit }, id){
+        if(getters.getOrder().project_bid){
+            return axiosClient.put(`bid/project/${id}/deliver`)
+            .then((res) => {
+                console.log(res.data)
+                commit('asd')
+            })
+        }
+        else{
+            return axiosClient.put(`bid/onhand/${id}/deliver`)
+            .then((res) => {
+                console.log(res.data)
+                commit('asd')
+            })
+        }
+    },    
 }
 
 const mutations = {
@@ -187,6 +286,7 @@ const mutations = {
         state.progress_data.project_completionDate = data.project_completionDate,
         state.progress_data.project_commenceDate = data.project_commenceDate,
         state.progress_data.trader_email = data.trader_email,
+        state.progress_data.prod_type = data.prod_type
         state.progress_data.project_floweringStart = data.project_floweringStart,
         state.progress_data.project_floweringEnd = data.project_floweringEnd,
         state.progress_data.project_fruitBuddingStart = data.project_fruitBuddingStart,
@@ -199,6 +299,8 @@ const mutations = {
         state.progress_data.contract_estimatedHarvest = data.contract_estimatedHarvest,
         state.progress_data.project_images = data.project_images
         state.progress_data.farm_name = data.farm_name
+        state.progress_data.produce_trader = data.produce_trader
+        state.progress_data.prod_name = data.prod_name 
         var arr = data.prod_name.split(' ')
         var container = null            
         if(arr.indexOf('(Class')){            
@@ -214,7 +316,7 @@ const mutations = {
             }
         }
         else{            
-            state.progress_data.prod_name = data.prod_name 
+            // state.progress_data.prod_name = data.prod_name 
             state.progress_data.prod_class = null                    
         }
     },
@@ -275,7 +377,8 @@ const mutations = {
                 }                                                          
             }
         }
-        state.order.produce = data.produce    
+        state.order.produce = data.produce  
+        state.order.produce_yield = data.produce_yield  
     },
     setOrderHistory: (state, data) => {
         state.order_history.orders = data.orders
@@ -287,7 +390,20 @@ const mutations = {
         state.order_history.trader_contactNums = data.trader_contactNums
         state.order_history.traders = data.traders
         state.order_history.bid_order_accs = data.bid_order_accs
-                       
+        state.order_history.produce_trader = data.produce_trader
+        state.order_history.deliveries = data.deliveries
+        state.order_history.farm_produce = data.farm_produce
+        state.order_history.produce_yields = data.produce_yields
+    },
+    setOnHandData: (state, data) => {      
+        state.on_hand_data.selectedProduce = data.selectedProduce
+        state.on_hand_data.farm_produce = data.farm_produce
+        state.on_hand_data.contract = data.contract
+        state.on_hand_data.trader = data.trader
+        state.on_hand_data.produce_yields = data.produce_yields
+        state.on_hand_data.trader_contactNum = data.trader_contactNum
+        state.on_hand_data.produce = data.produce
+        state.on_hand_data.produce_inventories = data.produce_inventories
     } 
 }
 

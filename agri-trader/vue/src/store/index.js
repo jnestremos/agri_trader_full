@@ -7,6 +7,9 @@ import project from './modules/Project/project'
 import catalog from './modules/Catalog/catalog'
 import bidOrder from './modules/BidOrder/bidOrder'
 import harvest from './modules/Harvest/harvest'
+import delivery from './modules/Delivery/delivery'
+import chat from './modules/Chat/chat'
+import inventory from './modules/Inventory/inventory'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -23,7 +26,7 @@ export default new Vuex.Store({
     readyApp({ commit }){
       setTimeout(() => {
         commit('appReady')
-      }, 5000)
+      }, 3000)
       return Promise.resolve('success')
     }
   },
@@ -39,6 +42,9 @@ export default new Vuex.Store({
     project,
     catalog,
     bidOrder,
-    harvest
+    harvest,
+    delivery,
+    chat,
+    inventory
   },
 })

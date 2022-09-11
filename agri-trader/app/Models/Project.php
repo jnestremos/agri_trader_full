@@ -36,7 +36,7 @@ class Project extends Model
     }
     public function bid_order()
     {
-        return $this->hasMany(BidOrder::class, 'bid_order_id');
+        return $this->hasMany(BidOrder::class);
     }
     public function refund()
     {
@@ -44,9 +44,12 @@ class Project extends Model
     }
     public function produce_yield()
     {
-        return $this->hasOne(ProduceYield::class);
+        return $this->hasMany(ProduceYield::class);
     }
     public function project_image(){
         return $this->hasMany(ProjectImage::class);
+    }
+    public function sale(){
+        return $this->hasMany(Sale::class);
     }
 }

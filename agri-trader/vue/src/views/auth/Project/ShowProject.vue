@@ -136,7 +136,7 @@
                     <td v-if="history.project_status_id == 3" :style="[history.project_status_id == getProject.project_status_id ? {color: 'blue'} : {color : 'black'}]">Cancelled</td>
                     <td v-if="history.project_status_id == 4" :style="[history.project_status_id == getProject.project_status_id ? {color: 'blue'} : {color : 'black'}]">Terminated Successfully</td>
                     <td v-if="history.project_status_id == 5" :style="[history.project_status_id == getProject.project_status_id ? {color: 'blue'} : {color : 'black'}]">Terminated w/ Complications</td>
-                    <td>{{ history.created_at }}</td>
+                    <td>{{ getDate(history) }}</td>
                   </tr>                  
                 </tbody>
               </table>               
@@ -293,6 +293,26 @@ export default {
           console.log(e.target.value)
           this.data.project_status_id = parseInt(e.target.value)
         },
+        getDate(history){
+          var dateTime = history.created_at.split(' ')
+          var date = dateTime[0]
+          var time = dateTime[1].split(':')
+          var hr = time[0]
+          var min = time[1]
+          var sec = time[2]
+          var meridiem = null
+          if(parseInt(hr) > 12){
+            hr = parseInt(hr) - 12
+            meridiem = 'PM'
+          }
+          else{           
+            meridiem = 'AM'
+            if(parseInt(hr) == 0){
+              hr = 1
+            }
+          }
+          return date + ' ' + hr + ':' + min + ':' + sec + ' ' + meridiem
+        },
         sendProject(){
           console.log(this.$route.params.id)
           var data = {
@@ -346,7 +366,7 @@ export default {
           project_devFruitStart: null,
           project_devFruitEnd: null,
           project_harvestableStart: null,
-          project_harvestableEnd: null
+          project_harvestableEnd: null,
         }        
       }
     }

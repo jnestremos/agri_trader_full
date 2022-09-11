@@ -2,7 +2,7 @@
   <div class="addProject">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Add Project</h3>        
-    </div>        
+    </div>      
     <form action="" @submit.prevent="sendProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">     
       <div class="row px-5 w-100 m-0" style="height:30%;">
         <div class="col-6 d-flex flex-column justify-content-evenly">
@@ -48,9 +48,9 @@
         <div class="col-9 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
             <div class="col-4 p-0 d-flex align-items-baseline">
-              <label for="produce_trader_id" class="form-label me-4">Select Produce:</label>
-              <select name="produce_trader_id" id="" class="form-select" style="width:250px" @change="setProduce($event)">
-                <option :value="produce.produce_trader_id" v-for="(produce, index) in getProducesForProject" :key="index">{{ produce.prod_name }}</option>
+              <label for="produce_id" class="form-label me-4">Select Produce:</label>
+              <select name="produce_id" id="" class="form-select" style="width:250px" @change="setProduce($event)">
+                <option :value="produce.id" v-for="(produce, index) in getTimeOfHarvest" :key="index">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
               </select>
             </div>
             <div class="col-4 p-0 d-flex align-items-baseline">
@@ -71,7 +71,7 @@
           </div>
           <div class="row w-100 m-0">
             <div class="col-4 d-flex align-items-baseline">
-               <input type="checkbox" name="stage1" id="" class="form-check-input" v-model="stage1">
+               <input type="checkbox" @click="data.startStage = 1" name="stage1" id="" class="form-check-input" v-model="stage1">
                <label for="stage1" class="form-label ms-2">Flowering:</label>
             </div>
             <div class="col-4 p-0">
@@ -83,7 +83,7 @@
           </div>
           <div class="row w-100 m-0">
             <div class="col-4 d-flex align-items-baseline">
-               <input type="checkbox" name="stage2" id="" class="form-check-input" v-model="stage2">
+               <input type="checkbox" @click="data.startStage = 2" name="stage2" id="" class="form-check-input" v-model="stage2">
                <label for="stage2" class="form-label ms-2">Fruit Budding:</label>
             </div>
             <div class="col-4 p-0">
@@ -95,7 +95,7 @@
           </div>
           <div class="row w-100 m-0">
             <div class="col-4 d-flex align-items-baseline">
-               <input type="checkbox" name="stage3" id="" class="form-check-input" v-model="stage3">
+               <input type="checkbox" @click="data.startStage = 3" name="stage3" id="" class="form-check-input" v-model="stage3">
                <label for="stage3" class="form-label ms-2">Developing Fruit:</label>
             </div>
             <div class="col-4 p-0">
@@ -107,7 +107,7 @@
           </div>
           <div class="row w-100 m-0">
             <div class="col-4 d-flex align-items-baseline">
-               <input type="checkbox" name="stage4" id="" class="form-check-input" v-model="stage4">
+               <input type="checkbox" @click="data.startStage = 4" name="stage4" id="" class="form-check-input" v-model="stage4">
                <label for="stage4" class="form-label ms-2">Harvestable:</label>
             </div>
             <div class="col-4 p-0">
@@ -135,7 +135,7 @@ export default {
         this.data.farm_id = this.getFarmsForProject[0].id
         this.fetchAllProducesForProject(this.data.farm_id)
         .then(() => {
-          this.data.produce_trader_id = this.getProducesForProject[0].produce_trader_id
+          this.data.produce_id = this.getProducesForProject[0].produce_id
           this.owner_name = this.getOwnersForProject[0].owner_firstName + ' ' + this.getOwnersForProject[0].owner_lastName
           this.maxDays = this.getTimeOfHarvest[0].prod_timeOfHarvest.split('-')[1].split(' ')[0]          
           this.readyApp()
@@ -320,11 +320,11 @@ export default {
               return parseInt(owner.id) === parseInt(owner_id)
             })
             this.owner_name = ownerObj[0].owner_firstName + " " + ownerObj[0].owner_lastName
-            this.data.produce_trader_id = this.getProducesForProject[0].produce_trader_id
+            this.data.produce_id = this.getProducesForProject[0].produce_id
           })     
         },
         setProduce(e){
-          this.data.produce_trader_id = e.target.value
+          this.data.produce_id = e.target.value
           this.data.contract_estimatedHarvest = '0.00'
           this.data.contract_estimatedPrice = '0.00'
           this.data.contractShare_type = 'Percentage'
@@ -333,6 +333,10 @@ export default {
           this.data.contract_traderShare = '0.00'
           this.data.project_completionDate = null
           this.data.project_commenceDate = null
+          var produceObj = this.getTimeOfHarvest.filter((p) => {
+            return parseInt(e.target.value) === parseInt(p.id)
+          })
+          this.maxDays = produceObj[0].prod_timeOfHarvest.split(' ')[0].split('-')[1]
           this.stage1 = false
           this.stage2 = false
           this.stage3 = false
@@ -446,7 +450,7 @@ export default {
       return{
         data: {
           farm_id: null,
-          produce_trader_id: null,
+          produce_id: null,
           project_status_id: 1,
           contract_estimatedHarvest: '0.00',
           contract_estimatedPrice: '0.00',
@@ -463,7 +467,8 @@ export default {
           project_devFruitStart: null,
           project_devFruitEnd: null,
           project_harvestableStart: null,
-          project_harvestableEnd: null
+          project_harvestableEnd: null,
+          startStage: null
         },
         owner_name: null,
         stage1: false,

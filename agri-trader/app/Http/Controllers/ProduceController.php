@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Produce;
 use App\Models\ProduceTrader;
 use App\Models\Trader;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -35,7 +36,9 @@ class ProduceController extends Controller
                     'prod_name' => $produce->prod_name . ' (Class ' . $classes[$i] . ')',            
                     'produce_numOfGrades' => $request->produce_numOfGrades,
                     'prod_details' => $request->prod_details,
-                    'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest
+                    'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]);
             }            
         }
@@ -45,7 +48,9 @@ class ProduceController extends Controller
                 'prod_name' => $produce->prod_name,            
                 'produce_numOfGrades' => $request->produce_numOfGrades,
                 'prod_details' => $request->prod_details,
-                'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest
+                'prod_timeOfHarvest' => Produce::find($request->produce_id)->prod_timeOfHarvest,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
         }
         return response([

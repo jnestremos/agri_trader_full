@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('delivery_receivedBy')->nullable();
             $table->string('delivery_contactNum')->nullable();
             $table->date('delivery_date');
+            $table->date('delivery_receivedDate')->nullable();
             $table->timestamps();
         });
     }

@@ -79,7 +79,8 @@ class AuthController extends Controller
                 'token' => $token,
                 'user' => $newUser,
                 'role' => $role,
-                'name' => $trader->trader_firstName . " " . $trader->trader_lastName
+                'name' => $trader->trader_firstName . " " . $trader->trader_lastName,
+                'id' => $newUser->trader()->first()->id
             ], 201);
         } else if (intval($request->role) == 2) {
             $user = $request->validate([
@@ -139,7 +140,8 @@ class AuthController extends Controller
                 'token' => $token,
                 'user' => $newUser,
                 'role' => $role,
-                'name' => $distributor->distributor_firstName . " " . $distributor->trader_lastName
+                'name' => $distributor->distributor_firstName . " " . $distributor->trader_lastName,
+                'id' => $newUser->distributor()->first()->id
             ], 201);
         }
     }
@@ -164,17 +166,26 @@ class AuthController extends Controller
         if($role == 'distributor'){
             $name = Distributor::where('user_id',$user->id)->first()->distributor_firstName . ' ' . 
             Distributor::where('user_id',$user->id)->first()->distributor_lastName;
+            return response([
+                'token' => $token,
+                'user' => $user,
+                'role' => $role,
+                'name' => $name,  
+                'id' => Distributor::where('user_id',$user->id)->first()->id
+            ], 201);
         }
         else{
             $name = Trader::where('user_id',$user->id)->first()->trader_firstName . ' ' . 
             Trader::where('user_id',$user->id)->first()->trader_lastName;
+            return response([
+                'token' => $token,
+                'user' => $user,
+                'role' => $role,
+                'name' => $name,  
+                'id' => Trader::where('user_id',$user->id)->first()->id          
+            ], 201);
         }
-        return response([
-            'token' => $token,
-            'user' => $user,
-            'role' => $role,
-            'name' => $name
-        ], 201);
+
     }
     public function logout(Request $request)
     {

@@ -14,10 +14,12 @@ class BidOrder extends Model
         'trader_id',
         'distributor_id',
         'project_id',
+        'produce_trader_id',
         'bid_order_status_id',
         'order_grade',
         'order_dateNeededTo',
         'order_dateNeededFrom',
+        'order_traderPrice',
         'order_initialPrice',
         'order_negotiatedPrice',
         'order_finalQty',
@@ -35,6 +37,10 @@ class BidOrder extends Model
     public function distributor()
     {
         return $this->belongsTo(Distributor::class, 'distributor_id');
+    }
+    public function produce_trader()
+    {
+        return $this->belongsTo(ProduceTrader::class, 'produce_trader_id');
     }
     public function project()
     {
@@ -62,7 +68,7 @@ class BidOrder extends Model
     }
     public function delivery()
     {
-        return $this->belongsTo(Delivery::class, 'delivery_id');
+        return $this->belongsTo(Delivery::class);
     }
     public function sale()
     {

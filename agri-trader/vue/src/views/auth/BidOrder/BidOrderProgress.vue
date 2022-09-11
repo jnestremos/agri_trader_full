@@ -1,7 +1,7 @@
 <template>
   <div class="bidOrderProgress p-3 h-100 w-100" style="position:relative;">
-    <h2>{{ getProgressData.prod_name }}</h2>
-    <p>{{ getProgressData.prod_class ? getProgressData.prod_class : '' }}</p>    
+    <h2>{{ getProgressData.prod_name + ' ' + getProgressData.prod_type }}</h2>
+    <!-- <p>{{ getProgressData.prod_class ? getProgressData.prod_class : '' }}</p>     -->
     <div class="d-flex justify-content-between align-items-baseline" style="width:50%;">
       <div class="d-flex align-items-baseline">
         <h5 class="me-2">Trader Name:</h5>
@@ -24,17 +24,17 @@
     </div>
     <div style="position:absolute; right:15%; top:5%">
       <h3 v-if="currentStage">Progress currently {{ currentStage }} Stage</h3>
-      <h3 v-else>Stage Not In Progress</h3>
-      <div class="d-flex justify-content-between align-items-baseline" v-if="currentStage">
+      <h3 v-else>Produce Hasn't Entered Flowering Stage Yet</h3>
+      <!-- <div class="d-flex justify-content-between align-items-baseline" v-if="currentStage">
         <p>Stage Start: {{ currentStage ? getStageStart() : '' }}</p>
-        <p class="ms-3">Current Date: {{ new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDate() }}</p>
+        <p class="ms-3">Current Date: {{ new Date().getFullYear() + '-' + parseInt(new Date().getMonth() + 1) + '-' + new Date().getDate() }}</p>
         <p class="ms-3">Stage End: {{ currentStage ? getStageEnd() : '' }}</p>
-      </div>
+      </div> -->
     </div>
-    <div style="width:100%; height:2vh;" v-if="getDates" class="mb-4">     
+    <div style="width:100%; height:2vh;" class="mb-4">     
       <div class="d-flex mx-auto" :style="{'width': '100%'}" style="height:100%; position:relative; z-index: 1; background:grey">        
         <div v-for="(stage, i) in stages" :key="i" :style="[i == 0 ? {'border-left':'2px solid black'} : {}, i == stages.length - 1 ? {'border-right':'2px solid black'} : {}, {'width': '100%'}]" style="height:100%;"></div>        
-        <div id="progress" v-b-tooltip.hover :title="((currentDate / dateTotal) * 100).toFixed(2) +'%'" style="position:absolute; z-index: 1; height:100%; left:0; height:100%; border-left: 2px solid black;" class="d-flex mx-auto" :style="{'width': (currentDate / dateTotal) * 100 +'%'}"></div>
+        <div id="progress" v-b-tooltip.hover :title="[((currentDate / dateTotal) * 100).toFixed(2) <= 0 ? '0.00' : ((currentDate / dateTotal) * 100).toFixed(2)] + '%'" style="position:absolute; z-index: 1; height:100%; left:0; border-left: 2px solid black;" class="d-flex mx-auto" :style="[currentDate != -1 ? {'width': (currentDate / dateTotal) * 100 +'%'} : {'width': '0%'}]"></div>
       </div>           
     </div>  
     <div class="w-100" style="height:50vh; background:grey">
@@ -48,7 +48,7 @@
         </b-carousel-slide>        
       </b-carousel>     
       <div class="d-flex justify-content-between align-items-baseline" style="width:15%;">
-        <h4>Asking Price: </h4>
+        <h4>Trader's Initial Price: </h4>
         <h5 v-if="getProgressData.contract_estimatedPrice">{{ getProgressData.contract_estimatedPrice.toFixed(2) }}</h5>
       </div>
       <div class="d-flex justify-content-between align-items-baseline" style="width:15%;">
@@ -95,48 +95,70 @@ export default {
         }
         var stages = []        
         var check = false                   
-        for(var i = 0; i < dateKeys.length; i = i + 2){            
-          if(this.getProgressData[dateKeys[i]]){
+        for(var i = 0; i < dateKeys.length; i++){            
+          if(this.getProgressData[dateKeys[i]] && i < dateKeys.length - 2){
             var year = this.getProgressData[dateKeys[i]].split('-')[0]
             var month = this.getProgressData[dateKeys[i]].split('-')[1]
             var day = this.getProgressData[dateKeys[i]].split('-')[2]
             var year1 = this.getProgressData[dateKeys[i+1]].split('-')[0]
             var month1 = this.getProgressData[dateKeys[i+1]].split('-')[1]
-            var day1 = this.getProgressData[dateKeys[i+1]].split('-')[2]  
+            var day1 = this.getProgressData[dateKeys[i+1]].split('-')[2]              
             var checkStartDate = isBefore(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
             var checkEndDate = isAfter(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
             var isStartEqual = isEqual(new Date(year, month-1, day, 8,0,0,0), new Date().setHours(8,0,0,0))
             var isEndEqual = isEqual(new Date(year1, month1-1, day1, 8,0,0,0), new Date().setHours(8,0,0,0))
-            if(dateKeys[i] == 'project_floweringStart'){
-              stages.push(dateKeys[i])                                      
-            }
-            else if(dateKeys[i] == 'project_fruitBuddingStart'){
-              stages.push(dateKeys[i])                                                    
-            }
-            else if(dateKeys[i] == 'project_devFruitStart'){
-              stages.push(dateKeys[i])                                                   
-            }
-            else if(dateKeys[i] == 'project_harvestableStart'){
-              stages.push(dateKeys[i])                                                    
-            }
-            if(!check){                          
-              if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){                  
-                this.currentStage =  dateKeys[i] 
-              if(dateKeys[i] == 'project_floweringStart'){
-                this.currentStage =  'Flowering'                                      
+            stages.push(dateKeys[i]) 
+            var string = null;                              
+            if((checkStartDate && checkEndDate) || (isStartEqual || isEndEqual)){                  
+              // this.currentStage =  dateKeys[i] 
+              if(isStartEqual){
+                string = dateKeys[i]
               }
-              else if(dateKeys[i] == 'project_fruitBuddingStart'){
-                this.currentStage =  'Fruit Budding'                                                   
+              else if(isEndEqual){
+                string = dateKeys[i+1]
               }
-              else if(dateKeys[i] == 'project_devFruitStart'){
-                this.currentStage =  'Developing Fruit'                                              
+              if(!string){
+                string = dateKeys[i]
               }
-              else if(dateKeys[i] == 'project_harvestableStart'){
-                this.currentStage =  'Harvestable'                                                  
+              if(string == 'project_floweringStart' || string == 'project_floweringEnd'){
+                this.currentStage =  'Flowering'    
+                break                                  
+              }
+              else if(string == 'project_fruitBuddingStart' || string == 'project_fruitBuddingEnd'){
+                this.currentStage =  'Fruit Budding'   
+                break                                                
+              }
+              else if(string == 'project_devFruitStart' || string == 'project_devFruitEnd'){
+                this.currentStage =  'Developing Fruit'    
+                break                                          
+              }
+              else if(string == 'project_harvestableStart' || string == 'project_harvestableEnd'){
+                this.currentStage =  'Harvestable'     
+                break                                             
               }                    
                 check = true
-              }                                                                
-            }                        
+            }
+            else{
+              if(!check){
+                this.currentStage = null
+              } 
+              // if(dateKeys[i-2] == 'project_floweringStart'){
+              //   this.currentStage =  'Flowering'   
+              //   break        
+              // }
+              // else if(dateKeys[i-2] == 'project_fruitBuddingStart'){
+              //   this.currentStage =  'Fruit Budding'   
+              //   break        
+              // }
+              // else if(dateKeys[i-2] == 'project_devFruitStart'){
+              //   this.currentStage =  'Developing Fruit'  
+              //   break         
+              // }
+              // else if(dateKeys[i-2] == 'project_harvestableStart'){
+              //   this.currentStage =  'Harvestable'     
+              //   break      
+              // }
+            }                                                                                                    
           }          
         }
         this.stages = stages                                                  

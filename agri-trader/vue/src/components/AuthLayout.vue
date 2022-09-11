@@ -26,6 +26,7 @@
           <li><router-link to="/produces">Produces</router-link></li>
           <li><router-link to="/farms">Farms and Owners</router-link></li>
           <li><router-link to="/bid/orders">Bid Orders</router-link></li>
+          <li><router-link :to="`/messages/${getID}/trader`">Chat</router-link></li>
           <li>Delivery</li>
           <li>Sales Income Report</li>
           <li>Profit Sharing Report</li>
@@ -37,14 +38,17 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {    
     name: 'AuthLayout',  
     data(){
       return{
         show:false
       }      
-    },    
+    },  
+    computed: {
+      ...mapGetters(['getID'])
+    }, 
     methods:{
       ...mapActions(['logout']),
       showModules(){     

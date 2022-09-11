@@ -7,7 +7,9 @@ use App\Models\FarmAddress;
 use App\Models\FarmOwner;
 use App\Models\FarmPartner;
 use App\Models\Produce;
+use App\Models\ProduceTrader;
 use App\Models\Trader;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -83,34 +85,43 @@ class FarmController extends Controller
             'farm_id' => 'required|exists:farms,id',    
         ]);
 
-        $result1 = DB::table('produce_trader')->where('id', '=', $request->id)->first();
+        // $result1 = DB::table('produce_trader')->where('id', '=', $request->id)->first();
         $owner = Farm::find($request->farm_id)->farm_owner_id;
         $trader = Trader::where('user_id', auth()->id())->first();
         $result2 = DB::table('owner_trader')->where([['farm_owner_id', '=', $owner], ['trader_id', '=', $trader->id]])->first();
 
-        if (!$query || !$result1 || !$result2) {
+        // if (!$query || !$result1 || !$result2) {
+        //     return response([
+        //         'error' => 'Invalid!'
+        //     ], 400);
+        // }
+        if (!$query || !$result2) {
             return response([
                 'error' => 'Invalid!'
             ], 400);
         }
 
         $farm = Farm::find($request->farm_id);  
-        $produce = DB::table('produce_trader')->where('id', '=', $request->id)->first();      
-        DB::table('farm_produce')->insert([
-            'farm_id' => $farm->id,
-            'farm_name' => $farm->farm_name,
-            'produce_trader_id' => $request->id,
-            'prod_name' => $produce->prod_name
-        ]);
+        $produces = ProduceTrader::where([['produce_id', $request->id], ['trader_id', Trader::where('user_id', auth()->id())->first()->id]])->get();     
+        foreach($produces as $produce){
+            DB::table('farm_produce')->insert([
+                'farm_id' => $farm->id,
+                'farm_name' => $farm->farm_name,
+                'produce_trader_id' => $produce->id,
+                'produce_id' => $produce->produce_id,
+                'prod_name' => $produce->prod_name,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            $prodNumOfFarms = $produce->prod_numOfFarms;
+            $produce->prod_numOfFarms = $prodNumOfFarms + 1;
+            $produce->save();
+            // DB::table('produce_trader')->where('id', '=', $request->id)->update([
+            //     'prod_numOfFarms' => $prodNumOfFarms + 1
+            // ]);
+        } 
+
         // $farm->produces()->attach($produce);
-
-        $prodNumOfFarms = DB::table('produce_trader')->where('id', '=', $request->id)->first()->prod_numOfFarms;
-
-        DB::table('produce_trader')->where('id', '=', $request->id)->update([
-            'prod_numOfFarms' => $prodNumOfFarms + 1
-        ]);
-        
-
         return response([
             'produces' => DB::table('farm_produce')->where('farm_id', $request->farm_id)->get()
         ], 200);

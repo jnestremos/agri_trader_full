@@ -7,7 +7,9 @@ use App\Models\FarmOwnerAddress;
 use App\Models\FarmOwnerContactNumber;
 use App\Models\Trader;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
 
 class FarmOwnerController extends Controller
@@ -51,6 +53,11 @@ class FarmOwnerController extends Controller
         $trader = Trader::where('user_id', auth()->id())->first();       
      
         $trader->farm_owners()->attach($farmOwner);
+
+        DB::table('owner_trader')->where([['trader_id', $trader->id], ['farm_owner_id', $farmOwner->id]])->update([
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
 
         FarmOwnerAddress::create([
             'farm_owner_id' => $farmOwner->id,
