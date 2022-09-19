@@ -84,7 +84,7 @@
         <div class="d-flex align-items-baseline">
           <h5 class="me-2">Distributor's Initial Bid Price:</h5>
           <input v-if="$route.name == 'BidOrderProject'" type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getProgressData.contract_estimatedPrice)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
-          <input v-else-if="getOnHandData.farm_produce && $route.name == 'BidOrderOnHand'" type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getMaxPrice).toFixed(2)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
+          <input v-else-if="getOnHandData.farm_produce && $route.name == 'BidOrderOnHand'" disabled type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getMaxPrice).toFixed(2)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
         </div>
         <div class="d-flex align-items-baseline">
           <h5 class="form-h5 me-2">Expected Dates Needed: </h5>
@@ -217,7 +217,10 @@ export default {
           this.data.project_id = prodYieldObj[0].project_id
           this.data.trader_id = this.getOnHandData.trader.id
           this.data.produce_trader_id = this.$route.params.produce_trader_id
-          this.data.order_initialPrice = prodYieldObj[0].produce_yield_price   
+          var farmProdObj = this.getOnHandData.farm_produce.filter((p) => {
+            return parseInt(this.$route.params.produce_trader_id) === parseInt(p.produce_trader_id) && parseInt(this.$route.params.farm_id) === parseInt(p.farm_id)
+          })
+          this.data.order_initialPrice = farmProdObj[0].on_hand_latestPrice  
           this.data.order_traderPrice = this.data.order_initialPrice        
           this.data.on_hand_bid_total = (this.data.order_initialPrice * this.data.on_hand_bid_qty).toFixed(2) 
           if(prodYieldObj[0].produce_yield_class != 'N/A'){
@@ -346,7 +349,11 @@ export default {
             else{
               this.data.order_grade = null
             }
-            this.data.order_initialPrice = prodYieldObj[0].produce_yield_price
+            var farmProdObj = this.getOnHandData.farm_produce.filter((p) => {
+              return parseInt(this.data.produce_trader_id) === parseInt(p.produce_trader_id) 
+            })
+            console.log(farmProdObj)
+            this.data.order_initialPrice = farmProdObj[0].on_hand_latestPrice
             this.data.on_hand_bid_total = (this.data.order_initialPrice * this.data.on_hand_bid_qty).toFixed(2)
             this.data.order_traderPrice = this.data.order_initialPrice
           }
@@ -390,7 +397,7 @@ export default {
           if(prodTraderObj.length > 0){
             var arr = prodTraderObj[0].prod_name.split(' ')            
             if(arr.indexOf('(Class')){
-              arr.splice(arr.indexOf('(Class') - 1, 0, this.getProgressData.prod_type)             
+              arr.splice(arr.indexOf('(Class'), 0, this.getProgressData.prod_type)             
               return arr.join(' ')
             }
             else{

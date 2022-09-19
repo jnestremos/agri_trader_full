@@ -401,18 +401,29 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $bidOrder = BidOrder::find($id);
                 $produce = $bidOrder->produce_trader()->first()->produce()->first();
                 $distributor = $bidOrder->distributor()->first();
+                $delivery = Delivery::where('bid_order_id', $id)->first();
                 $contract = $bidOrder->project()->first()->contract()->first();
                 $project_bid = null;
                 $on_hand_bid = null;
-                $bid_order_acc = $bidOrder->bid_order_account()->latest()->first();
+                // $bid_order_acc = $bidOrder->bid_order_account()->latest()->first();
+                $bid_order_acc = $bidOrder->bid_order_account()->latest()->get();
                 $produce_yield = null;
+                $refund = null;
+                $dist_address = $distributor->distributor_address()->first();
                 if($bidOrder->project_bid()->first()){
                     $project_bid = $bidOrder->project_bid()->first();
                 }
                 else if($bidOrder->on_hand_bid()->first()){
                     $on_hand_bid = $bidOrder->on_hand_bid()->first();
-                    $produce_yield = $bidOrder->project()->first()->produce_yield()->first();
+                    // $produce_yield = $bidOrder->project()->first()->produce_yield()->first();
                 }
+                if(ProduceYield::where([['project_id', $bidOrder->project_id], ['produce_trader_id', $bidOrder->produce_trader_id]])->first()){
+                    $produce_yield = ProduceYield::where([['project_id', $bidOrder->project_id], ['produce_trader_id', $bidOrder->produce_trader_id]])->first();
+                    // $produce_yield = $bidOrder->project()->first()->produce_yield()->first();
+                }
+                if($bidOrder->refund()->first()){
+                    $refund = $bidOrder->refund()->first();
+                }   
                 return response([
                     'produce' => $produce,
                     'project' => $bidOrder->project()->first(),
@@ -423,7 +434,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'on_hand_bid' => $on_hand_bid,
                     'bid_order_acc' => $bid_order_acc,
                     'distributor_contactNum' => $distributor->distributor_contactNum()->get(),
-                    'produce_yield' => $produce_yield
+                    'produce_yield' => $produce_yield,
+                    'refund' => $refund,
+                    'dist_address' => $dist_address,
+                    'delivery' => $delivery
                 ], 200);
             });
         });
@@ -515,7 +529,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $dist_contactNum = $distributor->distributor_contactNum()->first();            
             $contract = $bid_order->project()->first()->contract()->first();
             $produce_trader = ProduceTrader::find($produce_id);
-            $yield = $bid_order->project()->first()->produce_yield()->first();
+            $yield = $bid_order->project()->first()->produce_yield()->first();            
             $farm = $contract->farm()->first();
             $dist_address = $distributor->distributor_address()->first();
             $produce = $produce_trader->produce()->first();
@@ -613,9 +627,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $produce_inventories = [];
             $traders = [];
             $produce_trader = [];
-            foreach($contracts as $contract){
+            foreach($contracts as $contract){               
                 // $project = $contract->project()->where('project_floweringStart', '<=', Carbon::now())->first();
-                $project = $contract->project()->where('project_harvestableEnd', '>=', Carbon::now()->subMonths(1))->first();                
+                $project = $contract->project()->where([['project_harvestableEnd', '>=', Carbon::now()->addMonths(1)], ['project_commenceDate', '<=', Carbon::now()]])->first();                
                 // $project = $contract->project()->first();   
                 $trader = $contract->trader()->first();             
                 if($project){                  
@@ -627,27 +641,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                             array_push($produce_inventories, $yield->produce_inventory()->first());
                         }                        
                     }                    
-                    foreach($farm_produces as $p){
-                        $check = true;
-                        foreach($produce_trader as $pp){
-                            if($p->produce_trader_id == $pp->id){
-                                $check = false;
-                                break;
-                            }
-                            else{
-                                $check = true;
-                            }
-                        }
-                        if($check){
-                            array_push($produce_trader, ProduceTrader::find($p->produce_trader_id));
-                        }                        
-                    }
                     if($project->project_status_id == '2' && !$project->produce_yield()->first()){
                         array_push($projects, $project);
                     }
+                }
+                foreach($farm_produces as $p){
                     $check = true;
-                    foreach($traders as $t){
-                        if($t->id == $trader->id){
+                    foreach($produce_trader as $pp){
+                        if($p->produce_trader_id == $pp->id){
                             $check = false;
                             break;
                         }
@@ -656,8 +657,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                         }
                     }
                     if($check){
-                        array_push($traders, $trader);
+                        array_push($produce_trader, ProduceTrader::find($p->produce_trader_id));
+                    }                        
+                }
+                $check = true;
+                foreach($traders as $t){
+                    if($t->id == $trader->id){
+                        $check = false;
+                        break;
                     }
+                    else{
+                        $check = true;
+                    }
+                }
+                if($check){
+                    array_push($traders, $trader);
                 }
                 //$produce = $contract->produce()->first();
                 //array_push($produces, $produce);
@@ -717,16 +731,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $trader_contactNums = [];
             $bid_order_accs = [];
             $deliveries = [];
-            foreach($orders as $order){
+            $refunds = [];
+            foreach($orders as $order){        
                 $project_bid = $order->project_bid()->first();
                 $on_hand_bid = $order->on_hand_bid()->first();
                 $project = $order->project()->first();
                 $contract = $project->contract()->first();
                 $trader = $order->trader()->first();
-
+                $refund = $order->refund()->first();
                 // $produce = $contract->produce_trader()->first();
                 $contactNums = $trader->trader_contactNum()->get();
                 $bid_order_acc = $order->bid_order_account()->latest()->first();
+            
                 $delivery = Delivery::where('bid_order_id', $order->id)->first();
                 // array_push($produces, $produce);
                 if($project_bid){
@@ -735,15 +751,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 if($on_hand_bid){                
                     array_push($on_hand_bids, $on_hand_bid);
                 }                                
+                if($refund){                
+                    array_push($refunds, $refund);
+                }
+                if($bid_order_acc){
+                    array_push($bid_order_accs, $bid_order_acc);
+                }                                
                 array_push($projects, $project);
                 array_push($contracts, $contract);
                 array_push($traders, $trader);
                 array_push($trader_contactNums, $contactNums);
-                array_push($bid_order_accs, $bid_order_acc);
+                // array_push($bid_order_accs, $bid_order_acc);
                 if($delivery){
                     array_push($deliveries, $delivery);
                 }                
             }
+      
             return response([
                 'orders' => BidOrder::where('distributor_id', $distributor->id)->get(),
                 'produce_trader' => $produce_trader,
@@ -757,7 +780,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produces' => $produces,
                 'deliveries' => $deliveries,
                 'farm_produce' => $farm_produce,
-                'produce_yields' => $produce_yields
+                'produce_yields' => $produce_yields,
+                'refunds' => $refunds
             ], 200);
         });
 

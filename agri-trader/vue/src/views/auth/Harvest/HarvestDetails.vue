@@ -9,6 +9,7 @@
         <h5 v-if="getHarvestDetails.produce">Produce: {{ getHarvestDetails.produce.prod_name + ' ' + getHarvestDetails.produce.prod_type }}</h5>
         <h5 v-if="getHarvestDetails.produce_trader && getHarvestDetails.produce_trader[0].produce_numOfGrades > 1">Grades: A, B, C</h5>
         <h5 v-else>Grades: None</h5>
+        <h5>Expected Date of Harvest: {{ data.project_harvestableEnd }}</h5>
         <div class="d-flex justify-content-between align-items-baseline" style="width:65%">
           <h5>Date Harvested:</h5>
           <input type="date" v-model="data.produce_yield_dateHarvestFrom" onkeydown="return false" class="form-control me-3" style="width:150px;" :disabled="confirm">
@@ -448,12 +449,19 @@ export default {
     mounted(){      
       this.$root.$on('bv::modal::hide', (bvEvent) => {      
         if(bvEvent.trigger == 'ok'){
-          this.$router.push({ path: `/delivery/${this.id}`, 
+          // this.$router.push({ path: `/delivery/${this.id}`, 
+          // query: {
+          //   finalPrice: this.data.order_finalPrice,
+          //   finalQty: this.data.order_finalQty,
+          //   produce: this.data.produce_trader_id
+          // }})      
+          ///bid/orderss/:id
+          this.$router.push({ path: `/bid/orderss/${this.id}`, 
           query: {
             finalPrice: this.data.order_finalPrice,
             finalQty: this.data.order_finalQty,
             produce: this.data.produce_trader_id
-          }})                            
+          }})                                                  
         }
         else if(bvEvent.trigger == 'headerclose'){
           this.newProduce = false          
@@ -461,6 +469,8 @@ export default {
           this.data.order_finalPrice = 0
           this.data.order_finalQty = 0
           this.data.bid_order_acc_amount = 0
+          this.order_total = 0
+          this.data.produce_trader_id = null
         }
         // this.id = null                
       })              

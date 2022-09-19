@@ -56,25 +56,6 @@ class DeliveryController extends Controller
                         'delivery_date' => $request->delivery_date
                     ]);
 
-                    Message::create([
-                        'trader_id' => User::find(auth()->id())->trader()->first()->id,
-                        'distributor_id' => $order->distributor_id,
-                        'message_sentBy' => 'trader',
-                        'message_body' => "Your order is now ready for delivery! Please confirm your order upon arrival of your delivery for the final payment."
-                    ]);
-
-
-                    return response([
-                        'message' => 'Ready for Delivery!'
-                    ], 200);
-                } else if ($status == 6 && $acc) {
-                    $order = BidOrder::find($id);
-                    // $order->bid_order_status_id = 6;
-                    // $order->save();
-
-                    Delivery::where('bid_order_id', $id)->update([
-                        'delivery_status' => 'Received',                        
-                    ]);
                     if($order->order_grade){                    
                         $yield = ProduceYield::where([
                             ['project_id', '=', $order->project_id],
@@ -110,6 +91,41 @@ class DeliveryController extends Controller
                         'updated_at' => Carbon::now()
                     ]);
 
+                    Message::create([
+                        'trader_id' => User::find(auth()->id())->trader()->first()->id,
+                        'distributor_id' => $order->distributor_id,
+                        'message_sentBy' => 'trader',
+                        'message_body' => "Your order is now ready for delivery! Please confirm your order upon arrival of your delivery for the final payment.\n Your remaining balance is Php. ".number_format((float)$order->order_finalTotal - $order->order_dpAmount, 2, '.', '').""
+                    ]);
+
+
+                    return response([
+                        'message' => 'Ready for Delivery!'
+                    ], 200);
+                } else if ($status == 6 && $acc) {
+                    $order = BidOrder::find($id);
+                    // $order->bid_order_status_id = 6;
+                    // $order->save();
+
+                    Delivery::where('bid_order_id', $id)->update([
+                        'delivery_status' => 'Received',
+                        'delivery_receivedDate' => $order->bid_order_account()->latest()->first()->bid_order_acc_datePaid                        
+                    ]);
+                    
+                    if($order->order_grade){                    
+                        $yield = ProduceYield::where([
+                            ['project_id', '=', $order->project_id],
+                            ['produce_trader_id', $order->produce_trader_id],
+                            ['produce_yield_class', '=', $order->order_grade]
+                        ])->first();
+                    }
+                    else{
+                        $yield = ProduceYield::where([
+                            ['project_id', '=', $order->project_id],
+                            ['produce_trader_id', $order->produce_trader_id],
+                            ['produce_yield_class', '=', 'N/A']
+                        ])->first();
+                    }                
                     
 
                     $inventory = ProduceInventory::where('produce_yield_id', $yield->id)->first();
@@ -122,6 +138,13 @@ class DeliveryController extends Controller
                         'sale_stockLeft' => $inventory->produce_inventory_qtyOnHand,
                         'sale_price' => $order->order_finalPrice,
                         'sale_total' => $order->order_finalTotal
+                    ]);
+
+                    Message::create([
+                        'trader_id' => User::find(auth()->id())->trader()->first()->id,
+                        'distributor_id' => $order->distributor_id,
+                        'message_sentBy' => 'trader',
+                        'message_body' => "Final Payment for Order # ".$order->id." has now been confirmed! Thank you!"
                     ]);
 
                     // $order->delete();
@@ -171,10 +194,11 @@ class DeliveryController extends Controller
                             'error' => 'Invalid Date!'
                         ], 400);                            
                     }
-                    BidOrder::find($id)->delivery()->update([
+                    Delivery::where('bid_order_id', BidOrder::find($id)->id)->update([
                         'delivery_receivedBy' => $request->delivery_receivedBy,
-                        'delivery_contactNum' => $request->delivery_contactNum
+                        'delivery_contactNum' => $request->delivery_contactNum,                        
                     ]);
+
                     BidOrderAccount::create([
                         'bid_order_id' => $id,
                         'bid_order_acc_type' => $request->bid_order_acc_type,

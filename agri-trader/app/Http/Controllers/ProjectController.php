@@ -32,7 +32,7 @@ class ProjectController extends Controller
             'contract_traderShare' => 'required|gt:0.00',
             'contractShare_type' => 'required',
             'contractShare_amount' => 'required|gt:0.00',            
-            'project_commenceDate' => 'required|date|after:now',
+            'project_commenceDate' => 'required|date',
             'project_floweringStart' => 'date|nullable',
             'project_floweringEnd' => 'date|nullable',
             'project_fruitBuddingStart' => 'date|nullable',
@@ -59,37 +59,58 @@ class ProjectController extends Controller
 
         // return response([
         //     'result' => $request->all()
-        // ], 200);        
-        if($request->startStage == 1){            
-            $commenceDate = Carbon::create($request->project_commenceDate);
-            $startDate = Carbon::create($request->project_floweringStart);
+        // ], 200);
+        
+        
+        $arr = explode('-', $request->project_commenceDate);
+        $commenceDate = Carbon::create($arr[0], $arr[1], (int)$arr[2] + 1, 0, 0, 0);
+        // $commenceDate->hour(0);
+        // $commenceDate->min(0);
+        // $commenceDate->second(0);
+        $now = Carbon::now();
+        $now->hour(0);
+        $now->min(0);
+        $now->second(0);
+
+
+        // return response([
+        //     'result' => $commenceDate
+        // ], 400);
+
+        if($commenceDate->lessThan($now)){
+            return response([
+                'error' => 'Invalid Project Commence Date!'
+            ], 400);
+        }
+
+
+        
+        if($request->startStage == 1){                        
+            $startDate = Carbon::create($request->project_floweringStart)->addDay();           
             if($commenceDate->greaterThan($startDate)){
                 return response([
                     'error' => 'Invalid Date Input Under Flowering!'
                 ], 400);
             }
         }
-        else if($request->startStage == 2){
-            $commenceDate = Carbon::create($request->project_commenceDate);
-            $startDate = Carbon::create($request->project_fruitBuddingStart);
+        else if($request->startStage == 2){            
+            $startDate = Carbon::create($request->project_fruitBuddingStart)->addDay();
             if($commenceDate->greaterThan($startDate)){
                 return response([
                     'error' => 'Invalid Date Input Under Fruit Budding!'
                 ], 400);
             }
         }
-        else if($request->startStage == 3){
-            $commenceDate = Carbon::create($request->project_commenceDate);
-            $startDate = Carbon::create($request->project_devFruitStart);
+        else if($request->startStage == 3){            
+            $startDate = Carbon::create($request->project_devFruitStart)->addDay();
             if($commenceDate->greaterThan($startDate)){
                 return response([
                     'error' => 'Invalid Date Input Under Developing Fruit!'
                 ], 400);
             }
         }
-        else if($request->startStage == 4){
-            $commenceDate = Carbon::create($request->project_commenceDate);
-            $startDate = Carbon::create($request->project_harvestableStart);
+        else if($request->startStage == 4){            
+            $startDate = Carbon::create($request->project_harvestableStart)->addDay();
             if($commenceDate->greaterThan($startDate)){
                 return response([
                     'error' => 'Invalid Date Input Under Harvestable!'

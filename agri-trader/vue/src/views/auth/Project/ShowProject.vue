@@ -41,7 +41,7 @@
         <div class="col-9 p-0 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
             <div class="col-4 p-0 d-flex align-items-baseline">
-              <p v-if="getProduce">Produce: {{ getProduce.prod_name }}</p>
+              <p v-if="getProduce">Produce: {{ getProduce.prod_name + ' ' + getProduce.prod_type }}</p>
             </div>
             <div class="col-4 p-0 d-flex align-items-baseline">
               <p v-if="getProject">Project Start: {{ getProject.project_commenceDate }}</p>
@@ -301,8 +301,10 @@ export default {
           var min = time[1]
           var sec = time[2]
           var meridiem = null
-          if(parseInt(hr) > 12){
-            hr = parseInt(hr) - 12
+          if(parseInt(hr) >= 12){
+            if(parseInt(hr) != 12){
+              hr = parseInt(hr) - 12
+            }    
             meridiem = 'PM'
           }
           else{           

@@ -126,13 +126,18 @@
                 <p>Joshua Estremos</p>
             </div> -->
         </div> 
-        <input v-if="(bid_order_status_id == 1 ||  bid_order_status_id == 3 || bid_order_status_id == 4 || bid_order_status_id == 6)" type="submit" class="btn btn-success" :value="bid_order_status_id == 1 ? 'Post' : bid_order_status_id == 3 || bid_order_status_id == 6 ? 'Confirm' : 'Refund'" style="position:absolute; bottom:3%; right:10%;">               
-        <button v-if="getOrder.on_hand_bid && bid_order_status_id == 4" class="btn btn-success" style="position:absolute; bottom:3%; right:10%;" @click="$router.push({ path: `/delivery/${getOrder.bidOrder.id}`, 
-          query: {
-            finalPrice: data.order_finalPrice,
-            finalQty: data.order_finalQty,
-            produce: data.produce_trader_id
-          }})">Deliver</button>
+        <input v-if="(bid_order_status_id == 1 ||  bid_order_status_id == 3 || bid_order_status_id == 6)" type="submit" class="btn btn-success" :value="bid_order_status_id == 1 ? 'Post' : bid_order_status_id == 3 || bid_order_status_id == 6 ? 'Confirm' : ''" style="position:absolute; bottom:3%; right:10%;">               
+        <div style="position:absolute; bottom:3%; right:10%;">
+            <router-link v-if="getOrder.refund" :to="`/bid/orders/${$route.params.id}/refund`"><button :class="getOrder.on_hand_bid ? 'btn btn-success me-2' : 'btn btn-success'">See Refund Form</button></router-link>
+            <button v-if="getOrder.on_hand_bid && bid_order_status_id == 4" class="btn btn-success" @click="$router.push({ path: `/delivery/${getOrder.bidOrder.id}`, 
+            query: {
+                finalPrice: data.order_finalPrice,
+                finalQty: data.order_finalQty,
+                produce: data.produce_trader_id
+            }})">Deliver
+            </button> 
+        </div>
+
     </form>
         
   </div>

@@ -80,7 +80,7 @@ class ProjectBidController extends Controller
             'trader_id' => $request->trader_id,
             'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
             'message_sentBy' => 'distributor',
-            'message_body' => "Hello there!\nI am interested in bidding your ".ProduceTrader::find($request->produce_trader_id)->prod_name." for".$request->project_bid_maxQty." kg/kgs\nfrom ".Project::find($request->project_id)->contract()->first()->farm_name.". Please consider this offer and we're hoping for bidding negotiations here. Thank you!"
+            'message_body' => "Hello there!\nI am interested in bidding your ".ProduceTrader::find($request->produce_trader_id)->prod_name." for ".$request->project_bid_maxQty." kg/kgs\nfrom ".Project::find($request->project_id)->contract()->first()->farm_name.". Please consider this offer and we're hoping for bidding negotiations here. Thank you!"
         ]);
 
         return response([
@@ -120,7 +120,13 @@ class ProjectBidController extends Controller
                     $bidOrder->bid_order_status_id = 2;
                     $bidOrder->order_dpAmount = $request->order_dpAmount;
                     $bidOrder->save();
-                }
+                }  
+                Message::create([
+                    'trader_id' => User::find(auth()->id())->trader()->first()->id,
+                    'distributor_id' => $bidOrder->distributor_id,
+                    'message_sentBy' => 'trader',
+                    'message_body' => "Order # ".$bidOrder->id." has now been approved! Please confirm the negotiated price and quantity in your order history page."
+                ]);              
 
                 return response([
                     'message' => 'Order Approved!'
@@ -134,6 +140,13 @@ class ProjectBidController extends Controller
                     $bidOrder->bid_order_status_id = 3;
                     $bidOrder->save();
                 }
+
+                Message::create([
+                    'trader_id' => $bidOrder->trader_id,
+                    'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
+                    'message_sentBy' => 'distributor',
+                    'message_body' => "Order # ".$bidOrder->id." has now been confirmed! Please wait for the payment details to sent."
+                ]); 
 
                 return response([
                     'message' => 'Order Confirmed!'
@@ -230,6 +243,13 @@ class ProjectBidController extends Controller
                         'error' => 'Error!'
                     ], 400);
                 }
+
+                Message::create([
+                    'trader_id' => User::find(auth()->id())->trader()->first()->id,
+                    'distributor_id' => $order->distributor_id,
+                    'message_sentBy' => 'trader',
+                    'message_body' => "First Payment for Bid Order # ".$id." has been already confirmed! Please wait for actual harvest to take place and further instructions will be given."                        
+                ]);
 
                 return response([
                     'message' => 'First Payment Confirmed!'

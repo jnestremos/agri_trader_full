@@ -130,7 +130,7 @@
                       <p>{{ getInitTotal(order) }}</p> 
                     </div>                  
                   </div>
-                  <div class="d-flex align-items-baseline w-50">
+                  <div v-if="order.bid_order_status_id != 1" class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
                       <h5 class="me-3">Total Negotiated Price:</h5>
                       <p>{{ getTotal(order) }}</p> 
@@ -166,11 +166,11 @@
                   </div>
                 </div>                                 
                 <div class="d-flex align-items-center justify-content-end" style="position:absolute; bottom:0; right:5%;" v-if="order.bid_order_status_id != 1 && order.bid_order_status_id != 6">     
-                  <button class="btn btn-success me-3" v-if="(isProjectOrOnHand(order) == 'Project' && order.bid_order_status_id == 4) || (isProjectOrOnHand(order) == 'OnHand' && order.bid_order_status_id == 5)">Refund</button>
-                  <button class="btn btn-success" v-if="getDpDueDate(order) == order.order_dpDueDate || order.bid_order_status_id == 5" @click="setStatus(order)">{{ order.bid_order_status_id == 2 ? 'Confirm' : order.bid_order_status_id == 4 ? 'Refund Advanced Order' : 'Pay Amount' }}</button>
-                </div> 
+                  <button class="btn btn-success me-3" v-if="!hasRefundRequest(order) && ((isProjectOrOnHand(order) == 'Project' && order.bid_order_status_id == 4 && payment_data.refund_numOfDays >= 14) || (isProjectOrOnHand(order) == 'Project' && isDateAfterHarvest(order))) || order.bid_order_status_id == 5" @click="refundOrder(order)">Refund</button>
+                  <button class="btn btn-success" v-if="getDpDueDate(order) == order.order_dpDueDate || order.bid_order_status_id == 5 || order.bid_order_status_id == 8" @click="setStatus(order)">{{ order.bid_order_status_id == 2 || order.bid_order_status_id == 7 || order.bid_order_status_id == 8 ? 'Confirm' : order.bid_order_status_id == 4 ? 'Refund Advanced Order' : 'Pay Amount' }}</button>                  
+                </div>                 
                 <div class="d-flex align-items-baseline justify-content-between mt-3" style="width:100%;" v-if="order.bid_order_status_id > 2">              
-                  <div :class="order.bid_order_status_id == 4 || (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || order.bid_order_status_id == 6 ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline justify-content-between w-50'">
+                  <div :class="order.bid_order_status_id == 4 || (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || order.bid_order_status_id == 6 || order.bid_order_status_id == 7 || order.bid_order_status_id == 8 ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline justify-content-between w-50'">
                     <h5 class="me-3">Mode of Payment:</h5>
                     <select v-if="((order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5)" name="bid_order_acc_paymentMethod" id="" class="form-select ms-2" style="width:150px" @change="setPaymentMethod($event)">
                       <option value="Cash" selected>Cash</option>
@@ -178,12 +178,19 @@
                     </select>
                     <p v-else>{{ getPaymentMethod(order) }}</p> 
                   </div> 
-                  <div class="d-flex align-items-baseline w-50 ps-5">
-                    <div class="d-flex align-items-baseline">
+                  <div :class="(order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5 ? 'd-flex align-items-baseline w-50 ps-5' : 'd-flex align-items-baseline w-50'">
+                    <div v-if="order.bid_order_status_id != 8" class="d-flex align-items-baseline">
                       <h5 class="me-3">Amount:</h5>
+                      <!-- <p>{{ order.order_finalPrice ? 
+                      getRemainingBalance(order).toFixed(2) 
+                      : order.order_dpAmount.toFixed(2) + ` (${getPercentage(order)}%)` }}</p>  -->
                       <p>{{ order.order_finalPrice ? 
                       getRemainingBalance(order).toFixed(2) 
-                      : order.order_dpAmount.toFixed(2) + ` (${getPercentage(order)}%)` }}</p> 
+                      : order.order_dpAmount.toFixed(2) }}</p> 
+                    </div>
+                    <div v-else class="d-flex align-items-baseline">
+                      <h5 class="me-3">Amount to Refunded:</h5>                      
+                      <p>{{ getRefundAmount(order) }}</p> 
                     </div>                  
                   </div>
                 </div>
@@ -201,11 +208,25 @@
                       <p>{{ getAccName(order) }}</p>                  
                   </div>                  
                 </div>                                
-                <div v-else-if="((order.bid_order_status_id == 4 || order.bid_order_status_id == 6) && (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || (getPaymentMethod(order) == 'Cash' && order.bid_order_status_id != 5))">                  
+                <div class="d-flex align-items-baseline justify-content-between w-100" v-else-if="((order.bid_order_status_id == 4 || order.bid_order_status_id == 6) && (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || (getPaymentMethod(order) == 'Cash' && order.bid_order_status_id != 5))">                  
                   <div class="d-flex align-items-baseline w-50">
                       <h5 class="me-3">Payer Name:</h5>
                       <p>{{ getAccName(order) }}</p>                  
                   </div>                  
+                  <div v-if="hasRefundRequest(order)" class="d-flex align-items-baseline w-50">
+                      <h5 class="me-3">Date of Refund Request:</h5>
+                      <p>{{ getRefundDatePlaced(order) }}</p>                  
+                  </div>                  
+                </div>
+                <div class="d-flex align-items-baseline justify-content-between w-100 mb-3" v-if="order.bid_order_status_id == 8 && getPaymentType(order) == 'Refund'">
+                  <div class="d-flex align-items-baseline w-50">
+                    <h5 class="me-3">Received By:</h5>
+                    <input type="text" name="refund_receivedBy" id="" class="form-control" style="width:150px" v-model="payment_data.refund_receivedBy">
+                  </div>
+                  <div class="d-flex align-items-baseline w-50">
+                    <h5 class="me-3">Contact Num:</h5>
+                    <input type="text" name="refund_contactNum" id="" class="form-control" style="width:150px" v-model="payment_data.refund_contactNum">
+                  </div>
                 </div>                                
                 <div v-if="payment_data.bid_order_acc_paymentMethod == 'Bank' && (order.bid_order_status_id == 3 || order.bid_order_status_id == 5)">
                   <div class="d-flex align-items-baseline justify-content-between w-50">
@@ -228,11 +249,11 @@
                       <input type="text" name="delivery_receivedBy" id="" class="form-control" style="width:150px" v-model="payment_data.delivery_receivedBy">              
                     </div>                  
                   </div>                
-                  <div class="d-flex align-items-baseline justify-content-between w-100" v-if="order.bid_order_status_id == 5">
+                  <div class="d-flex align-items-baseline justify-content-between w-100 mt-3" v-if="order.bid_order_status_id == 5">
                     <div class="d-flex align-items-baseline w-50">
                     </div>
                     <div class="d-flex align-items-baseline w-50 ps-5">
-                      <h5 class="me-1">Contact Num:</h5>
+                      <h5 class="me-2">Contact Num:</h5>
                       <input type="text" name="delivery_contactNum" id="" class="form-control" style="width:150px" v-model="payment_data.delivery_contactNum">              
                     </div>
                   </div>                  
@@ -249,6 +270,9 @@
                   <h5 class="me-3">Date Paid:</h5>
                   <input v-if="(order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate) || order.bid_order_status_id == 5" type="date" class="form-control" style="width:150px;" v-model="payment_data.bid_order_acc_datePaid">              
                   <p v-else>{{ getDatePaid(order) }}</p> 
+                  <!-- <div v-if="order.bid_order_status_id == 7 && hasRefundRequest(order)">
+                    
+                  </div> -->
                 </div>                                            
               </div>            
             </b-modal>            
@@ -260,7 +284,7 @@
 </template>
 
 <script>
-import { add, format, sub } from 'date-fns'
+import { add, format, sub, eachDayOfInterval, isAfter, isEqual } from 'date-fns'
 import { mapActions, mapGetters } from 'vuex'
 import auth from '../../../store/modules/Auth/auth'
 export default {
@@ -285,7 +309,12 @@ export default {
           bid_order_acc_datePaid: new Date().toISOString().split('T')[0],
           delivery_receivedBy: null,
           delivery_contactNum: null,
-          bid_type: null          
+          bid_type: null,
+          refund_numOfDays: null,          
+          refund_percentage: null,          
+          refund_amount: null,
+          refund_receivedBy: null,
+          refund_contactNum: null,          
         },
         errors: null
       }
@@ -309,7 +338,9 @@ export default {
           'updateProjectStatus', 
           'updateOnHandStatus', 
           'firstPayment', 
-          'finalPayment'
+          'finalPayment',
+          'requestRefund',
+          'confirmRefund'
         ]),
         getProduceName(order){                      
           var prodTraderObj = this.getOrderHistory.produce_trader.filter((p) => {
@@ -579,7 +610,58 @@ export default {
           return parseFloat(parseFloat(order.order_dpAmount) / parseFloat(total)) * 100
         },
         triggerModal(order){
-          this.$bvModal.show(`modal-${order.id}`);
+          this.$bvModal.show(`modal-${order.id}`);          
+          if(this.isProjectOrOnHand(order) == 'Project'){
+            var projectObj = this.getOrderHistory.projects.filter((p) => {
+              return parseInt(order.project_id) === parseInt(p.id)
+            })
+
+            var year = parseInt(projectObj[0].project_harvestableEnd.split('-')[0]);                                      
+            var month = parseInt(projectObj[0].project_harvestableEnd.split('-')[1]);          
+            var day = parseInt(projectObj[0].project_harvestableEnd.split('-')[2]);            
+            var isAfterDate = isAfter(new Date(year, month-1, day).setHours(8, 0, 0, 0), new Date().setHours(8, 0, 0, 0))          
+            console.log(new Date())                        
+            if(isAfterDate){
+              this.payment_data.refund_numOfDays = (eachDayOfInterval({
+                start: new Date().setHours(8, 0, 0, 0),
+                end: new Date(year, month-1, day).setHours(8, 0, 0, 0)
+              }).length - 1)   
+
+              if(this.payment_data.refund_numOfDays >= 30){
+                this.payment_data.refund_percentage = 1
+                this.payment_data.refund_amount = (order.order_dpAmount * 1).toFixed(2)
+              }
+              else if(this.payment_data.refund_numOfDays >= 14){
+                this.payment_data.refund_percentage = 0.5                       
+                this.payment_data.refund_amount = (order.order_dpAmount * 0.5).toFixed(2)
+              }
+              else{
+                this.payment_data.refund_percentage = null
+                this.payment_data.refund_amount = null
+              }
+            }                                                                                        
+          }        
+        },
+        isDateAfterHarvest(order){
+          var projObj = this.getOrderHistory.projects.filter((p) => {
+            return parseInt(order.project_id) === parseInt(p.id)
+          })
+          console.log(projObj[0])
+          var year = parseInt(projObj[0].project_harvestableEnd.split('-')[0]);                                      
+          var month = parseInt(projObj[0].project_harvestableEnd.split('-')[1]);          
+          var day = parseInt(projObj[0].project_harvestableEnd.split('-')[2]);
+          var isAfterDate = isAfter(new Date().setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0)) || isEqual(new Date().setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0))
+          console.log(new Date())
+          console.log(new Date(year, month-1, day))
+          console.log(isAfterDate)
+          // console.log(order.id, 1)
+          return isAfterDate
+        },
+        getRefundAmount(order){
+          var refundObj = this.getOrderHistory.refunds.filter((r) => {
+            return parseInt(order.id) === parseInt(r.bid_order_id)
+          })          
+          return refundObj[0].refund_amount.toFixed(2)
         },
         setStatus(order){             
           if(order.bid_order_status_id == 2){
@@ -649,8 +731,66 @@ export default {
                 this.$toastr.e(this.errors[error][0])
               }              
             })            
+          }
+          else if(order.bid_order_status_id == 8){
+            this.payment_data.id = order.id
+            this.payment_data.bid_type = this.isProjectOrOnHand(order)
+            this.confirmRefund(this.payment_data)
+            .then(() => {
+              setTimeout(() => {
+                this.$toastr.s('Refund Confirmed!')
+              }, 5000)              
+              location.reload()
+            })
+            .catch((err) => {
+              console.log(err)
+              this.errors = err.response.data.errors
+              for(var error in this.errors){
+                this.$toastr.e(this.errors[error][0])
+              } 
+            })
           }            
         },
+        refundOrder(order){ 
+          this.payment_data.id = order.id                   
+          this.requestRefund(this.payment_data)
+          .then(() => {
+            this.$toastr.s('Request for Refund Delivered!')
+            setTimeout(() => {              
+              location.reload()
+            }, 5000)
+          })
+          .catch((err) => {
+            console.log(err)
+            this.errors = err.response.data.errors
+            for(var error in this.errors){
+              this.$toastr.e(this.errors[error][0])
+            }
+          })
+        },
+        getPaymentType(order){
+          var bidOrderAccObj = this.getOrderHistory.bid_order_accs.filter((o) => {
+            return parseInt(order.id) === parseInt(o.bid_order_id)
+          })
+          return bidOrderAccObj[bidOrderAccObj.length - 1].bid_order_acc_type
+        },
+        hasRefundRequest(order){
+          var refundObj = this.getOrderHistory.refunds.filter((r) => {
+            return parseInt(order.id) === parseInt(r.bid_order_id)
+          })
+          if(refundObj[0]){
+            console.log(true)
+            return true
+          }
+          console.log(false)
+          return false
+        },
+        getRefundDatePlaced(order){
+          var refundObj = this.getOrderHistory.refunds.filter((r) => {
+            return parseInt(order.id) === parseInt(r.bid_order_id)
+          })
+          return refundObj[0].created_at.split('T')[0]
+        },     
         getRemainingBalance(order){
           var result = (order.order_finalPrice * order.order_finalQty) - order.order_dpAmount 
           return result < 0 ? 0 : result

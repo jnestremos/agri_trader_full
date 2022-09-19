@@ -58,7 +58,11 @@ const state = {
         project_bid: null,
         on_hand_bid: null,
         distributor_contactNum: null,
-        bid_order_acc: null
+        bid_order_acc: null,
+        produce_yield: null,
+        refund: null,
+        dist_address: null,
+        delivery: null
     },
     order_history: {
         orders: null,
@@ -73,7 +77,8 @@ const state = {
         produces: null,
         deliveries: null,
         farm_produce: null,
-        produce_yields: null
+        produce_yields: null,
+        refunds: null
     },
     distributors: null,
     contracts: null,
@@ -275,7 +280,28 @@ const actions = {
                 commit('asd')
             })
         }
-    },    
+    },
+    requestRefund({ commit }, data){        
+        return axiosClient.post(`bid/project/refund/request/${data.id}`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
+    approveRefund({ commit }, data){
+        return axiosClient.put(`project/refund/approve/${data.id}`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
+    confirmRefund({ commit }, data){
+        return axiosClient.put(`bid/project/refund/confirm/${data.id}`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    } 
 }
 
 const mutations = {
@@ -378,7 +404,10 @@ const mutations = {
             }
         }
         state.order.produce = data.produce  
-        state.order.produce_yield = data.produce_yield  
+        state.order.produce_yield = data.produce_yield
+        state.order.refund = data.refund
+        state.order.dist_address = data.dist_address
+        state.order.delivery = data.delivery
     },
     setOrderHistory: (state, data) => {
         state.order_history.orders = data.orders
@@ -394,6 +423,7 @@ const mutations = {
         state.order_history.deliveries = data.deliveries
         state.order_history.farm_produce = data.farm_produce
         state.order_history.produce_yields = data.produce_yields
+        state.order_history.refunds = data.refunds
     },
     setOnHandData: (state, data) => {      
         state.on_hand_data.selectedProduce = data.selectedProduce

@@ -60,7 +60,7 @@ class OnHandBidController extends Controller
             'trader_id' => $request->trader_id,
             'distributor_id' => User::find(auth()->id())->distributor()->first()->id,
             'message_sentBy' => 'distributor',
-            'message_body' => "Hello there!\nI am interested in bidding your ".ProduceTrader::find($request->produce_trader_id)->prod_name." for".$request->project_bid_maxQty." kg/kgs\nfrom ".Project::find($request->project_id)->contract()->first()->farm_name.". Please consider this offer and we're hoping for bidding negotiations here. Thank you!"
+            'message_body' => "Hello there!\nI am interested in bidding your ".ProduceTrader::find($request->produce_trader_id)->prod_name." for ".$request->project_bid_maxQty." kg/kgs\nfrom ".Project::find($request->project_id)->contract()->first()->farm_name.". Please consider this offer and we're hoping for bidding negotiations here. Thank you!"
         ]);
 
         return response([
@@ -97,6 +97,7 @@ class OnHandBidController extends Controller
                 } else {
                     $bidOrder->order_dpDueDate = $request->order_dpDueDate;
                     $bidOrder->order_negotiatedPrice = $request->order_negotiatedPrice;
+                    $bidOrder->order_finalPrice = $request->order_negotiatedPrice;
                     $bidOrder->bid_order_status_id = 2;
                     $bidOrder->order_dpAmount = $request->order_dpAmount;
                     $bidOrder->save();

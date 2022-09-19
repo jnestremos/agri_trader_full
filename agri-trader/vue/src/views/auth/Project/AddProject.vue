@@ -440,7 +440,27 @@ export default {
               formattedDate = format(new Date(currDay), 'yyyy-MM-dd')
               this.data[stage] = formattedDate
             })
-          }      
+          }
+          stages.forEach((stage) => {
+            if(stage == 'project_floweringEnd'){
+              this.data.project_floweringEnd = sub(new Date(this.data.project_fruitBuddingStart), {
+                days: 1
+              })
+              this.data.project_floweringEnd = format(this.data.project_floweringEnd, 'yyyy-MM-dd')
+            }
+            else if(stage == 'project_fruitBuddingEnd'){
+              this.data.project_fruitBuddingEnd = sub(new Date(this.data.project_devFruitStart), {
+                days: 1
+              })
+              this.data.project_fruitBuddingEnd = format(this.data.project_fruitBuddingEnd, 'yyyy-MM-dd')
+            }
+            else if(stage == 'project_devFruitEnd'){
+              this.data.project_devFruitEnd = sub(new Date(this.data.project_harvestableStart), {
+                days: 1
+              })
+              this.data.project_devFruitEnd = format(this.data.project_devFruitEnd, 'yyyy-MM-dd')
+            }
+          })      
         }
     },
     computed: {

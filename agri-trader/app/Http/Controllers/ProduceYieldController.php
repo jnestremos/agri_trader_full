@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BidOrder;
 use App\Models\Contract;
+use App\Models\Message;
 use App\Models\Produce;
 use App\Models\ProduceInventory;
 use App\Models\ProduceTrader;
 use App\Models\ProduceYield;
 use App\Models\Project;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +25,7 @@ class ProduceYieldController extends Controller
             'produce_yield_qtyHarvested' => 'required',
             'produce_yield_price' => 'required',
             'project_harvestableEnd' => 'required|date',
-            'produce_yield_dateHarvestFrom' => 'required|date|after:project_harvestableEnd',
+            'produce_yield_dateHarvestFrom' => 'required|date|after_or_equal:project_harvestableEnd',
             'produce_yield_dateHarvestTo' => 'required|date|after:produce_yield_dateHarvestFrom'
         ]);
         $contract = Project::find($request->project_id)->contract()->first();
@@ -162,7 +165,17 @@ class ProduceYieldController extends Controller
             ]);
         }
 
-
+        $orders = BidOrder::where('project_id', $request->project_id)->get();
+        foreach($orders as $order){
+            if($order->project_bid()->first()){
+                Message::create([
+                    'trader_id' => User::find(auth()->id())->trader()->first()->id,
+                    'distributor_id' => $order->distributor_id,
+                    'message_sentBy' => 'trader',
+                    'message_body' => "Project # ".$order->project_id." has now been completely harvested! Please wait for further instructions regarding delivery."                        
+                ]);
+            }
+        }
         // DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
         //     'prod_totalQty' => $prodTotalQty + $yield->produce_yield_qtyHarvested,
         //     'prod_lastDateOfHarvest' => ProduceYield::where('produce_id', $request->produce_id)->orderBy('desc')->first()
