@@ -18,7 +18,7 @@
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderStatus" class="form-label me-4" >Purchase Order Status</label>
-                            <input type="text" name="supplyOrder_purchaseOrderStatus" id="" class="form-control" v-model="supplyOrder.purchaseOrderStatus">
+                            <input type="text" name="supplyOrder_purchaseOrderStatus" id="" class="form-control" v-model="supplyOrder.Status">
                         </div>
                     </div>
                     <div class="form-row">
@@ -198,7 +198,7 @@ export default {
             filterFor: null,
             supplyOrder: {
                 date: '',
-                // purchaseOrderNo: '',
+                purchaseOrderNo: '',
                 purchaseOrderStatus: '',
                 supplyType: null,
                 purchaseQuantity: '',

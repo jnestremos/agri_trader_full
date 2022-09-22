@@ -44,16 +44,16 @@
                 </div>
                 <div class="form-row">
                     <div class="col-lg-4 mb-3">
-                        <input type="number" name="supplier_zipCode" id="" class="form-control" placeholder="Zip Code" v-model="supplier.supplier_zipCode">
+                        <input type="number" name="address_zipCode" id="" class="form-control" placeholder="Zip Code" v-model="supplier.address_zipCode">
                     </div>
                     <div class="col-lg-4 mb-3">
-                        <input type="text" name="supplier_street" id="" class="form-control" placeholder="Street" v-model="supplier.supplier_street">
+                        <input type="text" name="address_street" id="" class="form-control" placeholder="Street" v-model="supplier.address_street">
                     </div>
                     <div class="col-lg-4 mb-3">
-                        <input type="text" name="supplier_municipality" id="" class="form-control" placeholder="Municipality / City" v-model="supplier.supplier_municipality">
+                        <input type="text" name="address_town" id="" class="form-control" placeholder="Municipality / City" v-model="supplier.address_town">
                     </div>
                     <div class="col-lg-4 mb-3">
-                        <input type="text" name="supplier_province" id="" class="form-control" placeholder="Province" v-model="supplier.supplier_province">
+                        <input type="text" name="address_province" id="" class="form-control" placeholder="Province" v-model="supplier.address_province">
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100">
@@ -62,11 +62,11 @@
                 <div class="form-row">
                     <div class="col-lg-4 mb-3">
                         <label for="Phone Number" class="form-label me-4" style="font-size: smaller;">Phone Number</label>
-                        <input type="text" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_contactNumber">
+                        <input type="text" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_phoneNumber">
                     </div>
                     <div class="col-lg-4 mb-3">
                         <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">Telephone Number</label>
-                        <input type="tel" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_contactTelephone">
+                        <input type="tel" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_telephoneNumber">
                     </div>
                 </div>
                 <div class="form-row">
@@ -101,12 +101,12 @@ export default{
                 contact_lastName: '',
                 contact_suffix: '',
                 contact_position: '',
-                supplier_zipCode: '',
-                supplier_street: '',
-                supplier_municipality: '',
-                supplier_province: '',
-                supplier_contactNumber: '',
-                supplier_contactTelephone: '',
+                address_zipCode: '',
+                address_street: '',
+                address_town: '',
+                address_province: '',
+                supplier_phoneNumber: '',
+                supplier_telephoneNumber: '',
                 supplier_email: '',
             }
         }
