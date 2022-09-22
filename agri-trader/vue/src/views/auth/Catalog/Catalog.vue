@@ -27,7 +27,7 @@
                                 <img width="100%" height="100%" :src="[p != null ? require(`../../../../../public/storage/catalog_images/${p.prod_name}.jpg`) : '']" alt="">
                             </div>
                         </div>
-                        <p class="ms-3 mt-3">{{ p.prod_name }}</p>
+                        <p class="ms-3 mt-3">{{ p.prod_name + ' ' + p.prod_type }}</p>
                         <template>
                             <b-modal hide-footer :id="'modal-' + p.id" size="xl" scrollable>
                                 <template #modal-header="{ close }">

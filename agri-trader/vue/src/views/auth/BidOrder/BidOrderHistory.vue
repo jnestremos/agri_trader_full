@@ -159,7 +159,7 @@
                     <p>{{ order.order_finalPrice.toFixed(2) + ' per kg' }}</p> 
                   </div>
                 </div>                                 
-                <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id == 5">
+                <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id == 5 || order.bid_order_status_id == 6">
                   <div class="d-flex align-items-baseline w-50">
                     <h5 class="me-3">Delivery Dispatch Date:</h5>
                     <p>{{ getDateDispatch(order) }}</p> 
@@ -184,7 +184,7 @@
                       <!-- <p>{{ order.order_finalPrice ? 
                       getRemainingBalance(order).toFixed(2) 
                       : order.order_dpAmount.toFixed(2) + ` (${getPercentage(order)}%)` }}</p>  -->
-                      <p>{{ order.order_finalPrice ? 
+                      <p>{{ order.order_finalPrice && order.bid_order_status_id == 5 ? 
                       getRemainingBalance(order).toFixed(2) 
                       : order.order_dpAmount.toFixed(2) }}</p> 
                     </div>

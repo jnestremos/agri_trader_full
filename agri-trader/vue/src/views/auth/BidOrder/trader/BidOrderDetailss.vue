@@ -115,7 +115,7 @@
             <h5 v-if="getOrder.contract">Trader's Price: {{ getOrder.bidOrder.order_traderPrice.toFixed(2) }}</h5>        
             <div v-if="bid_order_status_id != 3 && bid_order_status_id != 4 && bid_order_status_id != 5 && bid_order_status_id != 6 && bid_order_status_id != 7" class="d-flex align-items-baseline">
                 <h5 class="me-3">Negotiated Price:</h5>
-                <input type="number" v-if="bid_order_status_id == 1" name="" id="" class="form-control" style="width:150px;" min="0" step=".5" v-model="data.order_negotiatedPrice" @keyup="resetAmountPercentage($event)" onkeydown="return false" @change="resetAmountPercentage($event)">
+                <input type="number" v-if="bid_order_status_id == 1" name="" id="" class="form-control" style="width:150px;" min="0" step=".5" :disabled="getOrder.on_hand_bid" v-model="data.order_negotiatedPrice" @keyup="resetAmountPercentage($event)" onkeydown="return false" @change="resetAmountPercentage($event)">
                 <h5 v-else-if="getOrder.bidOrder && getOrder.bidOrder.order_negotiatedPrice" class="me-3">{{ getOrder.bidOrder.order_negotiatedPrice ?  getOrder.bidOrder.order_negotiatedPrice.toFixed(2) : '' }}</h5>
             </div>
             <h5 v-if="bid_order_status_id == 4 && data.order_finalPrice && data.order_finalQty && data.produce_trader_id">Quantity to be Received: {{ data.order_finalQty + ' kg/s' }}</h5>            
@@ -133,7 +133,7 @@
                 <input v-if="bid_order_status_id == 1" type="number" class="form-control" id="percentage" disabled style="width:100px;" min="0" max="100" value="50.00" @keyup="validatePercent($event)" onkeydown="return false">
                 <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getPercentage + '%' }}</h5>
             </div>
-            <h5 v-if="bid_order_status_id == 5 || bid_order_status_id == 6 || (bid_order_status_id == 4 && $route.query.finalPrice || bid_order_status_id == 4 && getOrder.on_hand_bid)">Total Amount: {{ getOrder.on_hand_bid ? getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) : data.order_finalTotal }}</h5>
+            <h5 v-if="bid_order_status_id == 5 || (bid_order_status_id == 4 && $route.query.finalPrice || bid_order_status_id == 4 && getOrder.on_hand_bid)">Total Amount: {{ getOrder.on_hand_bid ? getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) : data.order_finalTotal }}</h5>
             <div v-if="bid_order_status_id == 7 && getOrder.refund && data.bid_order_acc_paymentMethod == 'Bank' && getOrder.bid_order_acc[0].bid_order_acc_type != 'Refund'" class="d-flex align-items-baseline">
                 <h5 class="me-3">Account Number:</h5>
                 <input type="text" class="form-control" style="width:150px" v-model="data.bid_order_acc_accNum">

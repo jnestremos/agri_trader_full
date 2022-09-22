@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BidOrder;
 use App\Models\BidOrderAccount;
+use App\Models\Distributor;
 use App\Models\Message;
 use App\Models\ProduceTrader;
 use App\Models\ProduceYield;
@@ -35,6 +36,19 @@ class ProjectBidController extends Controller
         if (!$order) {
             return response([
                 'error' => 'Invalid Order!'
+            ], 400);
+        }
+
+        $order = BidOrder::where([
+            ['trader_id', $request->trader_id],
+            ['distributor_id', Distributor::where('user_id', auth()->id())->first()->id], 
+            ['project_id', $request->project_id],
+            ['produce_trader_id', $request->produce_trader_id],                    
+        ])->first();
+
+        if ($order) {
+            return response([
+                'error' => 'Order has already been sent!'
             ], 400);
         }
         // $produces = ProduceTrader::find($request->produce_trader_id)->produce_trader()->get();        

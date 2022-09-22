@@ -801,6 +801,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $trader = $contract->trader()->first();
                 $project = $contract->project()->first();
                 $produce_trader = ProduceTrader::where('produce_id', $contract->produce_id)->get();
+                $chart_data = DB::table('bid_orders')->select(DB::raw('avg(order_negotiatedPrice), order_grade, created_at'))->where([
+                    ['project_id', $id],
+                    ['order_negotiatedPrice', '!=', null],                    
+                ])->groupBy(DB::raw('cast(created_at as DATE), order_grade'))->get();
                 return response([
                     'trader_id' => $trader->id,
                     'trader_name' => $trader->trader_firstName . ' ' . $trader->trader_lastName,
@@ -822,7 +826,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'contract_estimatedPrice' => $contract->contract_estimatedPrice,
                     'project_images' => $project->project_image()->get(),
                     'farm_name' => $contract->farm()->first()->farm_name,
-                    'produce_trader' => $produce_trader
+                    'produce_trader' => $produce_trader,
+                    'chart_data' => $chart_data
                 ], 200);
             });
             Route::controller(ProjectBidController::class)->group(function () {
@@ -840,32 +845,68 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::prefix('bid/onhand')->group(function () {
             Route::get('/{farm_id}/{produce_trader_id}', function($farm_id, $produce_trader_id){
                 $selectedProduce = DB::table('farm_produce')->where([['farm_id', $farm_id], ['produce_trader_id', $produce_trader_id]])->first();
+                if($selectedProduce->on_hand_qty <= 0){
+                    return response([
+                        'error' => 'Produce Out of Stock!'
+                    ], 400);
+                }
+                $chart_data = ProduceYield::where([                
+                    ['produce_trader_id', $produce_trader_id]
+                ])->get();
                 $farm_produce = DB::table('farm_produce')->where([['farm_id', $farm_id], ['produce_id', $selectedProduce->produce_id]])->get();
                 $contracts = Contract::where([['farm_id', $farm_id], ['produce_id', $selectedProduce->produce_id]])->oldest()->get();
                 // $contract = ProduceInventory::find($selectedProduce->produce_inventory_id)->produce_yield()->first()->project()->first()->contract()->first(); 
                 $contract = null;
                 $produce_yields = [];
+                $container = [];
                 $produce_inventories = [];  
-                $trader = null;
-                $trader_contactNum = null;          
+                $trader = ProduceTrader::find($produce_trader_id)->trader()->first();
+                $trader_contactNum = $trader->trader_contactNum()->first();     
+                $numOfGrades = ProduceTrader::find($produce_trader_id)->produce_numOfGrades;
+                $classes = ['A', 'B', 'C'];                                                          
                 foreach($contracts as $c){
-                    if(count($c->project()->first()->produce_yield()->get()) > 0){
-                        $contract = $c;
-                        $trader = $contract->trader()->first();
-                        foreach($farm_produce as $produce){
-                            foreach($c->project()->first()->produce_yield()->get() as $yield){
-                                if(!in_array($yield, $produce_yields) && $yield->produce_inventory()->first()->produce_inventory_qtyOnHand > 0){
+                    $contract = $c;                
+                    $trader = $contract->trader()->first();                                   
+                    foreach(ProduceYield::where('project_id', (int)$c->project()->first()->id)->get() as $yield){                        
+                        if($numOfGrades == 3){                           
+                            for($i = 0; $i < count($classes); $i++){
+                                if($yield->produce_yield_class == $classes[$i] && $yield->produce_inventory()->first()->produce_inventory_qtyOnHand > 0){
                                     array_push($produce_yields, $yield);
-                                    array_push($produce_inventories, $yield->produce_inventory()->first());
-                                }                        
-                            }            
-                            // array_push($produce_inventories, ProduceInventory::find($produce->produce_inventory_id));
+                                    array_push($produce_inventories, $yield->produce_inventory()->first());                                
+                                    unset($classes[$i]);
+                                    $classes = array_values($classes);                                                                    
+                                }
+                            }
+                            if(count($produce_yields) == 3){     
+                                for($ii = 0; $ii < count($produce_yields); $ii++){
+                                    if($produce_yields[$ii]->produce_yield_class == 'A'){
+                                        array_push($container, $produce_yields[$ii]);
+                                        break;
+                                    }                                    
+                                }                                                       
+                                for($ii = 0; $ii < count($produce_yields); $ii++){
+                                    if($produce_yields[$ii]->produce_yield_class == 'B'){
+                                        array_push($container, $produce_yields[$ii]);
+                                        break;
+                                    }                                    
+                                }                                                       
+                                for($ii = 0; $ii < count($produce_yields); $ii++){
+                                    if($produce_yields[$ii]->produce_yield_class == 'C'){
+                                        array_push($container, $produce_yields[$ii]);
+                                        break;
+                                    }                                    
+                                }                                                                                      
+                                $produce_yields = array_unique($container);                 
+                            }                            
                         }
-                        $trader_contactNum = $trader->trader_contactNum()->first();
-                        break;
+                        else{
+                            if($yield->produce_inventory()->first()->produce_inventory_qtyOnHand > 0){
+                                array_push($produce_yields, $yield);
+                                array_push($produce_inventories, $yield->produce_inventory()->first());
+                            }                            
+                        }                     
                     }
-                }                            
-                
+                }                                                           
                 $produce = Produce::find($selectedProduce->produce_id);                
                 
                 return response([
@@ -877,6 +918,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'trader_contactNum' => $trader_contactNum,
                     'produce' => $produce,
                     'produce_inventories' => $produce_inventories,
+                    'chart_data' => $chart_data
                 ], 200);
             });
             Route::controller(OnHandBidController::class)->group(function () {

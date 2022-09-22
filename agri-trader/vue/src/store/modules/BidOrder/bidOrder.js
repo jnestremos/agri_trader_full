@@ -26,6 +26,7 @@ const state = {
         farm_name: null,
         produce_trader: null,
         prod_type: null,
+        chart_data: null
     },
     order_data: {
         orders: [],
@@ -48,6 +49,7 @@ const state = {
         trader_contactNum: null,  
         produce: null,
         produce_inventories: null,
+        chart_data: null
     },
     order:{
         produce: null,
@@ -307,6 +309,7 @@ const actions = {
 const mutations = {
     setProjectt: (state, data) => {
         state.progress_data.trader_id = data.trader_id
+        state.progress_data.chart_data = data.chart_data
         state.progress_data.trader_name = data.trader_name,
         state.progress_data.trader_contactNum = data.trader_contactNum,
         state.progress_data.project_completionDate = data.project_completionDate,
@@ -434,6 +437,7 @@ const mutations = {
         state.on_hand_data.trader_contactNum = data.trader_contactNum
         state.on_hand_data.produce = data.produce
         state.on_hand_data.produce_inventories = data.produce_inventories
+        state.on_hand_data.chart_data = data.chart_data
     } 
 }
 

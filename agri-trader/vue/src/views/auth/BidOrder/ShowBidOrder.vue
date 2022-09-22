@@ -33,9 +33,13 @@
           <h5 class="me-2">{{ $route.name == 'BidOrderProject' ? 'Expected Date of Harvest:' : 'Last Date of Harvest:'}} </h5>
           <p>{{ getProgressDate }}</p>
         </div>
-        <div class="d-flex align-items-baseline" style="width:25%">
-          <h5 class="me-2" v-if="$route.name == 'BidOrderProject'">Estimated Harvest: </h5>
-          <p v-if="$route.name == 'BidOrderProject'">{{ getProgressData.contract_estimatedHarvest + " kg"}}</p>
+        <div v-if="$route.name != 'BidOrderProject'" class="d-flex align-items-baseline" style="width:25%">
+          <h5 class="me-2"> Available Quantity: </h5>
+          <p v-if="getOnHandData.selectedProduce">{{ getOnHandData.selectedProduce.on_hand_qty + ' kg/s' }}</p>
+        </div>
+        <div v-if="$route.name == 'BidOrderProject'" class="d-flex align-items-baseline" style="width:25%">
+          <h5 class="me-2" >Estimated Harvest: </h5>
+          <p>{{ getProgressData.contract_estimatedHarvest + " kg"}}</p>
         </div>
         <div class="d-flex align-items-baseline" style="width:25%">
           <h5 v-if="(getProgressData.produce_trader && getProgressData.produce_trader.length > 1) || (getOnHandData.produce_yields && getOnHandData.produce_yields.length > 1)" class="me-2">Class: </h5>
@@ -61,12 +65,14 @@
           <p>{{ getProgressData.farm_name ? getProgressData.farm_name : getOnHandData.selectedProduce ? getOnHandData.selectedProduce.farm_name : '' }}</p>
         </div>
         <div class="d-flex align-items-baseline" style="width:25%">
-          
+          <h5 v-if="$route.name == 'BidOrderProject'" class="me-2">Cut-off Date: </h5>
+          <p v-if="$route.name == 'BidOrderProject'">{{ cutoffDate }}</p>
         </div>
       </div>
       <div class="d-flex align-items-center justify-content-between w-100 mb-2">
-        <div style="height:45vh; width:50%; background:grey">
-            Graph here
+        <div style="height:45vh; width:50%; background:transparent" class="d-flex justify-content-center align-items-center">                   
+            <line-chart style="width:95%;" v-if="chart_data.labels.length > 0 && chart_data.datasets.length > 0" :chartData="chart_data" :label="data.order_grade"></line-chart>                     
+            <h5 v-else>No Graphical Data</h5>
         </div>
         <div style="height:45vh; background:grey; width:50%">
           <b-carousel id="carousel-1" :interval="4000"
@@ -83,21 +89,21 @@
       <div class="d-flex align-items-baseline justify-content-between" style="width:60%;">
         <div class="d-flex align-items-baseline">
           <h5 class="me-2">Distributor's Initial Bid Price:</h5>
-          <input v-if="$route.name == 'BidOrderProject'" type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getProgressData.contract_estimatedPrice)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
+          <input v-if="$route.name == 'BidOrderProject'" :disabled="disabled" type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getProgressData.contract_estimatedPrice)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
           <input v-else-if="getOnHandData.farm_produce && $route.name == 'BidOrderOnHand'" disabled type="number" class="form-control" style="width:150px;" min="0" step="0.5" :max="parseFloat(getMaxPrice).toFixed(2)" v-model="data.order_initialPrice" @change="setTotal()" onkeydown="return false">
         </div>
         <div class="d-flex align-items-baseline">
           <h5 class="form-h5 me-2">Expected Dates Needed: </h5>
-          <input type="date" class="form-control me-3" style="width:150px;" onkeydown="return false" v-model="data.order_dateNeededFrom">
-          <input type="date" class="form-control" style="width:150px;" onkeydown="return false" v-model="data.order_dateNeededTo">
+          <input type="date" class="form-control me-3" style="width:150px;" :disabled="disabled" onkeydown="return false" v-model="data.order_dateNeededFrom">
+          <input type="date" class="form-control" style="width:150px;" :disabled="disabled" onkeydown="return false" v-model="data.order_dateNeededTo">
         </div>          
       </div>
       <div class="d-flex align-items-baseline mt-3">
         <h5 class="me-4">Quantity Needed:</h5>
         <div class="d-flex align-items-baseline" v-if="$route.name == 'BidOrderProject'">
-          <input type="number" class="form-control me-4" id="minQty" style="width:100px;" step="1" value="1" min="1" @change="setMinQty($event)" onkeydown="return false">
+          <input type="number" class="form-control me-4" id="minQty" style="width:100px;" :disabled="disabled" step="1" value="1" min="1" @change="setMinQty($event)" onkeydown="return false">
           <h5 class="me-4">To</h5>
-          <input type="number" class="form-control" id="maxQty" style="width:100px;" step="1" value="5" min="1" @change="setMaxQty($event)" onkeydown="return false">
+          <input type="number" class="form-control" id="maxQty" style="width:100px;" :disabled="disabled" step="1" value="5" min="1" @change="setMaxQty($event)" onkeydown="return false">
         </div>
         <div v-else class="d-flex align-items-baseline">
           <input type="number" class="form-control me-3" style="width:100px;" step="1" value="1" min="1" @change="setOnHandQty($event)" onkeydown="return false">
@@ -117,17 +123,20 @@
           <h5>{{ $route.name == 'BidOrderProject' ? data.project_bid_total : data.on_hand_bid_total }}</h5>
         </div>
       </div>
-      <input type="submit" value="Send Order Bid" class="btn btn-success" style="position:absolute; bottom:0; right:5%;">
+      <input type="submit" value="Send Order Bid" :disabled="disabled" class="btn btn-success" style="position:absolute; bottom:0; right:5%;">
     </form>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { add, format, isEqual, isAfter, isBefore } from 'date-fns'
+import { add, format, isEqual, isAfter, isBefore, sub } from 'date-fns'
+import LineChart from '../../../components/BidOrderGraph.vue'
 export default {
     name: 'ShowBidOrder',
+    components: { LineChart },   
     created(){
+      console.log(this.$route)
       if(this.$route.name == 'BidOrderProject'){
         this.fetchProjectProgress(this.$route.params.id)
         .then(() => {
@@ -201,10 +210,29 @@ export default {
             this.data.exp_dateHarvest = this.getProgressData.project_harvestableEnd
           }    
           this.data.produce_trader_id = this.getProgressData.produce_trader[0].id            
+          var chartData = this.getProgressData.chart_data.filter((c) => {
+            return (this.data.order_grade) === (c.order_grade)
+          })          
+          chartData.forEach((c) => {
+            this.chart_data.labels.push(c.created_at.split(' ')[0])
+            this.chart_data.datasets.push(c['avg(order_negotiatedPrice)'])
+          })           
+          var oneMonthBefore = sub(new Date(this.data.exp_dateHarvest).setHours(8,0,0,0), {
+            months: 1
+          })
+          this.cutoffDate = format(oneMonthBefore, 'yyyy-MM-dd')
+          if(isAfter(new Date().setHours(8,0,0,0), oneMonthBefore) || isEqual(new Date().setHours(8,0,0,0), oneMonthBefore)){
+            this.disabled = true
+          }
+          else{
+            this.disabled = false
+          }      
+          console.log(this.disabled)
           this.readyApp()
         })
       }
-      else if(this.$route.name == 'BidOrderOnHand'){       
+      else if(this.$route.name == 'BidOrderOnHand'){ 
+        console.log(1)      
         var data = {
           farm_id: this.$route.params.farm_id,
           produce_trader_id: this.$route.params.produce_trader_id,
@@ -229,6 +257,10 @@ export default {
           else{
             this.data.order_grade = null
           }
+          this.getOnHandData.chart_data.forEach((d) => {
+            this.chart_data.labels.push(d.produce_yield_dateHarvestTo)
+            this.chart_data.datasets.push(d.produce_yield_price)
+          })
           this.readyApp()          
         })
       }         
@@ -339,23 +371,25 @@ export default {
               })
             }
           }
-          else if(this.$route.name == 'BidOrderOnHand'){                        
-            var prodYieldObj = this.getOnHandData.produce_yields.filter((y) => {
-              return parseInt(this.data.produce_trader_id) === parseInt(y.produce_trader_id)
-            })
-            if(prodYieldObj[0].produce_yield_class != 'N/A'){
-              this.data.order_grade = prodYieldObj[0].produce_yield_class
-            }
-            else{
-              this.data.order_grade = null
-            }
-            var farmProdObj = this.getOnHandData.farm_produce.filter((p) => {
-              return parseInt(this.data.produce_trader_id) === parseInt(p.produce_trader_id) 
-            })
-            console.log(farmProdObj)
-            this.data.order_initialPrice = farmProdObj[0].on_hand_latestPrice
-            this.data.on_hand_bid_total = (this.data.order_initialPrice * this.data.on_hand_bid_qty).toFixed(2)
-            this.data.order_traderPrice = this.data.order_initialPrice
+          else if(this.$route.name == 'BidOrderOnHand'){                                    
+            this.$router.push({ path: `/bid_order/on_hand/${this.$route.params.farm_id}/${this.data.produce_trader_id}` })
+            location.reload()
+            // var prodYieldObj = this.getOnHandData.produce_yields.filter((y) => {
+            //   return parseInt(this.data.produce_trader_id) === parseInt(y.produce_trader_id)
+            // })
+            // if(prodYieldObj[0].produce_yield_class != 'N/A'){
+            //   this.data.order_grade = prodYieldObj[0].produce_yield_class
+            // }
+            // else{
+            //   this.data.order_grade = null
+            // }
+            // var farmProdObj = this.getOnHandData.farm_produce.filter((p) => {
+            //   return parseInt(this.data.produce_trader_id) === parseInt(p.produce_trader_id) 
+            // })
+            // console.log(farmProdObj)
+            // this.data.order_initialPrice = farmProdObj[0].on_hand_latestPrice
+            // this.data.on_hand_bid_total = (this.data.order_initialPrice * this.data.on_hand_bid_qty).toFixed(2)
+            // this.data.order_traderPrice = this.data.order_initialPrice
           }
         }
     },
@@ -442,6 +476,12 @@ export default {
       return {      
         currentStage: null,
         errors: null,
+        chart_data: {
+          labels: [],
+          datasets: [],
+        },
+        cutoffDate: null,
+        disabled: false,
         data: {
           exp_dateHarvest: null,
           order_grade: null,

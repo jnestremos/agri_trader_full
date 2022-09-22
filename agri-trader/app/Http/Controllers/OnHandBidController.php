@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OnHandBidController extends Controller
 {
@@ -35,6 +36,24 @@ class OnHandBidController extends Controller
             return response([
                 'error' => 'Invalid Order!'
             ], 400);
+        }
+
+        $farm_produce = DB::table('farm_produce')->where([
+            ['farm_id', Project::find($request->project_id)->contract()->first()->farm()->first()->id],
+            ['produce_trader_id', $request->produce_trader_id]
+        ])->first();
+
+        if($farm_produce->on_hand_qty <= 0){
+            return response([
+                'error' => 'Produce Out of Stock!'
+            ], 400);
+        }
+        else{
+            if($request->on_hand_bid_qty > $farm_produce->on_hand_qty){
+                return response([
+                    'error' => 'Produce Invalid Quantity! Please refresh the page for updated available quantity!'
+                ], 400);
+            }
         }
 
         $newOrder = BidOrder::create([

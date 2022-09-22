@@ -389,11 +389,12 @@ class DeliveryController extends Controller
                             'error' => 'Invalid Date!'
                         ], 400);                            
                     }
-                    BidOrder::find($id)->delivery()->update([
+
+                    Delivery::where('bid_order_id', BidOrder::find($id)->id)->update([
                         'delivery_receivedBy' => $request->delivery_receivedBy,
                         'delivery_contactNum' => $request->delivery_contactNum
                     ]);
-
+                    
                     BidOrderAccount::create([
                         'bid_order_id' => $id,
                         'bid_order_acc_type' => $request->bid_order_acc_type,
