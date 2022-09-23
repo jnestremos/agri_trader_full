@@ -26,6 +26,7 @@ use App\Models\ProduceYield;
 use App\Models\Project;
 use App\Models\ProjectBid;
 use App\Models\ProjectStatus;
+use App\Models\Sale;
 use App\Models\Trader;
 use App\Models\TraderContactNumber;
 use App\Models\User;
@@ -73,7 +74,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['middleware' => ['role:trader']], function () {
 
         Route::get('/dashboard', function(){
+
+            $user = User::find(auth()->id());
+            $contracts = $user->trader()->first()->contract()->get();
+            $project_ids = [];
+            foreach($contracts as $contract){
+                array_push($project_ids, $contract->project()->first()->id);
+            }            
+            $startMonth = Carbon::now()->firstOfMonth();
+            $endMonth = Carbon::now()->endOfMonth();
+            $totalSales = Sale::select(DB::raw('sum(sale_total), created_at'))->whereIn('project_id', $project_ids)
+            ->whereBetween('created_at', [$startMonth, $endMonth])->groupBy(DB::raw('cast(created_at as DATE)'))->orderBy('created_at')->get();
+
             return response([
+                'totalSales' => $totalSales,
                 'name' => Trader::where('user_id',auth()->id())->first()->trader_firstName . " " . 
                 Trader::where('user_id',auth()->id())->first()->trader_lastName
             ], 200);
