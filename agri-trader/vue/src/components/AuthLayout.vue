@@ -6,9 +6,9 @@
             <font-awesome-icon icon="fa-regular fa-user" style="font-size:40px; color:white;"/>
           </b-nav-item>
         <div style="width:100%; color:black;">          
-          <b-nav-item @mouseenter="moduleLeave()"><router-link to="/dashboard">Home</router-link></b-nav-item>
-          <b-nav-item @mouseenter="showModules()" @mouseleave="hideModules()" class="w-100">Modules</b-nav-item>
-          <b-nav-item @mouseenter="moduleLeave()">Settings</b-nav-item>
+          <b-nav-item @mouseenter="moduleLeave()"><router-link style="color:black" to="/dashboard">Home</router-link></b-nav-item>
+          <b-nav-item @mouseenter="showModules()" @mouseleave="hideModules()" class="w-100"><p style="color:black; margin:0">Modules</p></b-nav-item>
+          <b-nav-item @mouseenter="moduleLeave()"><p style="color:black; margin:0">Settings</p></b-nav-item>
         </div>
         <b-nav-text class="d-flex justify-content-center">
           <form action="" @submit.prevent="logoutUser()">
@@ -22,11 +22,11 @@
     <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
       <div style="background-color:green; width:100%; height:40%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
-          <li><router-link to="/projects">Projects</router-link></li>
-          <li><router-link to="/produces">Produces</router-link></li>
-          <li><router-link to="/farms">Farms and Owners</router-link></li>
-          <li><router-link to="/bid/orders">Bid Orders</router-link></li>
-          <li><router-link :to="`/messages/${getID}/trader`">Chat</router-link></li>
+          <li><router-link style="color:black" to="/projects">Projects</router-link></li>
+          <li><router-link style="color:black" to="/produces">Produces</router-link></li>
+          <li><router-link style="color:black" to="/farms">Farms and Owners</router-link></li>
+          <li><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
+          <li><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
           <li>Delivery</li>
           <li>Sales Income Report</li>
           <li>Profit Sharing Report</li>
@@ -100,5 +100,7 @@ export default {
 </script>
 
 <style scoped>
-
+b-nav-item{
+  color:black !important;
+}
 </style>

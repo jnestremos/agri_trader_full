@@ -20,7 +20,7 @@ import BidOrderHistory from '../views/auth/BidOrder/BidOrderHistory.vue'
 import HarvestDetails from '../views/auth/Harvest/HarvestDetails.vue'
 import DeliveryDetails from '../views/auth/Delivery/DeliveryDetails.vue'
 import AllBidOrders from '../views/auth/BidOrder/trader/AllBidOrders.vue'
-import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
+// import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
 import BidOrderDetailss from '../views/auth/BidOrder/trader/BidOrderDetailss.vue'
 import ChangeBidOrder from '../views/auth/BidOrder/trader/ChangeBidOrder.vue'
 import TraderMessaging from '../views/auth/Messaging/trader/TraderMessaging.vue'
@@ -118,14 +118,14 @@ const routes = [
         path: '/bid/orders/:id',
         name: 'ShowBidOrder',
         meta: {needsAuth: true, role:'trader'},
-        component: BidOrderDetails
-      },
-      {
-        path: '/bid/orderss/:id',
-        name: 'ShowBidOrderr',
-        meta: {needsAuth: true, role:'trader'},
         component: BidOrderDetailss
       },
+      // {
+      //   path: '/bid/orderss/:id',
+      //   name: 'ShowBidOrderr',
+      //   meta: {needsAuth: true, role:'trader'},
+      //   component: BidOrderDetailss
+      // },
       {
         path: '/bid/orders/:id/refund',
         name: 'RefundDetails',
