@@ -12,7 +12,6 @@ use App\Http\Controllers\ProduceController;
 use App\Http\Controllers\ProduceYieldController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RefundController;
-use App\Http\Controllers\SupplierController;
 use App\Models\BidOrder;
 use App\Models\Contract;
 use App\Models\Delivery;
@@ -73,11 +72,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['middleware' => ['role:trader']], function () {
-
-
-        Route::controller(SupplierController::class)->prefix('supplier')->group(function () {
-            Route::post('add', 'addSupplier');
-        });
 
         Route::get('/dashboard', function(){
 
