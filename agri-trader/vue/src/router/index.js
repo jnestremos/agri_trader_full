@@ -27,6 +27,15 @@ import TraderMessaging from '../views/auth/Messaging/trader/TraderMessaging.vue'
 import DistMessaging from '../views/auth/Messaging/DistMessaging.vue'
 import ProduceInventory from '../views/auth/ProduceInventory/ProduceInventory.vue'
 import RefundDetails from '../views/auth/Refund/RefundDetails.vue'
+import AddSupplier from '../views/auth/Supplier/AddSupplier.vue'
+import SupplierList from '../views/auth/Supplier/SupplierList.vue'
+import SupplierDetails from '../views/auth/Supplier/SupplierDetails.vue'
+import AddSupply from '../views/auth/Supply/AddSupply.vue'
+import AddFarmWorker from '../views/auth/Farm Worker/AddFarmWorker.vue'
+import InitialPurchaseOrder from '../views/auth/Supply Purchase Order/InitialPurchaseOrder.vue'
+import PurchaseOrderSummary from '../views/auth/Supply Purchase Order/PurchaseOrderSummary.vue'
+import PurchaseOrderPayment from '../views/auth/Supply Purchase Order/POPayment.vue'
+import PurchaseOrderDashboard from '../views/auth/Supply Purchase Order/PurchaseOrderDashboard.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -161,49 +170,6 @@ const routes = [
         name: 'ProduceInventory',
         meta: {needsAuth: true, role:'trader'},
         component: ProduceInventory
-      }
-    ]
-  }, 
-  {
-    path: '/distributor',
-    redirect: '/catalog',
-    component: DistributorLayout,
-    children: [
-      {
-        path: '/catalog',
-        name: 'Catalog',
-        meta: {needsAuth: true, role: 'distributor'},
-        component: Catalog
-      },
-      {
-        path: '/bid_order/progress/:id',
-        name: 'BidOrderProgress',
-        meta: {needsAuth: true, role: 'distributor'},
-        component: BidOrderProgress
-      },
-      {
-        path: '/bid_order/project/:id',
-        name: 'BidOrderProject',
-        meta: {needsAuth: true, role: 'distributor'},
-        component: ShowBidOrder
-      },
-      {
-        path: '/bid_order/on_hand/:farm_id/:produce_trader_id',
-        name: 'BidOrderOnHand',
-        meta: {needsAuth: true, role: 'distributor'},
-        component: ShowBidOrder
-      },
-      {
-        path: '/bid_order/history',
-        name: 'BidOrderHistory',
-        meta: {needsAuth: true, role: 'distributor'},
-        component: BidOrderHistory
-      },
-      {
-        path: '/messages/:id/dist',
-        name: 'DistMessaging',
-        meta: {needsAuth: true, role:'distributor'},
-        component: DistMessaging
       },
       {
         path:"/supplier/add",
@@ -258,6 +224,49 @@ const routes = [
         name:"PurchaseOrderDashboard",
         meta:{needsAuth: true, role: "trader"},
         component:PurchaseOrderDashboard
+      },
+    ]
+  }, 
+  {
+    path: '/distributor',
+    redirect: '/catalog',
+    component: DistributorLayout,
+    children: [
+      {
+        path: '/catalog',
+        name: 'Catalog',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: Catalog
+      },
+      {
+        path: '/bid_order/progress/:id',
+        name: 'BidOrderProgress',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: BidOrderProgress
+      },
+      {
+        path: '/bid_order/project/:id',
+        name: 'BidOrderProject',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: ShowBidOrder
+      },
+      {
+        path: '/bid_order/on_hand/:farm_id/:produce_trader_id',
+        name: 'BidOrderOnHand',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: ShowBidOrder
+      },
+      {
+        path: '/bid_order/history',
+        name: 'BidOrderHistory',
+        meta: {needsAuth: true, role: 'distributor'},
+        component: BidOrderHistory
+      },
+      {
+        path: '/messages/:id/dist',
+        name: 'DistMessaging',
+        meta: {needsAuth: true, role:'distributor'},
+        component: DistMessaging
       },
     ]
   }, 

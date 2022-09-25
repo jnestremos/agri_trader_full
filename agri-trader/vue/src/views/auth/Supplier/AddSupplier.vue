@@ -11,7 +11,7 @@
                 </div>
                 <div class="form-row">
                     <div class="col-lg-9 mb-3">
-                        <input type="text" name="company_name" id="" class="form-control" v-model="supplier.companyName">
+                        <input type="text" name="company_name" id="" class="form-control" v-model="supplier.supplier_name">
                     </div>
                 </div>
                 <div class="d-flex justify-content-start align-items-center w-100" style="height:50%">
@@ -66,7 +66,7 @@
                     </div>
                     <div class="col-lg-4 mb-3">
                         <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">Telephone Number</label>
-                        <input type="tel" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_telephoneNumber">
+                        <input type="tel" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_telNumber">
                     </div>
                 </div>
                 <div class="form-row">
@@ -99,7 +99,7 @@ export default{
     data() {
         return {
             supplier: {
-                companyName: '',
+                supplier_name: '',
                 contact_firstName: '',
                 contact_middleName: '',
                 contact_lastName: '',
@@ -110,7 +110,7 @@ export default{
                 address_town: '',
                 address_province: '',
                 supplier_phoneNumber: '',
-                supplier_telephoneNumber: '',
+                supplier_telNumber: '',
                 supplier_email: '',
             }
         }
