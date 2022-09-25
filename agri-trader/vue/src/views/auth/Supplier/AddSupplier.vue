@@ -32,7 +32,14 @@
                     </div>
                     <div class="col-lg-3 mb-3">
                         <label for="contact_lastName" class="form-label me-4" style="font-size:small">Suffix</label>
-                        <input type="text" name="supplier_contactSuffix" id="" class="form-control form-control-sm" v-model="supplier.contact_suffix">
+                        <select name="" class="form-select form-select-sm" id="" style="width:100px;" @change="setSuffix($event)">
+                            <option selected value="">None</option>
+                            <option value="Jr.">Jr.</option>
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                        </select>
                     </div>
                     <div class="col-lg-3 mb-3">
                         <label for="contact_lastName" class="form-label me-4" style="font-size:small">Position</label>
@@ -62,7 +69,7 @@
                 <div class="form-row">
                     <div class="col-lg-4 mb-3">
                         <label for="Phone Number" class="form-label me-4" style="font-size: smaller;">Phone Number</label>
-                        <input type="text" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_phoneNumber">
+                        <input type="tel" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_phoneNumber">
                     </div>
                     <div class="col-lg-4 mb-3">
                         <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">Telephone Number</label>
@@ -103,7 +110,7 @@ export default{
                 contact_firstName: '',
                 contact_middleName: '',
                 contact_lastName: '',
-                contact_suffix: '',
+                contact_suffix: 'None',
                 contact_position: '',
                 address_zipCode: '',
                 address_street: '',
@@ -116,7 +123,10 @@ export default{
         }
     },
     methods: {
-        ...mapActions(['readyApp'])
+        ...mapActions(['readyApp']),
+        setSuffix(e){
+            this.supplier.contact_suffix = e.target.value
+        }
     }
 }
 </script>
