@@ -11,6 +11,7 @@ import delivery from './modules/Delivery/delivery'
 import chat from './modules/Chat/chat'
 import inventory from './modules/Inventory/inventory'
 import dashboard from './modules/Dashboard/dashboard'
+import supplier from './modules/Supplier/supplier'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -47,6 +48,7 @@ export default new Vuex.Store({
     delivery,
     chat,
     inventory,
-    dashboard
+    dashboard,
+    supplier
   },
 })

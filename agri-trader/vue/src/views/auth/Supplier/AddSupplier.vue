@@ -51,7 +51,7 @@
                 </div>
                 <div class="form-row">
                     <div class="col-lg-4 mb-3">
-                        <input type="number" name="address_zipCode" id="" class="form-control" placeholder="Zip Code" v-model="supplier.address_zipCode">
+                        <input type="number" name="address_zipCode" id="" class="form-control" placeholder="Zip Code" v-model="supplier.address_zipcode">
                     </div>
                     <div class="col-lg-4 mb-3">
                         <input type="text" name="address_street" id="" class="form-control" placeholder="Street" v-model="supplier.address_street">
@@ -84,7 +84,7 @@
                 </div>
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-3">
-                        <button class="btn btn-success" style="width:100px">Add</button>
+                        <button class="btn btn-success" style="width:100px" @click="sendSupplier()">Add</button>
                     </div>
                     <div class="btn-group me-3">
                         <button class="btn btn-secondary" style="width:100px">Edit</button>
@@ -112,7 +112,7 @@ export default{
                 contact_lastName: '',
                 contact_suffix: 'None',
                 contact_position: '',
-                address_zipCode: '',
+                address_zipcode: '',
                 address_street: '',
                 address_town: '',
                 address_province: '',
@@ -123,9 +123,22 @@ export default{
         }
     },
     methods: {
-        ...mapActions(['readyApp']),
+        ...mapActions(['readyApp', 'addSupplier']),
         setSuffix(e){
             this.supplier.contact_suffix = e.target.value
+        },
+        sendSupplier(){
+            this.addSupplier(this.supplier)
+            .then(() => {
+                this.$toastr.s('Supplier Added!')
+            })
+            .catch((err) => {
+                console.log(err)
+                var errors = err.response.data.errors
+                for(var error in errors){
+                    this.$toastr.e(errors[error][0])
+                }                
+            })
         }
     }
 }

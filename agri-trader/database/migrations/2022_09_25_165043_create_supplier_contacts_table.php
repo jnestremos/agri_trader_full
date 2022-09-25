@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('supplier_contacts', function (Blueprint $table) {
             $table->foreignId('supplier_id')->constrained('suppliers')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('supplier_phoneNumber');            
-            $table->string('supplier_telNumber');
-            $table->string('supplier_email');
+            $table->string('supplier_phoneNumber')->unique();            
+            $table->string('supplier_telNumber')->nullable();
+            $table->string('supplier_email')->unique();
             $table->timestamps();
         });
     }
