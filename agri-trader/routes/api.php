@@ -76,6 +76,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::controller(SupplierController::class)->prefix('supplier')->group(function () {
             Route::get('/', 'fetchSuppliers');
+            Route::get('/{id}', 'fetchSupplier');
+            Route::patch('/{id}', 'updateSupplier');
             Route::post('/add', 'addSupplier');
         });
 
