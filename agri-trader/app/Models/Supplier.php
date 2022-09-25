@@ -10,11 +10,15 @@ class Supplier extends Model
     use HasFactory;
 
     protected $fillable = [
+        'trader_id',
         'supplier_name'
     ];
 
     public function supplier_contact(){
         return $this->hasOne(SupplierContact::class);
+    }
+    public function trader(){
+        return $this->belongsTo(Trader::class);
     }
     public function supplier_address(){
         return $this->hasOne(SupplierAddress::class);

@@ -14,9 +14,9 @@
                         </tr>
                       </thead>
                       <tbody align="center">
-                        <tr class="supplier" v-for="(supply, index) in suppliers" :key="index" @click="goToEditPage(supply.id)">
-                          <th>{{ supply.name }}</th>
-                          <th>{{ supply.address }}</th>
+                        <tr class="supplier" v-for="(supplier, index) in getSuppliers" :key="index" @click="goToEditPage(supplier.id)">
+                          <th>{{ supplier.supplier_name }}</th>
+                          <th>{{ getAddress(supplier) }}</th>
                         </tr>
                       </tbody>
                     </table>
@@ -32,38 +32,30 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 export default {
   name: "SupplierList",
   created() {
-        this.readyApp()
-    },
-  data() {
-    return {
-      suppliers: [
-        {
-          id: 1,
-          name: 'Pacifica Agrivet',
-          address: 'Sto. Tomas, Davao del Norte; Davao City',
-        },
-        {
-          id: 2,
-          name: 'McJenski Agri Supply',
-          address: 'Sto. Tomas, Davao del Norte',
-        },
-        {
-          id: 3,
-          name: 'Kaumahan sa Sto. Tomas',
-          address: 'Sto. Tomas, Davao del Norte',
-        },
-      ]
-    }
-  },
+    this.fetchSuppliers()
+    .then(() => {
+      this.readyApp()
+    })  
+  },  
   methods: {
+    ...mapActions(['readyApp', 'fetchSuppliers']),
     goToEditPage(id){      
       this.$router.push({ path: `/supplier/${id}` });
     },
-    ...mapActions(['readyApp'])
+    getAddress(supplier){
+      var addressObj = this.getSupplierAddresses.filter((a) => {
+        return parseInt(supplier.id) === parseInt(a.supplier_id)
+      })
+      return `${addressObj[0].address_street}, ${addressObj[0].address_town}, ${addressObj[0].address_province}`
+    }
+    
+  },
+  computed:{
+    ...mapGetters(['getSuppliers', 'getSupplierAddresses'])
   }
 }
 </script>

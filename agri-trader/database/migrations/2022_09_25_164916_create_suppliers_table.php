@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('trader_id')->constrained('traders')->onDelete('cascade')->onUpdate('cascade');
             $table->string('supplier_name')->unique();
             $table->timestamps();
         });

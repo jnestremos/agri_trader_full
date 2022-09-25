@@ -19,6 +19,9 @@ class Trader extends Model
     {
         return $this->hasMany(Farm::class, 'trader_id');
     }
+    public function supplier(){
+        return $this->hasMany(Supplier::class);
+    }
     public function trader_contactNum()
     {
         return $this->hasMany(TraderContactNumber::class, 'trader_id');

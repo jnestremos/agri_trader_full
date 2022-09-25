@@ -6,6 +6,8 @@ use App\Models\Supplier;
 use App\Models\SupplierAddress;
 use App\Models\SupplierContact;
 use App\Models\SupplierContactPerson;
+use App\Models\Trader;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
@@ -34,6 +36,7 @@ class SupplierController extends Controller
         }
 
         $supplier = Supplier::create([
+            'trader_id' => User::find(auth()->id())->trader()->first()->id,
             'supplier_name' => $request->supplier_name
         ]);
 
@@ -63,5 +66,17 @@ class SupplierController extends Controller
             'message' => 'Supplier Added Successfully!'
         ]);
 
+    }
+
+    public function fetchSuppliers () {       
+        $suppliers = Supplier::where('trader_id', Trader::where('user_id', auth()->id())->first()->id)->get();
+        $supplier_addresses = [];
+        foreach($suppliers as $supplier){
+            array_push($supplier_addresses, $supplier->supplier_address()->first());
+        }
+        return response([
+            'suppliers' => $suppliers,
+            'supplier_addresses' => $supplier_addresses
+        ]);
     }
 }

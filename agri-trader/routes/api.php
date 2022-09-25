@@ -75,6 +75,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['middleware' => ['role:trader']], function () {
 
         Route::controller(SupplierController::class)->prefix('supplier')->group(function () {
+            Route::get('/', 'fetchSuppliers');
             Route::post('/add', 'addSupplier');
         });
 
