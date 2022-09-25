@@ -386,7 +386,7 @@ export default {
             'project_harvestableEnd'
           ]            
           var interval = null   
-          interval = Math.round((parseInt(this.maxDays) - 20) / 7);          
+          interval = Math.round((parseInt(this.maxDays)) / 7);          
                     
           var year = parseInt(e.target.value.split('-')[0])
           var month = parseInt(e.target.value.split('-')[1])
