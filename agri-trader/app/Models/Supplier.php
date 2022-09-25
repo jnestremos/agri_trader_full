@@ -26,4 +26,7 @@ class Supplier extends Model
     public function supplier_contact_person(){
         return $this->hasOne(SupplierContactPerson::class);
     }
+    public function supply(){
+        return $this->hasMany(Supply::class);
+    }
 }

@@ -29,4 +29,7 @@ class Produce extends Model
     public function produce_trader(){
         return $this->hasMany(ProduceTrader::class);
     }
+    public function supply(){
+        return $this->hasMany(Supply::class);
+    }
 }

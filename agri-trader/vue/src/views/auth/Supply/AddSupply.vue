@@ -11,18 +11,25 @@
                 </div>
                 <div class="form-row">
                     <div class="col-lg-6 mb-3">
-                        <input type="text" name="supply_name" id="" class="form-control" v-model="supply.supply_Name">
+                        <input type="text" name="supply_name" id="" class="form-control" v-model="supply.supply_name" placeholder="ex: Yara UNIK-16">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="col-lg-4 mb-3 me-3">
                         <label for="supplyOrder_SupplyType" class="form-label me-3" style="font-size: large;">Supply Type</label>
                             <select class="form-select" @change="setSupplyType($event)">
-                                <option selected disabled value="None">Select Supply Type</option>
+                                <option selected disabled value="">Select Supply Type</option>
                                 <option value="Fertilizer">Fertilizer</option>
                                 <option value="Insecticide">Insecticide</option>
                                 <option value="Fungicide">Fungicide</option>
                                 <option value="Herbicide">Herbicide</option>
+                            </select>
+                    </div>
+                    <div class="col-lg-4 mb-3 me-3">
+                        <label for="supplyOrder_SupplyType" class="form-label me-3" style="font-size: large;">Supply For</label>
+                            <select v-if="getProducesForAddSupply" class="form-select" @change="setSupplyFor($event)">
+                                <option selected disabled value="">Select Supply For</option>
+                                <option v-for="(type, index) in getProducesForAddSupply" :key="index" :value="type.prod_type">{{ type.prod_type }}</option>                                
                             </select>
                     </div>
                 </div>
@@ -31,17 +38,17 @@
                 </div>
                 <div class="form-row">
                     <div class = "col-lg-6 mb-3">
-                        <input type="text" name="supply_description" id="" class="form-control" v-model="supply.supply_description">
+                        <input type="text" name="supply_description" id="" class="form-control" v-model="supply.supply_description" placeholder="ex: Magnesium-Based Fertilizer good for high yield of mangoes (Small Size)">
                     </div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <!-- <div class="d-flex justify-content-between align-items-center w-100">
                     <label for="Date" class="form-label me-4" style="font-size: large;">Date Added</label>
-                </div>
-                <div class="form-row">
+                </div> -->
+                <!-- <div class="form-row">
                     <div class="col-lg-4 mb-3">
                         <input type="date" name="supply_date" id="" class="form-control" v-model="supply.date">
                     </div>
-                </div>
+                </div> -->
                 <div class="form-row">
                     <div class="col-lg-3 mb-4">
                         <label for="Initial Price" class="form-label me-4" style="font-size: large;">Initial Price</label>
@@ -59,22 +66,16 @@
                 </div>
                 <div class="form-row">
                     <div class="col-lg-4 mb-2 me-3">
-                        <select class="form-select" @change="setSupplier($event)">
-                        <option selected disabled value="None">Select Supplier</option>
-                        <option value="1">Pacifica Agrivet</option>
-                        <option value="2">McJenski Agro</option>
-                        <option value="3">Inson Agro Farm Supply</option>
-                        <option value="4">Jeems Agrivet Supply</option>
+                        <select v-if="getSuppliersForAddSupply" class="form-select" @change="setSupplier($event)">
+                            <option selected disabled value="">Select Supplier</option>
+                            <option v-for="(supplier, index) in getSuppliersForAddSupply" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option>                            
                     </select>
                     </div>
                 </div>
                 <div class="btn-toolbar mt-3" role="toolbar">
                     <div class="btn-group me-3">
-                        <button class="btn btn-success" style="width:100px">Add</button>
-                    </div>
-                    <div class="btn-group me-3">
-                        <button class="btn btn-secondary" style="width:100px">Edit</button>
-                    </div>
+                        <button class="btn btn-success" style="width:100px" @click="sendSupply()">Add</button>
+                    </div>                   
                 </div>          
             </form>
         </div>
@@ -83,17 +84,26 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 export default {
     name: "AddSupplier",
     created() {
-        this.readyApp()
+        this.formForAddSupply()
+        .then(() => {
+            this.readyApp()
+        })
+        .catch((err) => {
+            console.error(err)
+            this.$router.push({ name: 'AddSupplier' })
+        })
+        
     },
     data() {
         return {
             supply: {
-                supply_Name: null,
+                supply_name: null,
                 supply_type: '',
+                supply_for: null,
                 supply_description: null,
                 date: new Date().toISOString().split('T')[0],
                 supply_initialPrice: 0.00,
@@ -103,9 +113,12 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['readyApp']),
+        ...mapActions(['readyApp', 'formForAddSupply', 'addSupply']),
         setSupplyType(e){
             this.supply.supply_type = e.target.value
+        },
+        setSupplyFor(e){
+            this.supply.supply_for = e.target.value
         },
         setUnit(e){
             this.supply.supply_unit = e.target.value
@@ -117,7 +130,26 @@ export default {
             if(parseInt(e.target.value) < 0){
                 this.supply.supply_initialPrice = Math.abs(e.target.value)
             }
+        },
+        sendSupply(){
+            this.addSupply(this.supply)
+            .then(() => {
+                this.$toastr.s('Supply successfully added!')
+                setTimeout(() => {
+                    // this.$router.push({ name: 'SupplyList' })
+                }, 5000)
+            })
+            .catch((err) => {
+                console.log(err)
+                var errors = err.response.data.errors
+                for(var error in errors){
+                    this.$toastr.e(errors[error][0])
+                }                
+            })
         }
+    },
+    computed: {
+        ...mapGetters(['getSuppliersForAddSupply', 'getProducesForAddSupply'])
     }
     
 }

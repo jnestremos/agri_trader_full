@@ -13,6 +13,7 @@ use App\Http\Controllers\ProduceYieldController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplyController;
 use App\Models\BidOrder;
 use App\Models\Contract;
 use App\Models\Delivery;
@@ -80,6 +81,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::patch('/{id}', 'updateSupplier');
             Route::post('/add', 'addSupplier');
         });
+
+
+        Route::controller(SupplyController::class)->prefix('supply')->group(function () {
+            Route::get('/', 'formForAddSupply');
+            Route::post('/add', 'addSupply');
+        });
+        
 
         Route::get('/dashboard', function(){
 

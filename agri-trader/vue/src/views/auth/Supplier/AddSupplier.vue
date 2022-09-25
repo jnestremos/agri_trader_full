@@ -85,10 +85,7 @@
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-3">
                         <button class="btn btn-success" style="width:100px" @click="sendSupplier()">Add</button>
-                    </div>
-                    <div class="btn-group me-3">
-                        <button class="btn btn-secondary" style="width:100px">Edit</button>
-                    </div>
+                    </div>                    
                 </div>      
             </form>
         </div>
