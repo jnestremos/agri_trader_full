@@ -131,6 +131,9 @@ export default{
             this.addSupplier(this.supplier)
             .then(() => {
                 this.$toastr.s('Supplier Added!')
+                setTimeout(() => {
+                    this.$router.push({ name: "SupplierList" })
+                }, 5000)
             })
             .catch((err) => {
                 console.log(err)
