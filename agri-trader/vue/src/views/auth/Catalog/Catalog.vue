@@ -24,7 +24,7 @@
                     <div class="d-flex flex-column produce" style="width: 55%; height: 35vh;" @click="triggerModal(p.id)">
                         <div class="d-flex justify-content-center" style="height:75%; width:100%;">
                             <div style="height:100%; width:85%; background:green">
-                                <img width="100%" height="100%" :src="[p != null ? require(`../../../../../public/storage/catalog_images/${p.prod_name}.jpg`) : '']" alt="">
+                                <!-- <img width="100%" height="100%" :src="[p != null ? require(`../../../../../public/storage/catalog_images/${p.prod_name}.jpg`) : '']" alt=""> -->
                             </div>
                         </div>
                         <p class="ms-3 mt-3">{{ p.prod_name + ' ' + p.prod_type }}</p>

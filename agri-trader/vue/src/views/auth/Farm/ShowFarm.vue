@@ -3,7 +3,7 @@
     <!-- <router-link to="/farms" style="position:absolute; top: 1%; left:1%;"><h3>&LeftTriangle; Back</h3></router-link> -->
     <div class="grid">
       <div class="farm-image">        
-        <img alt="" width="80%" style="border-radius:10%; float:right;" :src="[getFarmDetails.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmDetails.farm.farm_imageUrl}`) : '']"
+        <!-- <img alt="" width="80%" style="border-radius:10%; float:right;" :src="[getFarmDetails.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmDetails.farm.farm_imageUrl}`) : '']" -->
         v-if="getFarmDetails.farm.farm_imageUrl">
       </div>
       <div class="location d-flex flex-column justify-content-center">              
