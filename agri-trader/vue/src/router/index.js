@@ -205,6 +205,60 @@ const routes = [
         meta: {needsAuth: true, role:'distributor'},
         component: DistMessaging
       },
+      {
+        path:"/supplier/add",
+        name:"AddSupplier",
+        meta:{needsAuth: true, role: "trader"},
+        component:AddSupplier
+      },
+      {
+        path:"/supplier/list",
+        name:"SupplierList",
+        meta:{needsAuth: true, role: "trader"},
+        component:SupplierList
+      },
+      {
+        path:"/supplier/:id",
+        name:"SupplierDetails",
+        meta:{needsAuth: true, role: "trader"},
+        component:SupplierDetails
+      },
+      {
+        path:"/supply/add",
+        name:"AddSupply",
+        meta:{needsAuth: true, role: "trader"},
+        component:AddSupply
+      },
+      {
+        path:"/farm_worker/add",
+        name:"AddFarmWorker",
+        meta:{needsAuth: true, role: "trader"},
+        component:AddFarmWorker
+      },
+      {
+        path:"/supplyOrder/add",
+        name:"InitialPurchaseOrder",
+        meta:{needsAuth: true, role: "trader"},
+        component:InitialPurchaseOrder
+      },
+      {
+        path:"/supplyOrder/orderSummary",
+        name:"PurchaseOrderSummary",
+        meta:{needsAuth: true, role: "trader"},
+        component:PurchaseOrderSummary
+      },
+      {
+        path:"/supplyOrder/payment",
+        name:"PurchaseOrderPayment",
+        meta:{needsAuth: true, role: "trader"},
+        component:PurchaseOrderPayment
+      },
+      {
+        path:"/supplyOrder/statusDashboard",
+        name:"PurchaseOrderDashboard",
+        meta:{needsAuth: true, role: "trader"},
+        component:PurchaseOrderDashboard
+      },
     ]
   }, 
   {
