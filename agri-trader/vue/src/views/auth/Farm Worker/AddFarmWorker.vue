@@ -12,19 +12,19 @@
                     <div class="form-row">
                         <div class="col-lg-2 mb-2">
                             <label for="farmWorker_firstName" class="form-label me-4 font-weight-bold" style="font-size:medium">First Name</label>
-                            <input type="text" name="farmWorker_farmWorkerFirstName" id="" class="form-control form-control-sm" v-model="farmWorker.farmWorker_firstName">
+                            <input type="text" name="farmWorker_farmWorkerFirstName" id="" class="form-control form-control-sm" v-model="farmWorker.worker_firstName">
                         </div>
                         <div class="col-lg-2 mb-2">
                             <label for="farmWorker_middleName" class="form-label me-4 font-weight-bold" style="font-size:medium">Middle Name</label>
-                            <input type="text" name="farmWorker_farmWorkerMiddleName" id="" class="form-control form-control-sm" v-model="farmWorker.farmWorker_middleName">
+                            <input type="text" name="farmWorker_farmWorkerMiddleName" id="" class="form-control form-control-sm" v-model="farmWorker.worker_middleName">
                         </div>
                         <div class="col-lg-2 mb-2">
                             <label for="farmWorker_lastName" class="form-label me-4 font-weight-bold" style="font-size:medium">Last Name</label>
-                            <input type="text" name="farmWorker_farmWorkerLastName" id="" class="form-control form-control-sm" v-model="farmWorker.farmWorker_lastName">
+                            <input type="text" name="farmWorker_farmWorkerLastName" id="" class="form-control form-control-sm" v-model="farmWorker.worker_lastName">
                         </div>
                         <div class="col-lg-2 mb-2">
                             <label for="farmWorker_lastName" class="form-label me-4 font-weight-bold" style="font-size:medium">Suffix</label>
-                            <input type="text" name="farmWorker_farmWorkerSuffix" id="" class="form-control form-control-sm" v-model="farmWorker.farmWorker_suffix">
+                            <input type="text" name="farmWorker_farmWorkerSuffix" id="" class="form-control form-control-sm" v-model="farmWorker.worker_suffix">
                         </div>
                     </div>
                     <div class="d-flex justify-content-start align-items-center w-100">
@@ -63,14 +63,16 @@
                     <div class="form-row mt-2">
                         <div class="col-lg-2 mb-1">
                             <label for="farmWorker_birthday" class="form-label me-4 font-weight-bold">Gender</label>
-                            <select class="form-select form-control-sm">
+                            <select class="form-select form-control-sm" @change="setGender($event)">
+                                <option value="None">Select Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                             </select>
                         </div>
                         <div class="col-lg-2 mb-1">
                             <label for="farmWorker_birthday" class="form-label me-4 font-weight-bold">Marital Status</label>
-                            <select class="form-select form-control-sm">
+                            <select class="form-select form-control-sm" @change="setMaritalStatus($event)">
+                                <option value="None">Select Status</option>
                                 <option value="Single">Single</option>
                                 <option value="Married">Married</option>
                                 <option value="Separated">Separated</option>
@@ -136,11 +138,15 @@ export default {
     data() {
         return {
             farmWorker: {
-                companyName: '',
-                farmWorker_firstName: '',
-                farmWorker_middleName: '',
-                farmWorker_lastName: '',
-                farmWorker_suffix: '',
+
+                worker_firstName: '',
+                worker_middleName: '',
+                worker_lastName: '',
+                worker_suffix: '',
+                worker_age: '',
+                worker_contactNum: '',
+                worker_gender: '',
+                worker_maritalStatus: '',
                 workerAdd_zipCode: '',
                 workerAdd_street: '',
                 workerAdd_barangay: '',
@@ -169,6 +175,12 @@ export default {
         },
         setBank(e){
             this.farmWorker.salaryPaymentMethod_bankName = e.target.value
+        },
+        setMaritalStatus(e){
+            this.farmWorker.worker_maritalStatus = e.target.value
+        },
+        setGender(e){
+            this.farmWorker.worker_gender = e.target.value
         }
     },
     watch: {
