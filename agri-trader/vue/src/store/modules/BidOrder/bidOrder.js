@@ -82,12 +82,19 @@ const state = {
         produce_yields: null,
         refunds: null
     },
+    order_list: {
+        orders: null,
+        on_hand_bids: null,
+        project_bids: null,
+        distributor: null
+    },
     distributors: null,
     contracts: null,
     projects: null,
     produces: null,
     project_bids: null,
-    on_hand_bids: null
+    on_hand_bids: null,
+    lastOrderDate: null
 }
 
 const getters = {
@@ -118,11 +125,17 @@ const getters = {
     getOrderDistributors(){
         return state.distributors
     },
+    getOrderLastOrderDate(){
+        return state.lastOrderDate
+    },
     getOrder(){
         return state.order
     },
     getOrderHistory(){
         return state.order_history
+    },
+    getOrderList(){
+        return state.order_list
     }
 }
 
@@ -170,6 +183,29 @@ const actions = {
                 commit('setOrders', res.data)
             })
         }
+    },   
+    fetchAllOrdersFilter({ commit }, query = null){
+        if(query){
+            return axiosClient.get(`/bid/orders/filter?${query}`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setOrders', res.data)
+            })
+        }
+        else{
+            return axiosClient.get(`bid/orders/filter`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setOrders', res.data)
+            })
+        }
+    },
+    fetchOrdersForDist({ commit }, id){
+        return axiosClient.get(`/bid/orders/${id}/bids`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setOrderList', res.data)
+        })
     },
     fetchOrder({ commit }, id){
         //bid/project/{id}/approve
@@ -382,8 +418,15 @@ const mutations = {
         state.contracts = data.contracts        
         state.produces = data.produces
         state.project_bids = data.project_bids
-        state.on_hand_bids = data.on_hand_bids    
+        state.on_hand_bids = data.on_hand_bids  
+        state.lastOrderDate = data.lastOrderDate  
     }, 
+    setOrderList: (state, data) => {
+        state.order_list.orders = data.orders
+        state.order_list.on_hand_bids = data.on_hand_bids
+        state.order_list.project_bids = data.project_bids
+        state.order_list.distributor = data.distributor        
+    },
     setOrder: (state, data) => {
         state.order.bidOrder = data.bidOrder
         state.order.project = data.project

@@ -20,6 +20,8 @@ import BidOrderHistory from '../views/auth/BidOrder/BidOrderHistory.vue'
 import HarvestDetails from '../views/auth/Harvest/HarvestDetails.vue'
 import DeliveryDetails from '../views/auth/Delivery/DeliveryDetails.vue'
 import AllBidOrders from '../views/auth/BidOrder/trader/AllBidOrders.vue'
+import AllBidOrdersFiltered from '../views/auth/BidOrder/trader/AllBidOrdersFiltered.vue'
+import DistributorListOfBids from '../views/auth/BidOrder/trader/DistributorListOfBids.vue'
 // import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
 import BidOrderDetailss from '../views/auth/BidOrder/trader/BidOrderDetailss.vue'
 import ChangeBidOrder from '../views/auth/BidOrder/trader/ChangeBidOrder.vue'
@@ -36,6 +38,7 @@ import InitialPurchaseOrder from '../views/auth/Supply Purchase Order/InitialPur
 import PurchaseOrderSummary from '../views/auth/Supply Purchase Order/PurchaseOrderSummary.vue'
 import PurchaseOrderPayment from '../views/auth/Supply Purchase Order/POPayment.vue'
 import PurchaseOrderDashboard from '../views/auth/Supply Purchase Order/PurchaseOrderDashboard.vue'
+import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -124,10 +127,28 @@ const routes = [
         component: AllBidOrders
       },
       {
+        path: '/bid/orders/filter',
+        name: 'AllBidOrdersFiltered', 
+        meta: {needsAuth: true, role:'trader'},
+        component: AllBidOrdersFiltered
+      },
+      {
         path: '/bid/orders/:id',
         name: 'ShowBidOrder',
         meta: {needsAuth: true, role:'trader'},
         component: BidOrderDetailss
+      },
+      {
+        path: '/bid/orders/:id/bids',
+        name: 'DistributorListOfBids',
+        meta: {needsAuth: true, role:'trader'},
+        component: DistributorListOfBids
+      },
+      {
+        path: '/income/summary',
+        name: 'IncomeSummary',
+        meta: {needsAuth: true, role:'trader'},
+        component: IncomeSummary
       },
       // {
       //   path: '/bid/orderss/:id',

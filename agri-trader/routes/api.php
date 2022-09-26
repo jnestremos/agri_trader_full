@@ -101,11 +101,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $endMonth = Carbon::now()->endOfMonth();
             $totalSales = Sale::select(DB::raw('sum(sale_total), created_at'))->whereIn('project_id', $project_ids)
             ->whereBetween('created_at', [$startMonth, $endMonth])->groupBy(DB::raw('cast(created_at as DATE)'))->orderBy('created_at')->get();
-
+            $bidOrders = BidOrder::where('trader_id', $user->trader()->first()->id)->get();
+            $incomeSumm = [];
+            foreach($bidOrders as $bidOrder){
+                foreach($bidOrder->bid_order_account()->where(DB::raw('cast(created_at as DATE)'), '2022-09-21')->orderBy('created_at', 'asc')->get() as $acc){
+                    array_push($incomeSumm, $acc);
+                }
+            }
             return response([
                 'totalSales' => $totalSales,
                 'name' => Trader::where('user_id',auth()->id())->first()->trader_firstName . " " . 
-                Trader::where('user_id',auth()->id())->first()->trader_lastName
+                Trader::where('user_id',auth()->id())->first()->trader_lastName,
+                'incomeSumm' => $incomeSumm
             ], 200);
         });
 
@@ -427,6 +434,31 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 }                
             });
 
+            Route::get('/filter', function (){
+                $trader = Trader::where('user_id', auth()->id())->first();
+                $orders = BidOrder::select(DB::raw('distributor_id, count(id), max(created_at)'))->where([
+                    ['trader_id', $trader->id],                    
+                ])->groupBy('trader_id');
+                $distributors = [];
+            
+                foreach($orders->get() as $order){
+                    array_push($distributors, $order->distributor()->first());
+                }                
+
+                if(count($orders->get()) > 6){
+                    return response([
+                        'orders' => $orders->paginate(6),
+                        'distributors' => $distributors,
+                    ]);
+                }
+                else{
+                    return response([
+                        'orders' => $orders->get(),
+                        'distributors' => $distributors,            
+                    ]);
+                }            
+            });
+
             Route::get('/{id}', function($id){
                 $bidOrder = BidOrder::find($id);
                 $produce = $bidOrder->produce_trader()->first()->produce()->first();
@@ -470,6 +502,31 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'delivery' => $delivery
                 ], 200);
             });
+
+
+            Route::get('/{dist_id}/bids', function ($dist_id) {
+                $orders = BidOrder::where('distributor_id', $dist_id)->get();
+                $on_hand_bids = [];
+                $project_bids = [];
+                foreach($orders as $order){
+                    if($order->on_hand_bid()->first()){
+                        array_push($on_hand_bids, $order->on_hand_bid()->first());
+                    }
+                    else if($order->project_bid()->first()){
+                        array_push($project_bids, $order->project_bid()->first());
+                    }
+                }
+
+                $distributor = Distributor::find($dist_id);
+                return response([
+                    'orders' => $orders,
+                    'on_hand_bids' => $on_hand_bids,
+                    'project_bids' => $project_bids,
+                    'distributor' => $distributor,
+                ]);
+            });
+
+
         });
 
         Route::get('/harvest/{id}/details', function($id) {

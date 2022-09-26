@@ -1,11 +1,15 @@
 import axiosClient from '../../../axios'
 const state = {
-    totalSales: null
+    totalSales: null,
+    incomeSumm: null
 }
 
 const getters = {
     getTotalSales(){
         return state.totalSales
+    },
+    getIncomeSumm(){
+        return state.incomeSumm
     }
 }
 
@@ -22,6 +26,7 @@ const actions = {
 const mutations = {
     setDashboardData: (state, data) => {
         state.totalSales = data.totalSales
+        state.incomeSumm = data.incomeSumm
     }
 }
 

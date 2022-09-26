@@ -7,7 +7,7 @@
     <div class="mb-5 mt-3">      
       <div class="container-fluid">
       <div class="row">
-        <div class="col-9">
+        <div class="col-6">
           <h5>Total Sales</h5>
           <div style="height:300px; background-color:greenyellow; border-radius:20px;" class="px-3 pb-3">
             <TotalSalesGraph style="height:100%; width:100%;" v-if="getTotalSales" :chartData="getTotalSales" label="Total Sales"/>
@@ -19,10 +19,10 @@
 
           </div>
         </div> -->
-        <div class="col-3">
-          <h5>Lead Produce in Sales</h5>
-          <div style="height:300px; background-color:greenyellow; border-radius:20px;">
-
+        <div class="col-6">
+          <h5>Income Summary</h5>
+          <div style="height:300px; background-color:greenyellow; border-radius:20px;" class="px-3 pb-3">
+            <IncomeSummaryGraph style="height:100%; width:100%;" v-if="getIncomeSumm" :chartData="getIncomeSumm" label="Income"/>
           </div>
         </div>
       </div>
@@ -47,6 +47,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import TotalSalesGraph from '../../components/TotalSalesGraph.vue';
+import IncomeSummaryGraph from '../../components/IncomeSummaryGraph.vue';
 export default {
     name: 'Dashboard',
     created(){
@@ -55,9 +56,9 @@ export default {
         this.readyApp()
       })      
     },  
-    components: { TotalSalesGraph },      
+    components: { TotalSalesGraph, IncomeSummaryGraph },      
     computed: {
-        ...mapGetters(['getName', 'getTotalSales']),        
+        ...mapGetters(['getName', 'getTotalSales', 'getIncomeSumm']),        
     },    
     methods: {
       ...mapActions(['readyApp', 'fetchDashboardData'])

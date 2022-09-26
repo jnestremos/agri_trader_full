@@ -2,6 +2,7 @@
   <div class="allBidOrders">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Bid Orders</h3>
+        <button @click="filterBidOrders()" class="btn btn-secondary">Filter By Buyer</button>
     </div>
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getOrderData.orders.length > 0">            
@@ -166,6 +167,9 @@ export default {
             .then(() => {
                 this.$router.push({ path: `/bid/orders/${id}` })
             })
+        },
+        filterBidOrders(){
+            // this.$router.push({ name: 'AllBidOrdersFiltered' })
         }                
     },
     computed: {
