@@ -84,7 +84,7 @@
                 </div>
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-3">
-                        <button class="btn btn-success" style="width:100px" @click="editSupplier()">Edit</button>
+                        <button class="btn btn-success" style="width:100px" @click="editSupplier($event)">Edit</button>
                     </div>                    
                 </div>      
             </form>
@@ -145,9 +145,10 @@ export default {
       setSuffix(e){
         this.supplier.contact_suffix = e.target.value
       },
-      editSupplier(){
+      editSupplier(e){
         this.updateSupplier(this.supplier)
         .then(() => {
+            e.target.disabled = true
           this.$toastr.s('Supplier Updated Successfully!')
           setTimeout(() => {
             this.$router.push({ name: 'SupplierList' })
