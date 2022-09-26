@@ -325,13 +325,13 @@ export default {
         getClass(proj){                      
             var prodTraderObj = this.getProduceTrader.filter((p) => {
                 return parseInt(proj.produce_trader_id) === parseInt(p.id) && parseFloat(proj.on_hand_qty) > 0
-            })            
+            })                    
             var arr = prodTraderObj[0].prod_name.split(' ')
-            if(arr.indexOf('(Class')){                              
+            if(arr.indexOf('(Class') && arr[arr.length - 2]){                        
                 return arr[arr.length - 2] + ' ' + arr[arr.length - 1]
             }
             else{
-                return prodTraderObj[0].prod_name
+                return 'No Class'
             }            
         },
         redirectToBidOrder(p){  

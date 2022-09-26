@@ -31,10 +31,12 @@
                 <td v-if="getOrderList.project_bids && getOrderList.on_hand_bids">{{ getQty(order) }}</td>
                 <td>{{ getStatus(order) }}</td>
                 <td v-if="order.order_initialPrice">{{ order.order_initialPrice.toFixed(2) }}</td>
-                <td v-if="order.order_negotiatedPrice">{{ order.order_negotiatedPrice.toFixed(2) }}</td>
+                <td v-if="order.order_negotiatedPrice">{{  order.order_negotiatedPrice.toFixed(2) }}</td>
+                <td v-else>&nbsp;</td>
                 <td v-if="order.order_finalPrice">{{ order.order_finalPrice.toFixed(2) }}</td>
+                <td v-else>&nbsp;</td>
                 <td>{{ order.created_at.split('T')[0] }}</td>
-                <td v-if="getOrderList.project_bids && getOrderList.on_hand_bids">{{ getTotal(order) }}</td>
+                <td v-if="getOrderList.project_bids && getOrderList.on_hand_bids">{{ order.order_finalTotal ? order.order_finalTotal.toFixed(2) : getTotal(order) }}</td>
               </tr>              
             </tbody>    
           </table>

@@ -26,7 +26,18 @@ const actions = {
 const mutations = {
     setDashboardData: (state, data) => {
         state.totalSales = data.totalSales
-        state.incomeSumm = data.incomeSumm
+        var dateToday = new Date().toISOString()
+        var year = dateToday.split('T')[0].split('-')[0]
+        var month = dateToday.split('T')[0].split('-')[1]
+        // var day = new Date().toLocaleString().split('/')[1]
+        var day = dateToday.split('T')[0].split('-')[2]
+        var incomeSummObj = data.incomeSumm.filter((i) => {
+            console.log(`${year}-${month}-${day}`)
+            console.log(i['created_at'].split('T')[0])
+            console.log(`${year}-${month}-${day}` === i['created_at'].split('T')[0])
+            return `${year}-${month}-${day}` === i['created_at'].split('T')[0]
+        })
+        state.incomeSumm = incomeSummObj
     }
 }
 

@@ -216,6 +216,23 @@ const actions = {
             commit('setOrder', res.data)
         })
     },
+    cancelPaymentOrOrder({ commit }, data){                
+        if(data.bid_type == 'Project Bid'){
+            return axiosClient.post(`/bid/project/${data.id}/cancel`)
+            .then((res) => {
+                console.log(res.data)
+                commit('asd')
+            })
+        }
+        else if(data.bid_type == 'On Hand Bid'){
+            return axiosClient.post(`/bid/onhand/${data.id}/cancel`)
+            .then((res) => {
+                console.log(res.data)
+                commit('asd')
+            })
+        }
+
+    },
     approveProjectBid({ commit }, data){
         return axiosClient.put(`/bid/project/${data.id}/approve`, data)
         .then((res) => {

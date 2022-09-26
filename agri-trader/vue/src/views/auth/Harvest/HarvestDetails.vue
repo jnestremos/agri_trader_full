@@ -456,7 +456,7 @@ export default {
           //   produce: this.data.produce_trader_id
           // }})      
           ///bid/orderss/:id
-          this.$router.push({ path: `/bid/orderss/${this.id}`, 
+          this.$router.push({ path: `/bid/orders/${this.id}`, 
           query: {
             finalPrice: this.data.order_finalPrice,
             finalQty: this.data.order_finalQty,

@@ -33,7 +33,7 @@
        this.renderChart({
         labels: this.chartData.labels,
         datasets: [{
-          label: 'Negotiated Price',
+          label: this.label,
           data: this.chartData.datasets,
           backgroundColor: 'black',
           borderColor: 'green'

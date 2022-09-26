@@ -32,7 +32,7 @@ class DeliveryController extends Controller
                         'produce_yield_dateHarvestTo' => 'required|date',
                         'delivery_date' => 'required|date|after_or_equal:produce_yield_dateHarvestTo',
                         'produce_trader_id' => 'required|exists:produce_trader,id',
-                        'order_grade' => 'required'
+                        'order_grade' => 'nullable'
                     ]);
                     if (!$order) {
                         return response([

@@ -43,9 +43,13 @@ class ProjectController extends Controller
             'project_harvestableEnd' => 'date|required',
             'startStage' => 'required'
         ]);
-        $result1 = ProduceTrader::where('produce_id', $request->produce_id)->first();
+        
         $trader = Trader::where('user_id', auth()->id())->first();
-        $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_id', '=', $request->produce_id]])->first(); 
+        $result1 = ProduceTrader::where([
+            ['produce_id', $request->produce_id],
+            ['trader_id', $trader->id]
+        ])->first();
+        $result2 = DB::table('farm_produce')->where([['farm_id', '=', $request->farm_id], ['produce_id', '=', $request->produce_id]])->first();         
         if (!$project || !($result1->trader_id == $trader->id) || !$result2) {
             return response([
                 'error' => 'Unavailable Produce for that Farm!'

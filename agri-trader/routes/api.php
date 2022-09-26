@@ -104,7 +104,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $bidOrders = BidOrder::where('trader_id', $user->trader()->first()->id)->get();
             $incomeSumm = [];
             foreach($bidOrders as $bidOrder){
-                foreach($bidOrder->bid_order_account()->where(DB::raw('cast(created_at as DATE)'), '2022-09-21')->orderBy('created_at', 'asc')->get() as $acc){
+                foreach($bidOrder->bid_order_account()
+                ->select(DB::raw('sum(bid_order_acc_amount), created_at'))->groupBy('bid_order_id')->get() as $acc){                    ;
                     array_push($incomeSumm, $acc);
                 }
             }
@@ -548,8 +549,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 }
                 else if($bidOrder->on_hand_bid()->first()){
                     array_push($on_hand_bids, $bidOrder->on_hand_bid()->first());
-                }
-                
+                }                
             }
             $produce = null;
             $farm = null;
@@ -564,11 +564,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             else{
                 $produce = Project::find($id)->contract()->first()->produce()->first();
                 $farm = Project::find($id)->contract()->first()->farm()->first();
-            }
-            foreach(ProduceTrader::where([['produce_id', $produce->id], ['trader_id', Trader::where('user_id', auth()->id())->first()->id]])->get() as $p){
+            }  
+            $trader = Trader::where('user_id', auth()->id())->first();                 
+            
+            foreach(ProduceTrader::where([
+                ['produce_id', $produce->id],
+                ['trader_id', $trader->id]                    
+            ])->get() as $p){
                 array_push($produce_trader, $p); 
             }  
-            $container = $produce->produce_trader()->where('trader_id', auth()->id())->get();
+            $container = $produce->produce_trader()->where('trader_id', Trader::where('user_id', auth()->id())->first()->id)->get();
             $produce_list = [];
             foreach($container as $p){
                 // if($p->produce_yield()->where([['project_id', $id]])->first()->produce_yield_qtyHarvested > 0){
@@ -689,6 +694,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::prefix('bid/project/{id}')->group(function () {
             Route::controller(ProjectBidController::class)->group(function () {
                 Route::put('/approve', 'approveProjectBid');
+                Route::post('/cancel', 'cancelProjectBid');
                 Route::post('/payment', 'paymentProjectBid');
             });
             Route::put('/deliver', [DeliveryController::class, 'deliverProjectBid']);
@@ -697,6 +703,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::prefix('bid/onhand/{id}')->group(function () {
             Route::controller(OnHandBidController::class)->group(function () {
                 Route::put('/approve', 'approveOnHandBid');
+                Route::post('/cancel', 'cancelOnHandBid');
                 Route::post('/payment', 'paymentOnHandBid');
             });
             Route::put('/deliver', [DeliveryController::class, 'deliverOnHandBid']);
@@ -890,7 +897,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $contract = Contract::find($id);
                 $trader = $contract->trader()->first();
                 $project = $contract->project()->first();
-                $produce_trader = ProduceTrader::where('produce_id', $contract->produce_id)->get();
+                $produce_trader = ProduceTrader::where([
+                    ['produce_id', $contract->produce_id],
+                    ['trader_id', $contract->trader_id]
+                ])->get();
                 $chart_data = DB::table('bid_orders')->select(DB::raw('avg(order_negotiatedPrice), order_grade, created_at'))->where([
                     ['project_id', $id],
                     ['order_negotiatedPrice', '!=', null],                    

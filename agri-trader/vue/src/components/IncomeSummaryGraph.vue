@@ -31,10 +31,11 @@
         var month = dateNow.toDateString().split(' ')[1]
         var day = dateNow.toDateString().split(' ')[2]
         var year = dateNow.toDateString().split(' ')[3]
-        console.log(dateNow.toDateString())        
-        this.chartData.forEach((d) => {
-            labels.push(d.created_at.split('T')[1].split('.')[0])
-            data.push(d.bid_order_acc_amount)
+        console.log(dateNow.toDateString())    
+        console.log(this.chartData)    
+        this.chartData.forEach((d) => {          
+            labels.push(d['created_at'].split('T')[1].split('.')[0])
+            data.push(d['sum(bid_order_acc_amount)'])
         })         
          this.renderChart({
           labels: labels,

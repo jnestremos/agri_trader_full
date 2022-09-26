@@ -16,12 +16,13 @@ return new class extends Migration
         Schema::create('refunds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('bid_order_id')->constrained('bid_orders')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('bid_order_id')->constrained('bid_orders')->onUpdate('cascade')->onDelete('cascade');            
             $table->integer('refund_numOfDays')->nullable();
             $table->double('refund_percentage')->nullable();
             $table->double('refund_amount')->nullable();
             $table->string('refund_receivedBy')->nullable();
             $table->string('refund_contactNum')->nullable();
+            $table->string('refund_statusFrom');
             $table->timestamps();
         });
     }

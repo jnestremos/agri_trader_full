@@ -26,7 +26,8 @@
         </div>
         <table width="100%" class="mt-3 mb-4">
             <thead>
-                <tr>                   
+                <tr>   
+                    <th>Transaction #</th>                
                     <th>Type</th>
                     <th>Mode Of Payment</th>
                     <th>Account Name</th>
@@ -37,7 +38,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(acc, index) in getOrder.bid_order_acc" :key="index">                
+                <tr v-for="(acc, index) in getOrder.bid_order_acc" :key="index"> 
+                    <td>{{ acc.id }}</td>               
                     <td>{{ acc.bid_order_acc_type }}</td>
                     <td>{{ acc.bid_order_acc_paymentMethod }}</td>
                     <td>{{ acc.bid_order_acc_accName }}</td>
@@ -54,8 +56,10 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 <tr>                    
+                    <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -72,6 +76,7 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 <tr>                   
                     <td>&nbsp;</td>
@@ -81,8 +86,10 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 <tr>                    
+                    <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -133,7 +140,8 @@
                 <input v-if="bid_order_status_id == 1" type="number" class="form-control" id="percentage" disabled style="width:100px;" min="0" max="100" value="50.00" @keyup="validatePercent($event)" onkeydown="return false">
                 <h5 v-else-if="getOrder.bidOrder" class="me-3">{{ getPercentage + '%' }}</h5>
             </div>
-            <h5 v-if="bid_order_status_id == 5 || (bid_order_status_id == 4 && $route.query.finalPrice || bid_order_status_id == 4 && getOrder.on_hand_bid)">Total Amount: {{ getOrder.on_hand_bid ? getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) : data.order_finalTotal }}</h5>
+            <!-- (bid_order_status_id == 5 && getOrder.on_hand_bid) || -->
+            <h5 v-if="(bid_order_status_id == 4 && $route.query.finalPrice || bid_order_status_id == 4 && getOrder.on_hand_bid)">Total Amount: {{ getOrder.on_hand_bid ? getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) : data.order_finalTotal }}</h5>
             <div v-if="bid_order_status_id == 7 && getOrder.refund && data.bid_order_acc_paymentMethod == 'Bank' && getOrder.bid_order_acc[0].bid_order_acc_type != 'Refund'" class="d-flex align-items-baseline">
                 <h5 class="me-3">Account Number:</h5>
                 <input type="text" class="form-control" style="width:150px" v-model="data.bid_order_acc_accNum">
@@ -190,7 +198,8 @@
         <div v-if="getOrder.delivery && (bid_order_status_id == 5 || bid_order_status_id == 6)" class="d-flex align-items-baseline justify-content-between w-100 mt-3">
             <h5>{{ getOrder.delivery.delivery_receivedBy ? 'Received By: ' : 'Not Yet Received' }} {{ getOrder.delivery.delivery_receivedBy ? getOrder.delivery.delivery_receivedBy  + ' - ' + getOrder.delivery.delivery_contactNum : '' }}</h5>                  
         </div>
-        <button v-if="bid_order_status_id != 4 && bid_order_status_id != 5 && bid_order_status_id != 2 && bid_order_status_id != 7" type="submit" class="btn btn-success px-5" style="position:absolute; right: 5%; bottom: 2%">{{ bid_order_status_id == 1 ? 'Post' : bid_order_status_id == 3 && getOrder.bid_order_acc.length > 0 || bid_order_status_id == 6 ? 'Confirm' : '' }}</button>
+        <button v-if="bid_order_status_id != 4 && bid_order_status_id != 5 && bid_order_status_id != 2 && bid_order_status_id != 7 && (bid_order_status_id == 1 || bid_order_status_id == 3 && getOrder.bid_order_acc.length > 0 && getOrder.bid_order_acc[0].bid_order_acc_type == 'First Payment' || bid_order_status_id == 6 && getOrder.bid_order_acc.length > 0 && getOrder.bid_order_acc[0].bid_order_acc_type == 'Final Payment')" type="submit" class="btn btn-success px-5" style="position:absolute; right: 5%; bottom: 2%">{{ bid_order_status_id == 1 ? 'Post' : bid_order_status_id == 3 && getOrder.bid_order_acc.length > 0 || bid_order_status_id == 6 ? 'Confirm' : '' }}</button>
+        <button type="button" v-if="bid_order_status_id != 2 && (bid_order_status_id == 7 || bid_order_status_id == 1 || bid_order_status_id == 3 && getOrder.bid_order_acc.length > 0 && getOrder.bid_order_acc[0].bid_order_acc_type == 'First Payment' || bid_order_status_id == 6 && getOrder.bid_order_acc.length > 0 && getOrder.bid_order_acc[0].bid_order_acc_type == 'Final Payment')" class="btn btn-secondary me-3" @click="cancelTransaction()" style="position:absolute; right: 13%; bottom: 2%">Cancel</button>
         <button class="btn btn-success px-5" @click="sendDelivery()" v-if="bid_order_status_id == 4 && data.order_finalPrice && data.order_finalQty && data.produce_trader_id" style="position:absolute; right: 5%; bottom: 2%">Post</button>
         <button v-if="bid_order_status_id == 7 && getOrder.bid_order_acc[0].bid_order_acc_type != 'Refund'" @click="refundApprove()" class="btn btn-success px-5" style="position:absolute; right: 5%; bottom: 2%">Post</button>
     </form>
@@ -292,7 +301,8 @@ export default {
             'approveFinalPayment',
             'fetchDeliveryFormDetails', 
             'sendDeliveryFormDetails',
-            'approveRefund'           
+            'approveRefund',
+            'cancelPaymentOrOrder'           
         ]),
         getStatus(){
             if(this.getOrder.bidOrder.bid_order_status_id == 1){                
@@ -481,7 +491,18 @@ export default {
         getTotall(){
             this.data.order_finalTotal = parseFloat(this.$route.query.finalPrice * this.$route.query.finalQty).toFixed(2)
             return parseFloat(this.$route.query.finalPrice * this.$route.query.finalQty).toFixed(2)
-        },        
+        }, 
+        cancelTransaction(){                
+            var data = {
+                id: this.getOrder.bidOrder.id,
+                bid_type: this.getOrder.project_bid ? 'Project Bid' 
+                : this.getOrder.on_hand_bid ? 'On Hand Bid' : null
+            }        
+            this.cancelPaymentOrOrder(data)
+            .then(() => {
+                this.$router.push({ name: 'AllBidOrders' })
+            })
+        }       
     },
     computed: {
         ...mapGetters(['getOrder', 'getDeliveryForm']),

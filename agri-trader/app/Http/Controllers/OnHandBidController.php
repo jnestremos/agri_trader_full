@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BidOrder;
 use App\Models\BidOrderAccount;
+use App\Models\BidOrderStatus;
 use App\Models\Message;
 use App\Models\OnHandBid;
 use App\Models\ProduceTrader;
@@ -141,6 +142,84 @@ class OnHandBidController extends Controller
         } else {
             return response([
                 'error' => 'Bid Order Not Found!'
+            ], 400);
+        }
+    }
+
+    public function cancelOnHandBid($id){
+        $user = User::find(auth()->id());
+        $trader = $user->trader()->first();
+        $distributor = $user->distributor()->first();
+        $bidOrder = BidOrder::find($id);
+        $status = $bidOrder->bid_order_status_id;
+        if($trader){
+            if($status == 1){
+                $bidOrder->delete();
+                return response([
+                    'message' => "Bid Order Cancelled!"
+                ]);
+            }
+            else if($status == 3){
+                $acc = $bidOrder->bid_order_account()->latest()->first();
+                if($acc){
+                    $acc->delete();
+                    return response([
+                        'message' => "Payment Cancelled!"
+                    ]);
+                }
+            }
+            else if($status == 6){
+                $acc = $bidOrder->bid_order_account()->latest()->first();
+                if($acc){
+                    $acc->delete();
+                    $bidOrder->delivery()->update([
+                        'delivery_receivedBy' => null,
+                        'delivery_contactNum' => null
+                    ]);
+                    $bidOrder->update([
+                        'bid_order_status_id' => 5
+                    ]);
+                    return response([
+                        'message' => "Payment Cancelled!"
+                    ]);
+                }
+            }
+            else if($status == 7){                                
+                $refund = $bidOrder->refund()->first();    
+                $bidOrderStatus = BidOrderStatus::where('bid_order_status', $refund->refund_statusFrom)->first();
+                $bidOrder->update([
+                    'bid_order_status_id' => $bidOrderStatus->id
+                ]);            
+                $refund->delete();                
+                return response([
+                    'message' => "Refund Denied!"
+                ]);
+            }
+        }
+        else if($distributor){
+            if($status == 2){
+                $bidOrder->delete();
+                return response([
+                    'message' => "Bid Order Cancelled!"
+                ]);
+            }
+            else if($status == 8){
+                $refund = $bidOrder->refund()->first();
+                $refund->update([
+                    'refund_amount' => null
+                ]);
+                $bidOrder->bid_order_account()->latest()->first()->delete();
+                $bidOrder->update([
+                    'bid_order_status_id' => 7
+                ]);                
+                return response([
+                    'message' => "Refund Denied!"
+                ]);
+            }
+        }
+        else {
+            return response([
+                'error' => 'Unauthorized Access!'
             ], 400);
         }
     }

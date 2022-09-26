@@ -71,7 +71,7 @@
       </div>
       <div class="d-flex align-items-center justify-content-between w-100 mb-2">
         <div style="height:45vh; width:50%; background:transparent" class="d-flex justify-content-center align-items-center">                   
-            <line-chart style="width:95%;" v-if="chart_data.labels.length > 0 && chart_data.datasets.length > 0" :chartData="chart_data" :label="data.order_grade"></line-chart>                     
+            <line-chart style="width:95%;" v-if="chart_data.labels.length > 0 && chart_data.datasets.length > 0" :chartData="chart_data" :label="$route.name == 'BidOrderProject' ? 'Negotiated Price' : 'Market Price'"></line-chart>                     
             <h5 v-else>No Graphical Data</h5>
         </div>
         <div style="height:45vh; background:grey; width:50%">

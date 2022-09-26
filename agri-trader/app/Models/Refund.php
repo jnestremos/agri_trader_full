@@ -17,7 +17,8 @@ class Refund extends Model
         'refund_paymentMethod',
         'refund_amount',
         'refund_receivedBy',
-        'refund_contactNum'
+        'refund_contactNum',
+        'refund_statusFrom'
     ];
 
     public function project()

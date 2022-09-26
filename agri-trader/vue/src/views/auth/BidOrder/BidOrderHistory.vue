@@ -142,7 +142,7 @@
                     <h5 class="me-3">Negotiated Price:</h5>
                     <p>{{ order.order_negotiatedPrice.toFixed(2) + ' per kg' }}</p> 
                   </div>                                 
-                  <div class="d-flex align-items-baseline w-50">
+                  <div class="d-flex align-items-baseline w-50" :style="order.bid_order_status_id == 2 ? {'margin-bottom':'40px'} : '' ">
                     <div class="d-flex align-items-baseline">
                       <h5 class="me-3">First Payment:</h5>
                       <p>{{ order.order_dpAmount.toFixed(2) + ` (${getPercentage(order)}%)` }}</p> 
@@ -166,8 +166,9 @@
                   </div>
                 </div>                                 
                 <div class="d-flex align-items-center justify-content-end" style="position:absolute; bottom:0; right:5%;" v-if="order.bid_order_status_id != 1 && order.bid_order_status_id != 6">     
-                  <button class="btn btn-success me-3" v-if="!hasRefundRequest(order) && ((isProjectOrOnHand(order) == 'Project' && order.bid_order_status_id == 4 && payment_data.refund_numOfDays >= 14) || (isProjectOrOnHand(order) == 'Project' && isDateAfterHarvest(order))) || order.bid_order_status_id == 5" @click="refundOrder(order)">Refund</button>
-                  <button class="btn btn-success" v-if="getDpDueDate(order) == order.order_dpDueDate || order.bid_order_status_id == 5 || order.bid_order_status_id == 8" @click="setStatus(order)">{{ order.bid_order_status_id == 2 || order.bid_order_status_id == 7 || order.bid_order_status_id == 8 ? 'Confirm' : order.bid_order_status_id == 4 ? 'Refund Advanced Order' : 'Pay Amount' }}</button>                  
+                  <button class="btn btn-secondary me-3" v-if="order.bid_order_status_id != 1 && order.bid_order_status_id != 3 && order.bid_order_status_id != 4 && order.bid_order_status_id != 5 && order.bid_order_status_id != 7" @click="cancelTransaction(order)">Cancel</button>
+                  <button class="btn btn-success me-3" v-if="!hasRefundRequest(order) && ((isProjectOrOnHand(order) == 'Project' && order.bid_order_status_id == 4 && payment_data.refund_numOfDays >= 14) || (isProjectOrOnHand(order) == 'Project' && isDateAfterHarvest(order))) || order.bid_order_status_id == 5" @click="refundOrder(order)">Refund</button>                  
+                  <button class="btn btn-success" v-if="getDpDueDate(order) == order.order_dpDueDate || order.bid_order_status_id == 5 || order.bid_order_status_id == 8" @click="setStatus(order)">{{ order.bid_order_status_id == 2 || order.bid_order_status_id == 7 || order.bid_order_status_id == 8 ? 'Confirm' : order.bid_order_status_id == 4 ? 'Refund Advanced Order' : 'Pay Amount' }}</button>                                    
                 </div>                 
                 <div class="d-flex align-items-baseline justify-content-between mt-3" style="width:100%;" v-if="order.bid_order_status_id > 2">              
                   <div :class="order.bid_order_status_id == 4 || (order.bid_order_status_id == 3 && getDpDueDate(order) != order.order_dpDueDate) || order.bid_order_status_id == 6 || order.bid_order_status_id == 7 || order.bid_order_status_id == 8 ? 'd-flex align-items-baseline w-50' : 'd-flex align-items-baseline justify-content-between w-50'">
@@ -340,8 +341,28 @@ export default {
           'firstPayment', 
           'finalPayment',
           'requestRefund',
-          'confirmRefund'
+          'confirmRefund',
+          'cancelPaymentOrOrder'
         ]),
+        cancelTransaction(order){
+          var data;
+          if(this.isProjectOrOnHand(order) == 'Project'){
+            data = {
+              id: order.id,
+              bid_type: 'Project Bid'
+            }
+          }
+          else if(this.isProjectOrOnHand(order) == 'OnHand'){
+            data = {
+              id: order.id,
+              bid_type: 'On Hand Bid'
+            }
+          }
+          this.cancelPaymentOrOrder(data)
+          .then(() => {
+            location.reload()
+          })
+        },
         getProduceName(order){                      
           var prodTraderObj = this.getOrderHistory.produce_trader.filter((p) => {
             return parseInt(p.id) === parseInt(order.produce_trader_id)

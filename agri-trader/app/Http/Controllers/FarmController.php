@@ -23,8 +23,8 @@ class FarmController extends Controller
         $newFarm = $request->validate([
             'owner_id' => 'required|exists:farm_owners,id',
             'farm_hectares' => 'required|numeric',
-            'farm_titleNum' => 'required|string',
-            'farm_name' => 'required|string',
+            'farm_titleNum' => 'required|string|unique:farms,farm_titleNum',
+            'farm_name' => 'required|string|unique:farms,farm_name',
             'farm_imageUrl' => 'required|image|mimes:jpg,jpeg,png|max:5048',
             //'farm_imageUrl' => 'required',
             'farm_province' => 'required',

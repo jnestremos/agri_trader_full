@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BidOrder;
 use App\Models\BidOrderAccount;
+use App\Models\BidOrderStatus;
 use App\Models\Message;
 use App\Models\Refund;
 use App\Models\User;
@@ -32,8 +33,6 @@ class RefundController extends Controller
                 // }
     
                 $order = BidOrder::find($id);
-                $order->bid_order_status_id = 7;
-                $order->save();
                 
                 Message::create([
                     'trader_id' => $order->trader_id,
@@ -48,8 +47,13 @@ class RefundController extends Controller
                     'bid_order_id' => $order->id,
                     'refund_numOfDays' => $request->refund_numOfDays,
                     'refund_percentage' => $request->refund_percentage,
-                    'refund_amount' => $request->refund_amount
+                    'refund_amount' => $request->refund_amount,
+                    'refund_statusFrom' => BidOrderStatus::find($order->bid_order_status_id)->bid_order_status
                 ]);
+
+                $order->bid_order_status_id = 7;
+                $order->save();
+                
     
                 return response([
                     'message' => 'Refund Request Sent!'
@@ -114,7 +118,7 @@ class RefundController extends Controller
                 'bid_order_acc_bankName' => $request->bid_order_acc_bankName,
                 'bid_order_acc_accNum' => $request->bid_order_acc_accNum,
                 'bid_order_acc_accName' => $request->bid_order_acc_accName,
-                'bid_order_acc_amount' => $request->bid_order_acc_amount,
+                'bid_order_acc_amount' => $request->bid_order_acc_amount * -1,
                 'bid_order_acc_remarks' => $request->bid_order_acc_remarks,
                 'bid_order_acc_datePaid' => $request->bid_order_acc_datePaid,
             ]);
