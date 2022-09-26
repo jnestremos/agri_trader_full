@@ -1,6 +1,8 @@
 <template>
     <div class="incomeSummary">
-        this is the income Summary page
+        <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
+            <h3>Income Summary</h3>
+        </div>       
     </div>
 </template>
 

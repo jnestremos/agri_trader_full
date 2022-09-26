@@ -21,7 +21,7 @@
         </div> -->
         <div class="col-6">
           <h5>Income Summary</h5>
-          <div style="height:300px; background-color:greenyellow; border-radius:20px;" class="px-3 pb-3">
+          <div style="height:300px; background-color:greenyellow; border-radius:20px; cursor:pointer" class="px-3 pb-3" @click="redirectIncomeSummary()">
             <IncomeSummaryGraph style="height:100%; width:100%;" v-if="getIncomeSumm" :chartData="getIncomeSumm" label="Income"/>
           </div>
         </div>
@@ -61,7 +61,10 @@ export default {
         ...mapGetters(['getName', 'getTotalSales', 'getIncomeSumm']),        
     },    
     methods: {
-      ...mapActions(['readyApp', 'fetchDashboardData'])
+      ...mapActions(['readyApp', 'fetchDashboardData']),
+      redirectIncomeSummary(){
+        this.$router.push({ name: 'IncomeSummary' })
+      }
     }
     
 }

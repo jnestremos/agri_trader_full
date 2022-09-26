@@ -169,7 +169,7 @@ export default {
             })
         },
         filterBidOrders(){
-            // this.$router.push({ name: 'AllBidOrdersFiltered' })
+            this.$router.push({ name: 'AllBidOrdersFiltered' })
         }                
     },
     computed: {

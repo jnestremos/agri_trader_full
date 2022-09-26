@@ -7,14 +7,14 @@
         <div class="w-100" v-if="getOrderData.orders.length > 0">            
             <div class="row mb-5" v-for="(order, index) in filtered" :key="index">                     
                 <div class="col-4" style="height:35vh" v-for="(o, i) in order" :key="i">                
-                    <div class="d-flex order" style="height:100%; border-radius:50px; position: relative;" @click="showOrder(o.id)">                
+                    <div class="d-flex order" style="height:80%; border-radius:50px; position: relative;" @click="showOrderList(o.distributor_id)">                
                         <div class="" style="position: absolute; top:5%; left:5%; 
                         width:85%;">
-                            <div class="d-flex">
+                            <div class="d-flex mb-3">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
                                 <h3 class="mb-4">{{ getDistName(o) }}</h3>
                             </div>                                                                                
-                            <h5 class="d-flex align-items-baseline">Pending Orders: <p class="ms-3">{{ o['count(id)'] }}</p></h5>
+                            <h5 class="d-flex align-items-baseline mb-3">Pending Orders: <p class="ms-3">{{ o['count(id)'] }}</p></h5>
                             <h5 class="d-flex align-items-baseline">Last Order Date Placed: <p class="ms-3">{{ o['max(created_at)'].split('T')[0] }}</p></h5>                          
                         </div>                                                
                     </div>
@@ -53,9 +53,14 @@ export default {
             this.filtered = this.filteredOrderArray()
             this.readyApp()
         })        
+    },
+    data(){
+      return {
+        filtered: null
+      }
     },  
     methods:{   
-        ...mapActions(['readyApp']),
+        ...mapActions(['readyApp', 'fetchAllOrdersFilter']),
         filteredOrderArray(){
             var filtered = [];
             var arr = this.getOrderData.orders;             
@@ -68,11 +73,12 @@ export default {
             }            
             return filtered
         },
-        getDistName(o){
+        getDistName(o){    
+          console.log(this.getOrderDistributors)     
           var distObj = this.getOrderDistributors.filter((d) => {
             return parseInt(d.id) === parseInt(o.distributor_id);
           })
-          return `${distObj[0].distributor_firstName} ${distObj[0].distributor.lastName}`
+          return `${distObj[0].distributor_firstName} ${distObj[0].distributor_lastName}`
         },
         showPrevious(){
             var query = this.getOrderData.prev_page_url.split('?')[1]
@@ -96,6 +102,9 @@ export default {
                 this.filtered = this.filteredOrderArray()   
             })
         },
+        showOrderList(id){
+          this.$router.push({ path: `/bid/orders/${id}/bids` })
+        }
     },
     computed: {
       ...mapGetters(['getOrderData', 'getOrderData', 'getOrderDistributors', 'getOrderLastOrderDate'])
@@ -103,6 +112,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.order{
+    background-color:greenyellow;
+}
 
+.order:hover{
+    transition: 0.5s;
+    background-color:grey;
+    cursor:pointer;
+}
+
+.page-item a{
+    cursor:pointer;
+}
 </style>

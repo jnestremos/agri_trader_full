@@ -86,7 +86,8 @@ const state = {
         orders: null,
         on_hand_bids: null,
         project_bids: null,
-        distributor: null
+        distributor: null,
+        produce_trader: null
     },
     distributors: null,
     contracts: null,
@@ -426,6 +427,7 @@ const mutations = {
         state.order_list.on_hand_bids = data.on_hand_bids
         state.order_list.project_bids = data.project_bids
         state.order_list.distributor = data.distributor        
+        state.order_list.produce_trader = data.produce_trader        
     },
     setOrder: (state, data) => {
         state.order.bidOrder = data.bidOrder

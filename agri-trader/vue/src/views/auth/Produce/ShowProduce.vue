@@ -26,7 +26,7 @@
       </div>
     </div>
     <div style="width:100%; height:65%; clear:left;">
-      <table id="example" class="table table-striped" style="width:100%: height:100%;">
+      <table id="example" class="table table-striped" style="width:100%; height:100%;">
         <thead>
             <tr>
                 <th>Farm Name</th>

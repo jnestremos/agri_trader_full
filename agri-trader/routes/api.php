@@ -438,7 +438,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $trader = Trader::where('user_id', auth()->id())->first();
                 $orders = BidOrder::select(DB::raw('distributor_id, count(id), max(created_at)'))->where([
                     ['trader_id', $trader->id],                    
-                ])->groupBy('trader_id');
+                ])->groupBy('distributor_id');
                 $distributors = [];
             
                 foreach($orders->get() as $order){
@@ -508,6 +508,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $orders = BidOrder::where('distributor_id', $dist_id)->get();
                 $on_hand_bids = [];
                 $project_bids = [];
+                $produce_trader = [];
                 foreach($orders as $order){
                     if($order->on_hand_bid()->first()){
                         array_push($on_hand_bids, $order->on_hand_bid()->first());
@@ -515,6 +516,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     else if($order->project_bid()->first()){
                         array_push($project_bids, $order->project_bid()->first());
                     }
+                    array_push($produce_trader, $order->produce_trader()->first());
                 }
 
                 $distributor = Distributor::find($dist_id);
@@ -523,6 +525,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'on_hand_bids' => $on_hand_bids,
                     'project_bids' => $project_bids,
                     'distributor' => $distributor,
+                    'produce_trader' => $produce_trader,                    
                 ]);
             });
 
