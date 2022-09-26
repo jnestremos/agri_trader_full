@@ -10,7 +10,7 @@
                     <div class="form-row mb-2">
                         <div class="col-lg-2 me-2">
                             <label for="supplyOrder_date" class="form-label me-4" >Date</label>
-                            <input type="date" name="supplyOrder_Date" id="" class="form-control" v-model="supplyOrder.date">
+                            <input type="date" name="supplyOrder_Date" id="" class="form-control" v-model="supplyOrder.supplyOrder_date">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
@@ -18,7 +18,7 @@
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderStatus" class="form-label me-4" >Purchase Order Status</label>
-                            <input type="text" name="supplyOrder_purchaseOrderStatus" id="" class="form-control" v-model="supplyOrder.Status">
+                            <input type="text" name="supplyOrder_purchaseOrderStatus" id="" class="form-control" v-model="supplyOrder.supplyOrder_Status">
                         </div>
                     </div>
                     <div class="form-row">
@@ -44,10 +44,6 @@
                         <div class="col-sm-2 mb-2 me-4">
                             <label for="supplyOrder_onHand" class="form-label me-3">On-hand Inventory</label>
                             <input type="number" name="supplyOrder_onHand" id="" class="form-control" placeholder="5" readonly>
-                        </div>
-                        <div class="col-sm-2 mb-2 me-4">
-                            <label for="supplyOrder_reorderLevel" class="form-label me-3">Reorder Level</label>
-                            <input type="number" name="supplyOrder_reorderLevel" id="" class="form-control" placeholder="5" readonly>
                         </div>
                     </div>
                     <!-- height:90%; -->
@@ -84,24 +80,15 @@
                             <label for="supplyOrder_purchaseQuantity" class="form-label me-4" >Quantity</label>
                             <input type="number" name="supplyOrder_purchaseQuantity" id="" class="form-control" v-model="getTotal" disabled>
                         </div>
-                        <div class="col-lg-2 mb-2 me-4">
-                            <label for="supplyOrder_unitType" class="form-label me-4" >Unit Type</label>
-                            <select class="form-select">
-                                <option>Sack</option>
-                                <option>Bottle</option>
-                                <option>Sachet</option>
-                                <option>Pack</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="form-row mb-2">
                         <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_subTotal" class="form-label me-4" >Sub-Total</label>
-                            <input type="text" name="supplyOrder_subTotal" id="" class="form-control" v-model="supplyOrder.subTotal">
+                            <input type="text" name="supplyOrder_subTotal" id="" class="form-control" v-model="supplyOrder.supplyOrder_subTotal">
                         </div>
                         <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_transactionPrice" class="form-label me-4" >Transaction Price</label>
-                            <input type="text" name="supplyOrder_transactionPrice" id="" class="form-control" v-model="supplyOrder.transactionPrice">
+                            <input type="text" name="supplyOrder_transactionPrice" id="" class="form-control" v-model="supplyOrder.supplyOrder_transactionPrice">
                         </div>
                     </div>
                     <div class="text-left">
@@ -202,14 +189,14 @@ export default {
             filter: null,
             filterFor: null,
             supplyOrder: {
-                date: '',
-                purchaseOrderNo: '',
-                purchaseOrderStatus: '',
+                supplyOrder_date: '',
+                supplyOrder_purchaseOrderNo: '',
+                supplyOrder_purchaseOrderStatus: '',
                 supplyType: null,
-                purchaseQuantity: '',
+                supplyOrder_purchaseQuantity: '',
                 select: [],
                 selectQty: [],
-                unit: '',
+                
                 
             },                    
             products: [

@@ -123,6 +123,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
     name: "PurchaseOrderSummary",
     data() {
@@ -186,7 +187,8 @@ export default {
         },
         triggerModal(){
             this.$bvModal.show("paymentModal")                                 
-        }
+        },
+        ...mapActions(['readyApp'])
     },
 }
 </script>
