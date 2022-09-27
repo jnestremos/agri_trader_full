@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\PseudoTypes\False_;
+use Ramsey\Collection\Set;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,7 +106,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $incomeSumm = [];
             foreach($bidOrders as $bidOrder){
                 foreach($bidOrder->bid_order_account()
-                ->select(DB::raw('sum(bid_order_acc_amount), created_at'))->groupBy('bid_order_id')->get() as $acc){                    ;
+                ->select(DB::raw('sum(bid_order_acc_amount), created_at'))->groupBy('bid_order_id')->get() as $acc){
                     array_push($incomeSumm, $acc);
                 }
             }
@@ -115,6 +116,67 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Trader::where('user_id',auth()->id())->first()->trader_lastName,
                 'incomeSumm' => $incomeSumm
             ], 200);
+        });
+
+        Route::get('/income/summary', function (){
+            $trader = User::find(auth()->id())->trader()->first();
+            $bidOrders = BidOrder::where('trader_id', $trader->id)->get();            
+            $incomeSumm = [];
+            foreach($bidOrders as $bidOrder){                
+                foreach($bidOrder->bid_order_account()
+                ->select(DB::raw('id, bid_order_id, sum(bid_order_acc_amount), created_at'))->groupBy('bid_order_id')->orderBy('created_at')->get() as $acc){
+                    array_push($incomeSumm, $acc);
+                }
+            }                       
+            $bid_order_accounts = [];
+            $produce_trader = [];
+            $distributors = [];
+            $produces = [];
+            $contracts = [];
+            $projects = [];
+            $project_bids = [];
+            $on_hand_bids = [];
+            foreach($bidOrders as $bidOrder){
+                if(!in_array($bidOrder->project_bid()->first(), $project_bids) && $bidOrder->project_bid()->first()){
+                    array_push($project_bids, $bidOrder->project_bid()->first());
+                }   
+                else if(!in_array($bidOrder->on_hand_bid()->first(), $on_hand_bids) && $bidOrder->on_hand_bid()->first()){
+                    array_push($on_hand_bids, $bidOrder->on_hand_bid()->first());
+                }   
+                if(!in_array($bidOrder->produce_trader()->first(), $produce_trader)){
+                    array_push($produce_trader, $bidOrder->produce_trader()->first());
+                }
+                if(!in_array($bidOrder->distributor()->first(), $distributors)){
+                    array_push($distributors, $bidOrder->distributor()->first());   
+                }
+                if(!in_array($bidOrder->project()->first()->contract()->first(), $contracts)){
+                    array_push($contracts, $bidOrder->project()->first()->contract()->first());   
+                }         
+                if(!in_array($bidOrder->project()->first(), $projects)){
+                    array_push($projects, $bidOrder->project()->first());                    
+                }         
+                foreach($bidOrder->bid_order_account()->get() as $acc){
+                    array_push($bid_order_accounts, $acc);
+                }
+            }
+            foreach($produce_trader as $p){
+                if(!in_array($p->produce()->first(), $produces)){
+                    array_push($produces, $p->produce()->first());
+                }
+            }   
+            
+            return response([
+                'bidOrders' => $bidOrders,
+                'incomeSumm' => $incomeSumm,
+                'bid_order_accounts' => $bid_order_accounts,
+                'produce_trader' => $produce_trader,
+                'distributors' => $distributors,
+                'produces' => $produces,
+                'contracts' => $contracts,
+                'projects' => $projects,
+                'project_bids' => $project_bids,
+                'on_hand_bids' => $on_hand_bids,
+            ]);
         });
 
         

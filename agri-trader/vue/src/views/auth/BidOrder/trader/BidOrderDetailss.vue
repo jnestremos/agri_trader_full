@@ -617,7 +617,7 @@ export default {
                 bid_order_acc_accNum: null,
                 bid_order_acc_accName: null,
                 bid_order_acc_remarks: null,
-                bid_order_acc_datePaid: new Date().toISOString().split('T')[0]
+                bid_order_acc_datePaid: format(new Date(), 'yyyy-MM-dd')
             },
             errors: null
         }

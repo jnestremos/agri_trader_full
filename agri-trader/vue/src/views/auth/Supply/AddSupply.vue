@@ -85,6 +85,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { format } from 'date-fns'
 export default {
     name: "AddSupplier",
     created() {
@@ -105,7 +106,7 @@ export default {
                 supply_type: '',
                 supply_for: null,
                 supply_description: null,
-                date: new Date().toISOString().split('T')[0],
+                date: format(new Date(), 'yyyy-MM-dd'),
                 supply_initialPrice: 0.00,
                 supply_unit: 'Sack',
                 supplier_id: null

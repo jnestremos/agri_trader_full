@@ -158,9 +158,9 @@ export default {
                         var year = this.getHarvestDate(projObj[0]).split('-')[0];
                         var month = this.getHarvestDate(projObj[0]).split('-')[1];
                         var day = this.getHarvestDate(projObj[0]).split('-')[2];
-                        var yearToday = new Date().toISOString().split('T')[0].split('-')[0];
-                        var monthToday = new Date().toISOString().split('T')[0].split('-')[1];
-                        var dayToday = new Date().toISOString().split('T')[0].split('-')[2];
+                        var yearToday = new Date().getFullYear();
+                        var monthToday = new Date().getMonth() + 1;
+                        var dayToday = new Date().getDate();
                         var harvestDate = new Date(year, month, day, 8, 0, 0, 0)
                         var today = new Date(yearToday, monthToday, dayToday, 8, 0, 0, 0)                        
                         var subMonth = sub(harvestDate, {
@@ -327,7 +327,8 @@ export default {
                 return parseInt(proj.produce_trader_id) === parseInt(p.id) && parseFloat(proj.on_hand_qty) > 0
             })                    
             var arr = prodTraderObj[0].prod_name.split(' ')
-            if(arr.indexOf('(Class') && arr[arr.length - 2]){                        
+            // if(arr.indexOf('(Class') && arr[arr.length - 2]){                        
+            if(arr.indexOf('(Class') != -1){                        
                 return arr[arr.length - 2] + ' ' + arr[arr.length - 1]
             }
             else{
