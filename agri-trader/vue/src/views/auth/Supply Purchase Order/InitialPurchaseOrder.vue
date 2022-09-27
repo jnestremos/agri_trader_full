@@ -41,9 +41,18 @@
                                 <option value="Rice">Rice</option>                                 
                             </select>
                         </div>
-                        <div class="col-sm-2 mb-2 me-4">
-                            <label for="supplyOrder_onHand" class="form-label me-3">On-hand Inventory</label>
-                            <input type="number" name="supplyOrder_onHand" id="" class="form-control" placeholder="5" readonly>
+                        <div class="col-lg-2 mb-2 me-3" v-if="filter">
+                            <label for="supplyOrder_Supplier" class="form-label me-4">Supplier</label>
+                            <select class="form-select" @change="filterSupplierr($event)" id="supplier" ref="supplier">
+                                <option value="None">Select Supplier</option>
+                                <option value="Pacifica Agrivet">Pacifica Agrivet</option>
+                                <option value="McJenski Agrivet Supply">McJenski Agrivet Supply</option>
+                                <option value="Inson Agro Farm Supply">Inson Agro Farm Supply</option>                                 
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="supplyOrder_onHand" class="form-label me-3">Total On-hand Inventory</label>
+                            <input type="number" name="supplyOrder_onHand" id="" class="form-control" placeholder="5" style="width:90px" readonly>
                         </div>
                     </div>
                     <!-- height:90%; -->
@@ -63,7 +72,7 @@
                                 </tr>
                             </thead>
                             <tbody align="center">
-                                <tr v-for="(product, index) in tableProducts" :key="index">
+                                <tr v-for="(product, index) in tableProducts()" :key="index">
                                     <th><input type="checkbox" :value="product.id" :checked="product.selected" @change="addOrRemoveSupplyID($event)"></th>
                                     <th>{{ product.supplier }}</th>
                                     <th>{{ product.supply_type }}</th>
@@ -155,19 +164,34 @@ export default {
                 this.filterFor = null
             }
         },
-        ...mapActions(['readyApp'])
-    },
-    computed: {        
+        filterSupplierr(e){
+            if(e.target.value != 'None'){
+                this.filterSupplier = e.target.value                
+            }
+            else{
+                this.filterSupplier = null
+            }
+        },
         tableProducts(){
             if(!this.filter){
                 return this.products
             }
             else{
-                if(!this.filterFor){
+                if(!this.filterFor){            
+                    var supplier = document.getElementById('supplier')        
+                    if(supplier){
+                        supplier.value = 'None'
+                        this.filterSupplier = null
+                    }                    
                     return this.products.filter((p) => {
                         return p.supply_type === this.filter
                     })
                 }
+                else if(this.filterFor && this.filterSupplier){
+                    return this.products.filter((p) => {
+                        return p.supply_type === this.filter && p.supply_for === this.filterFor && p.supplier === this.filterSupplier
+                    })
+                }               
                 else{
                     return this.products.filter((p) => {
                         return p.supply_type === this.filter && p.supply_for === this.filterFor
@@ -176,6 +200,9 @@ export default {
                 
             }
         },
+        ...mapActions(['readyApp'])
+    },
+    computed: {        
         getTotal(){
             var total = 0
             this.supplyOrder.selectQty.forEach((qty) => {
@@ -188,6 +215,7 @@ export default {
         return {
             filter: null,
             filterFor: null,
+            filterSupplier: null,
             supplyOrder: {
                 supplyOrder_date: '',
                 supplyOrder_purchaseOrderNo: '',
