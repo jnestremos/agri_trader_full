@@ -73,7 +73,7 @@
                                         <input class="form-check-input" type="checkbox" ref="bank" value="Bank" :checked="orderSummary.paymentType == 'Bank'" @change="setPaymentMethod($event)"/>Bank/Wire Transfer
                                     </div>
                                     <div class="col">
-                                        <input class="form-check-input" type="checkbox" :checked="orderSummary.paymentType == 'Payment upon Delivery'" ref="paymentDelivery" value="Payment upon Delivery" @change="setPaymentMethod($event)"/>Payment upon Delivery
+                                        <input class="form-check-input" type="checkbox" :checked="orderSummary.paymentType == 'Cash'" ref="cash" value="Cash" @change="setPaymentMethod($event)"/>Cash
                                     </div>
                                     <div class="col">
                                         <input class="form-check-input" type="checkbox" :checked="orderSummary.paymentType == 'Others'" ref="others" value="Others" @change="setPaymentMethod($event)"/>Others
@@ -92,8 +92,8 @@
                                         <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Name</label>
                                         <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="orderSummary.paymentAccountNum">
                                 </div>
-                                <div class="form-row text-center" v-if="orderSummary.paymentType == 'Payment upon Delivery'">
-                                        <div class="col-md-12 mt-4 center-block text-center" style="font-size:larger">Refer to the Delivery Address of the Trader for Payment</div>  
+                                <div class="form-row text-center" v-if="orderSummary.paymentType == 'Cash'">
+                                        <div class="col-md-12 mt-4 center-block text-center" style="font-size:larger">Proceed to Payment</div>  
                                 </div>
                                 <div class="form-row" v-if="orderSummary.paymentType == 'Others'">
                                         <label for="supplyOrder_SupplyType" class="form-label me-4 mt-3" >Choose Payment Option</label>
@@ -126,6 +126,9 @@
 import { mapActions } from 'vuex'
 export default {
     name: "PurchaseOrderSummary",
+    created() {
+        this.readyApp()
+    },
     data() {
         return {
             orderSummary: {
@@ -143,13 +146,13 @@ export default {
     watch: {
         'orderSummary.paymentType'(newVal){
             if(newVal == 'Bank'){
-                this.$refs.paymentDelivery.checked = false
+                this.$refs.cash.checked = false
                 this.$refs.others.checked = false
                 this.orderSummary.paymentOtherAccountName = null
                 this.orderSummary.paymentOtherAccountNum = null
                 this.orderSummary.paymentOtherWallet = 'None'
             }
-            else if(newVal == 'Payment upon Delivery'){
+            else if(newVal == 'Cash'){
                 this.$refs.bank.checked = false
                 this.$refs.others.checked = false
                 this.orderSummary.paymentAccountName = null
@@ -161,7 +164,7 @@ export default {
             }
             else if(newVal == 'Others'){
                 this.$refs.bank.checked = false
-                this.$refs.paymentDelivery.checked = false
+                this.$refs.cash.checked = false
                 this.orderSummary.paymentAccountName = null
                 this.orderSummary.paymentAccountNum = null
                 this.orderSummary.paymentBankName = 'None'

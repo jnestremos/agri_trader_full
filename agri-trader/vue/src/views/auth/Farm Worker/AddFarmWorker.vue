@@ -62,7 +62,7 @@
                     </div>
                     <div class="form-row mt-2">
                         <div class="col-lg-2 mb-1">
-                            <label for="farmWorker_birthday" class="form-label me-4 font-weight-bold">Gender</label>
+                            <label for="farmWorker_gender" class="form-label me-4 font-weight-bold">Gender</label>
                             <select class="form-select form-control-sm" @change="setGender($event)">
                                 <option value="None">Select Gender</option>
                                 <option value="Male">Male</option>
@@ -70,7 +70,7 @@
                             </select>
                         </div>
                         <div class="col-lg-2 mb-1">
-                            <label for="farmWorker_birthday" class="form-label me-4 font-weight-bold">Marital Status</label>
+                            <label for="farmWorker_maritalStatus" class="form-label me-4 font-weight-bold">Marital Status</label>
                             <select class="form-select form-control-sm" @change="setMaritalStatus($event)">
                                 <option value="None">Select Status</option>
                                 <option value="Single">Single</option>
