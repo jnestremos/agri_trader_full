@@ -13,6 +13,7 @@ import inventory from './modules/Inventory/inventory'
 import dashboard from './modules/Dashboard/dashboard'
 import supplier from './modules/Supplier/supplier'
 import supply from './modules/Supply/supply'
+import supplyPurchaseOrder from './modules/SupplyPurchaseOrder/supplyPurchaseOrder'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -51,6 +52,7 @@ export default new Vuex.Store({
     inventory,
     dashboard,
     supplier,
-    supply
+    supply,
+    supplyPurchaseOrder
   },
 })

@@ -20,7 +20,7 @@
       </b-nav>
     </div>
     <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
-      <div style="background-color:green; width:100%; height:40%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
+      <div style="background-color:green; width:100%; height:50%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
           <li><router-link style="color:black" to="/supplier/list">Suppliers</router-link></li>
           <li><router-link style="color:black" to="/projects">Projects</router-link></li>

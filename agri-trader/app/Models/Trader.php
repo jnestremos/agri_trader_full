@@ -22,6 +22,9 @@ class Trader extends Model
     public function supplier(){
         return $this->hasMany(Supplier::class);
     }
+    public function supply_purchase_order(){
+        return $this->hasMany(SupplyPurchaseOrder::class);
+    }
     public function trader_contactNum()
     {
         return $this->hasMany(TraderContactNumber::class, 'trader_id');

@@ -14,6 +14,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\SupplyPurchaseOrderController;
 use App\Models\BidOrder;
 use App\Models\Contract;
 use App\Models\Delivery;
@@ -87,6 +88,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::controller(SupplyController::class)->prefix('supply')->group(function () {
             Route::get('/', 'formForAddSupply');
             Route::post('/add', 'addSupply');
+        });
+
+        Route::controller(SupplyPurchaseOrderController::class)->prefix('supplyOrder')->group(function (){
+            Route::get('/', 'formForAddPO');
+            Route::post('/add', 'addPO');
         });
         
 

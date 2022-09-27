@@ -35,7 +35,7 @@ class SupplyController extends Controller
             'supply_type' => 'required',
             'supply_for' => 'required',
             'supply_description' => 'required',
-            'supply_initialPrice' => 'required|numeric',
+            'supply_initialPrice' => 'required|numeric|gt:0',
             'supply_unit' => 'required',
         ]);
 

@@ -2,106 +2,120 @@
     <div class="InitialPurchaseOrder">
         <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
             <h3>Create Supply Purchase Order</h3>        
-        </div> 
-        <!-- <pre>{{supplyOrder.select}}</pre> -->
+        </div>     
         <div class="container-fluid d-flex" style="height:90%; position: relative; z-index: 9;">
-            <div style="width:85%; height:100%;" class="pb-5">
-                <form class="d-flex flex-column justify-content-between" @submit.prevent="">
+            <div style="width:100%; height:100%;" class="pb-5">
+                <form class="d-flex flex-column justify-content-between w-100 h-100" @submit.prevent="">
                     <div class="form-row mb-2">
                         <div class="col-lg-2 me-2">
                             <label for="supplyOrder_date" class="form-label me-4" >Date</label>
-                            <input type="date" name="supplyOrder_Date" id="" class="form-control" v-model="supplyOrder.supplyOrder_date">
+                            <input type="date" name="supplyOrder_Date" id="" class="form-control" disabled v-model="dateToday">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
-                            <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" placeholder="PO-123456">
+                            <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" v-model="data.purchaseOrder_num" placeholder="PO-123456">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderStatus" class="form-label me-4" >Purchase Order Status</label>
-                            <input type="text" name="supplyOrder_purchaseOrderStatus" id="" class="form-control" v-model="supplyOrder.supplyOrder_Status">
+                            <input type="text" name="supplyOrder_purchaseOrderStatus" disabled v-model="data.purchaseOrder_status" id="" class="form-control">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col-lg-2 mb-2 me-3">
+                            <label for="supplyOrder_Supplier" class="form-label me-4">Supplier</label>
+                            <select class="form-select" id="supplier" @change="setSupplier($event)">
+                                <option value="None">Select Supplier</option>
+                                <option v-for="(supplier, index) in getFormPO.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option>                                                                
+                            </select>
+                        </div>
+                        <div v-if="data.supplier_id != 'None'" class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4" >Choose Supply Type</label>
-                            <select class="form-select" @change="filterSupplyType($event)">
+                            <select class="form-select" @change="setSupplyType($event)" id="supply_type">
                                 <option selected value="None">Select Supply Type</option>
-                                <option value="Fertilizer">Fertilizer</option>
-                                <option value="Insecticide">Insecticide</option>
-                                <option value="Fungicide">Fungicide</option>
+                                <option value="Fertilizer">Fertilizer</option>                                
+                                <option value="Insecticide">Insecticide</option>                                
+                                <option value="Fungicide">Fungicide</option>                                
                                 <option value="Herbicide">Herbicide</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 mb-2 me-3" v-if="filter">
+                        <div v-if="data.supplier_id != 'None'" class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4">Choose Supply For</label>
-                            <select class="form-select" @change="filterSupplyFor($event)" ref="supply_for">
-                                <option selected value="None">Select Supply Type</option>
-                                <option value="Mango">Mango</option>
-                                <option value="Grapes">Grapes</option>
-                                <option value="Rice">Rice</option>                                 
+                            <select v-if="getFormPO.produces" class="form-select" @change="setSupplyFor($event)" id="supply_for">
+                                <option selected value="None">Select Supply Type</option> 
+                                <option v-for="(produce, index) in getFormPO.produces" :key="index" :value="produce.prod_type">{{ produce.prod_type }}</option>                                
                             </select>
+                        </div>                        
+                    </div>                    
+                    <div class="d-flex m-0 p-0" style="width:100%; height:60%;">
+                        <div class="me-3" style="width:60%;">
+                            <div class="w-100 h-100" style="overflow-y:scroll">
+                                <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
+                                    <thead align="center">
+                                        <tr>
+                                            <th scope="col">Select</th>
+                                            <th scope="col">Supplier</th>
+                                            <th scope="col">Supply Name</th>
+                                            <th scope="col">Supply Type</th>
+                                            <th scope="col">Supply For</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody align="center">
+                                         <tr v-for="(supply, index) in filteredSupplies" :key="index">
+                                            <td><input type="checkbox" name="" id="" :value="supply.id" :disabled="data.supplier_id == 'None'" :checked="checkID(supply.id)" @change="setSupplyId($event)"></td>
+                                            <td>{{ getSupplierName(supply) }}</td>
+                                            <td>{{ supply.supply_name }}</td>
+                                            <td>{{ supply.supply_type }}</td>
+                                            <td>{{ supply.supply_for }}</td>
+                                            <td>{{ supply.supply_description }}</td>
+                                            <td>{{ supply.supply_initialPrice }}</td>
+                                            <td>{{ supply.supply_unit }}</td>
+                                        </tr>                                                                          
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-lg-2 mb-2 me-3" v-if="filter">
-                            <label for="supplyOrder_Supplier" class="form-label me-4">Supplier</label>
-                            <select class="form-select" @change="filterSupplierr($event)" id="supplier" ref="supplier">
-                                <option value="None">Select Supplier</option>
-                                <option value="Pacifica Agrivet">Pacifica Agrivet</option>
-                                <option value="McJenski Agrivet Supply">McJenski Agrivet Supply</option>
-                                <option value="Inson Agro Farm Supply">Inson Agro Farm Supply</option>                                 
-                            </select>
-                        </div>
-                        <div class="col-lg-3">
-                            <label for="supplyOrder_onHand" class="form-label me-3">Total On-hand Inventory</label>
-                            <input type="number" name="supplyOrder_onHand" id="" class="form-control" placeholder="5" style="width:90px" readonly>
+                        <div style="width:40%;">
+                            <div class="w-100 h-100" style="overflow-y:scroll">
+                                <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
+                                    <thead align="center">
+                                        <tr>
+                                            <th scope="col">Supply ID</th>
+                                            <th scope="col">Supply Type</th>
+                                            <th scope="col">Supply For</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Unit</th>
+                                            <th scope="col">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody align="center">
+                                         <tr v-for="(supply, index) in getCart" :key="index">                                            
+                                            <td>{{ supply.id }}</td>
+                                            <td>{{ supply.supply_type }}</td>
+                                            <td>{{ supply.supply_for }}</td>
+                                            <td>{{ supply.supply_description }}</td>
+                                            <td>{{ supply.purchaseOrder_qty }}</td>
+                                            <td>{{ supply.supply_initialPrice }}</td>
+                                            <td>{{ supply.purchaseOrder_unit }}</td>
+                                            <td>{{ supply.purchaseOrder_subTotal }}</td>
+                                        </tr>                                                                          
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <!-- height:90%; -->
-                    <!-- <pre>{{ supplyOrder }}</pre> -->
-                    <div class="container-fluid m-0 p-0" style="width:100%; height:40vh; overflow-y: scroll;
-                    ">
-                        <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
-                            <thead align="center">
-                                <tr>
-                                    <th scope="col">Select</th>
-                                    <th scope="col">Supplier</th>
-                                    <th scope="col">Supply Type</th>
-                                    <th scope="col">Supply For</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Unit</th>
-                                </tr>
-                            </thead>
-                            <tbody align="center">
-                                <tr v-for="(product, index) in tableProducts()" :key="index">
-                                    <th><input type="checkbox" :value="product.id" :checked="product.selected" @change="addOrRemoveSupplyID($event)"></th>
-                                    <th>{{ product.supplier }}</th>
-                                    <th>{{ product.supply_type }}</th>
-                                    <th>{{ product.supply_for }}</th>
-                                    <th>{{ product.description }}</th>
-                                    <th>{{ product.price }}</th>
-                                    <th>{{ product.unit }}</th>
-                                </tr>                                                                                                                              -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="form-row mb-2">
-                        <div class="col-sm-1 mb-2 me-3">
-                            <label for="supplyOrder_purchaseQuantity" class="form-label me-4" >Quantity</label>
-                            <input type="number" name="supplyOrder_purchaseQuantity" id="" class="form-control" v-model="getTotal" disabled>
-                        </div>
-                    </div>
-                    <div class="form-row mb-2">
+                    <div class="form-row mb-2">                       
                         <div class="col-lg-2 mb-2 me-3">
-                            <label for="supplyOrder_subTotal" class="form-label me-4" >Sub-Total</label>
-                            <input type="text" name="supplyOrder_subTotal" id="" class="form-control" v-model="supplyOrder.supplyOrder_subTotal">
+                            <label for="supplyOrder_transactionPrice" class="form-label me-4">Transaction Price</label>
+                            <input type="text" name="supplyOrder_transactionPrice" id="" disabled v-model="totalBalance" class="form-control">
                         </div>
-                        <div class="col-lg-2 mb-2 me-3">
-                            <label for="supplyOrder_transactionPrice" class="form-label me-4" >Transaction Price</label>
-                            <input type="text" name="supplyOrder_transactionPrice" id="" class="form-control" v-model="supplyOrder.supplyOrder_transactionPrice">
-                        </div>
-                    </div>
+                    </div>                    
                     <div class="text-left">
-                        <router-link to="/supplyOrder/orderSummary"><button class="btn btn-success" style="width:200px;">Create PO Summary</button></router-link>
+                        <button :disabled="validateData" @click="sendData()" class="btn btn-success" style="width:200px;">Create PO Summary</button>
                     </div>
                 </form>
             </div>
@@ -110,198 +124,204 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { format } from 'date-fns'
 export default {
     name: "InitialPurchaseOrder",
     created() {
-        this.readyApp()
-    },
-    methods: {
-        addOrRemoveSupplyID(e){        
-            // select = [1, 2]
-            // e.target.value = 1
-            var searchID = this.supplyOrder.select.filter((id) => {
-                return parseInt(e.target.value) === parseInt(id)
-            })
-            // searchID = [1]
-            if(searchID[0]){
-                // [1, 2]
-                var target = this.supplyOrder.select.indexOf(e.target.value)
-                this.supplyOrder.select.splice(target, 1)
-                this.supplyOrder.selectQty.splice(target, 1)
-                // [2]
-            }
-            else{
-                this.supplyOrder.select.push(e.target.value)
-                let qty = prompt(`Set Quantity for Produce # ${e.target.value}`);
-                if (qty != null && parseInt(qty)) {
-                    this.supplyOrder.selectQty.push(parseInt(qty))
-                }                
-            }
-            var selectID = this.products.filter((p) => {
-                return parseInt(e.target.value) === parseInt(p.id)
-            })
-            selectID[0].selected = !selectID[0].selected
-        },        
-        filterSupplyType(e){           
-            if(e.target.value != 'None'){
-                this.filter = e.target.value                
-            }
-            else{
-                this.filter = null
-            }
-            var supplyFor = this.$refs.supply_for
-            this.filterFor = null        
-            if(supplyFor){
-                supplyFor.value = 'None'
-            }                
-        },
-        filterSupplyFor(e){
-            if(e.target.value != 'None'){
-                this.filterFor = e.target.value
-            }
-            else{
-                this.filterFor = null
-            }
-        },
-        filterSupplierr(e){
-            if(e.target.value != 'None'){
-                this.filterSupplier = e.target.value                
-            }
-            else{
-                this.filterSupplier = null
-            }
-        },
-        tableProducts(){
-            if(!this.filter){
-                return this.products
-            }
-            else{
-                if(!this.filterFor){            
-                    var supplier = document.getElementById('supplier')        
-                    if(supplier){
-                        supplier.value = 'None'
-                        this.filterSupplier = null
-                    }                    
-                    return this.products.filter((p) => {
-                        return p.supply_type === this.filter
-                    })
-                }
-                else if(this.filterFor && this.filterSupplier){
-                    return this.products.filter((p) => {
-                        return p.supply_type === this.filter && p.supply_for === this.filterFor && p.supplier === this.filterSupplier
-                    })
-                }               
-                else{
-                    return this.products.filter((p) => {
-                        return p.supply_type === this.filter && p.supply_for === this.filterFor
-                    })
-                }
-                
-            }
-        },
-        ...mapActions(['readyApp'])
-    },
-    computed: {        
-        getTotal(){
-            var total = 0
-            this.supplyOrder.selectQty.forEach((qty) => {
-                total += qty
-            })
-            return total
-        }
+        this.formForAddPO()
+        .then(() => {
+            this.readyApp()
+        })    
     },
     data() {
         return {
-            filter: null,
-            filterFor: null,
-            filterSupplier: null,
-            supplyOrder: {
-                supplyOrder_date: '',
-                supplyOrder_purchaseOrderNo: '',
-                supplyOrder_purchaseOrderStatus: '',
-                supplyType: null,
-                supplyOrder_purchaseQuantity: '',
-                select: [],
-                selectQty: [],
-                
-                
-            },                    
-            products: [
-                    {
-                        id: 1,
-                        supplier: 'Pacifica Agrivet',
-                        supply_type: 'Fertilizer',
-                        supply_for: 'Mango',
-                        description: 'Yara Mila UNIK 16 Nitrogen-based fertilizer',
-                        price: '500.00',
-                        unit: 'Sack',
-                        selected: false
-                    },
-                    {
-                        id: 2,
-                        supplier: 'Inson Agro Farm Supply',
-                        supply_type: 'Fertilizer',
-                        supply_for: 'Mango',
-                        description: 'Yara Mila UNIK 16 Nitrogen-based fertilizer',
-                        price: '530.00',
-                        unit: 'Sack',
-                        selected: false
-                    },
-                    {
-                        id: 3,
-                        supplier: 'McJenski Agrivet Supply',
-                        supply_type: 'Fertilizer',
-                        supply_for: 'Mango',
-                        description: 'Yara Mila UNIK 16 Nitrogen-based fertilizer',
-                        price: '510.00',
-                        unit: 'Sack',
-                        selected: false
-                    },
-                    {
-                        id: 4,
-                        supplier: 'Kaumahan sa Sto. Tomas',
-                        supply_type: 'Fertilizer',
-                        supply_for: 'Grapes',
-                        description: 'Yara Mila UNIK 16 Nitrogen-based fertilizer',
-                        price: '550.00',
-                        unit: 'Sack',
-                        selected: false
-                    },
-                    {
-                        id: 5,
-                        supplier: 'Inson Agro Farm Supply',
-                        supply_type: 'Herbicide',
-                        supply_for: 'Rice',
-                        description: 'Sygenta Syngenta Direk 800 Pre Emergent Selective Herbicide',
-                        price: '978.00',
-                        unit: 'bottle',
-                        selected: false
-                    },
-                    {
-                        id: 6,
-                        supplier: 'Pacifica Agrivet',
-                        supply_type: 'Fungicide',
-                        supply_for: 'Mango',
-                        description: 'Tantor 250 SC Mango Anthracnose',
-                        price: '2250.00',
-                        unit: 'Bottle',
-                        selected: false
-                    },
-                    {
-                        id: 7,
-                        supplier: 'McJenski Agrivet Supply',
-                        supply_type: 'Herbicide',
-                        supply_for: 'Rice',
-                        description: 'Sygenta Syngenta Direk 800 Pre Emergent Selective Herbicide For Rice',
-                        price: '920.00',
-                        unit: 'bottle',
-                        selected: false
-                    },
-                ]
-        }
-        
+            data: {
+                supplier_id: 'None',
+                supply_id: [], 
+                purchaseOrder_num: null, 
+                purchaseOrder_status: 'Pending', 
+                purchaseOrder_qty: [], 
+                purchaseOrder_unit: [],
+                purchaseOrder_subTotal: [],   
+            },
+            filter_type: 'None',
+            filter_for: 'None',
+            totalBalance: 0,
+            dateToday: format(new Date(), 'yyyy-MM-dd'),
+        }        
     },
+    watch: {
+        'data.supplier_id'(newVal, oldVal){
+            console.log(newVal)
+            console.log(oldVal)
+            if(oldVal != 'None'){
+                if(confirm('Changing your selected supplier will result in clearing out your cart!\n Would you like to proceed!')){
+                    this.filter_type = 'None'
+                    this.filter_for = 'None'
+                    var supply_type = document.getElementById('supply_type')
+                    var supply_for = document.getElementById('supply_for')
+                    supply_type.value = 'None'
+                    supply_for.value = 'None' 
+                    this.data.supply_id = [];
+                    this.data.purchaseOrder_qty= [], 
+                    this.data.purchaseOrder_unit= [],
+                    this.data.purchaseOrder_subTotal= [],   
+                    this.totalBalance = 0
+                    this.data.supplier_id = newVal
+                }
+                else{
+                    console.log(1)
+                    console.log(oldVal)
+                    var supplier = document.getElementById('supplier')
+                    supplier.value = oldVal
+                    this.data.supplier_id = oldVal
+                }     
+            }                                    
+        },
+    },
+    methods: {
+        ...mapActions(['readyApp', 'formForAddPO']), 
+        setSupplier(e){
+            this.data.supplier_id = e.target.value
+        },
+        setSupplyType(e){
+            this.filter_type = e.target.value
+        },
+        setSupplyFor(e){
+            this.filter_for = e.target.value
+        },
+        setSupplyId(e){
+            var qty;
+            var supplyObj;
+            var index = this.data.supply_id.findIndex((i) => parseInt(i) === parseInt(e.target.value))
+            console.log(index)            
+            if(index != -1){           
+                var subValue = parseFloat(this.data.purchaseOrder_subTotal[index])
+                this.totalBalance -= subValue
+                this.data.supply_id.splice(index, 1)                 
+                this.data.purchaseOrder_qty.splice(index, 1)                
+                this.data.purchaseOrder_unit.splice(index, 1)                
+                this.data.purchaseOrder_subTotal.splice(index, 1)   
+            }
+            else{
+                this.data.supply_id.push(e.target.value)
+                qty = parseInt(prompt('Please set your desired quantity'))
+                this.data.purchaseOrder_qty.push(qty)
+                supplyObj = this.filteredSupplies.filter((s) => {
+                    return parseInt(e.target.value) === parseInt(s.id)
+                })
+                this.data.purchaseOrder_subTotal.push(supplyObj[0].supply_initialPrice * qty)
+                this.data.purchaseOrder_unit.push(supplyObj[0].supply_unit)
+                this.totalBalance += parseFloat(supplyObj[0].supply_initialPrice) * parseFloat(qty)                               
+            }
+        },
+        checkID(id){  
+            var index = this.data.supply_id.findIndex((i) => parseInt(id) === parseInt(i))            
+            if(index != -1){
+                return true
+            }
+            else{
+                return false
+            }
+        },
+        getSupplierName(supply){
+            var supplierObj = this.getFormPO.suppliers.filter((s) => {
+                return parseInt(supply.supplier_id) === parseInt(s.id)
+            })
+            return supplierObj[0].supplier_name
+        },
+        sendData(){             
+            this.$router.push({ name:'PurchaseOrderSummary', query: {
+                supplier_id: this.data.supplier_id,
+                supply_id: this.data.supply_id,
+                purchaseOrder_num: this.data.purchaseOrder_num,
+                purchaseOrder_status: this.data.purchaseOrder_status,
+                purchaseOrder_qty: this.data.purchaseOrder_qty,
+                purchaseOrder_unit: this.data.purchaseOrder_unit,
+                purchaseOrder_subTotal: this.data.purchaseOrder_subTotal,
+            }})
+        }
+    },
+    computed: {   
+        ...mapGetters(['getFormPO']),
+        filteredSupplies(){
+            var supplies = [];            
+            if(this.data.supplier_id != 'None'){
+                supplies = this.getFormPO.supplies.filter((s) => {
+                    return parseInt(this.data.supplier_id) === parseInt(s.supplier_id)
+                })
+                if(this.filter_type != 'None' && this.filter_for != 'None'){
+                    supplies = supplies.filter((s) => {
+                        return this.filter_type === s.supply_type && this.filter_for === s.supply_for
+                    })                    
+                }
+                else if(this.filter_type != 'None'){
+                    supplies = supplies.filter((s) => {
+                        return this.filter_type === s.supply_type
+                    })
+                }
+                else if(this.filter_for != 'None'){
+                    supplies = supplies.filter((s) => {
+                        return this.filter_for === s.supply_for
+                    })
+                }               
+                return supplies
+            }
+            else{
+                return this.getFormPO.supplies
+            }
+        },
+        getTypes(){
+            var types = [];
+            var typeSet = new Set()
+            this.getFormPO.supplies.forEach((s) => {
+                typeSet.add(s.supply_for)
+            })
+            typeSet.forEach((t) => {
+                types.push(t)
+            })
+            return types
+        },
+        getCart(){
+            var cart = [];                       
+            this.data.supply_id.forEach((id, i) => {
+                var supplyObj = this.filteredSupplies.filter((s) => {
+                    return parseInt(id) === parseInt(s.id)
+                })
+                var item = {
+                    id: id,
+                    supply_type: supplyObj[0].supply_type,
+                    supply_for: supplyObj[0].supply_for,
+                    supply_description: supplyObj[0].supply_description,
+                    purchaseOrder_qty: this.data.purchaseOrder_qty[i],
+                    supply_initialPrice: supplyObj[0].supply_initialPrice,
+                    purchaseOrder_unit: this.data.purchaseOrder_unit[i],
+                    purchaseOrder_subTotal: this.data.purchaseOrder_subTotal[i],                    
+                }
+                cart.push(item)
+            })
+            return cart
+        },
+        validateData(){
+           var supplier_id = this.data.supplier_id
+           var supply_id = this.data.supply_id
+           var purchaseOrder_num = this.data.purchaseOrder_num
+           var purchaseOrder_status = this.data.purchaseOrder_status
+           var purchaseOrder_qty = this.data.purchaseOrder_qty
+           var purchaseOrder_unit = this.data.purchaseOrder_unit
+           var purchaseOrder_subTotal = this.data.purchaseOrder_subTotal
+           if(supplier_id != 'None' && supply_id.length > 0 && purchaseOrder_num && purchaseOrder_status
+            && purchaseOrder_qty.length > 0 && purchaseOrder_unit.length > 0 
+            && purchaseOrder_subTotal.length > 0){
+                return false
+           }
+           else{
+                return true
+           }            
+        },        
+    },
+
 }
 </script>
 

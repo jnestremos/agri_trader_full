@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('supply_for');
             $table->string('supply_description');
             $table->string('supply_unit');
+            $table->integer('supply_reorderLevel')->default('10');
             $table->double('supply_initialPrice');
             $table->timestamps();
         });

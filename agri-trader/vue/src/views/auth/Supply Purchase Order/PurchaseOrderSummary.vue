@@ -9,15 +9,15 @@
                     <div class="form-row mb-2">
                         <div class="col-lg-2 me-2">
                             <label for="orderSummary_date" class="form-label me-4" >Date</label>
-                            <input type="text" name="orderSummary_Date" id="" class="form-control" placeholder="09/05/2022">
+                            <input type="text" name="orderSummary_Date" id="" class="form-control" disabled v-model="dateToday" placeholder="09/05/2022">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
-                            <input type="text" name="orderSummary_purchaseOrderNum" id="" class="form-control" placeholder="PO-1234567">
+                            <input type="text" name="orderSummary_purchaseOrderNum" id="" disabled class="form-control" v-model="data.purchaseOrder_num" placeholder="PO-1234567">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_purchaseOrderStatus" class="form-label me-4" >Purchase Order Status</label>
-                            <input type="text" name="orderSummary_purchaseOrderStatus" id="" class="form-control" placeholder="Pending">
+                            <input type="text" name="orderSummary_purchaseOrderStatus" id="" disabled class="form-control" placeholder="Pending">
                         </div>
                     </div>
                     <div class="row">
@@ -35,20 +35,26 @@
                         <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                             <thead align="center">
                                 <tr>
+                                    <th scope="col">Supply ID</th>
+                                    <th scope="col">Supply Name</th>
                                     <th scope="col">Supply Type</th>
+                                    <th scope="col">Supply For</th>                                    
                                     <th scope="col">Quantity</th>
                                     <th scope="col">Unit</th>
                                     <th scope="col">Price per unit</th>
                                     <th scope="col">Total Amount</th>
                                 </tr>
                             </thead>
-                            <tbody align="center">
-                                <tr>
-                                    <th>Fertilizer</th>
-                                    <th>15</th>
-                                    <th>Sack</th>
-                                    <th>Php 500</th>
-                                    <th>Php 7,500.00</th>
+                            <tbody align="center" v-if="supplies">
+                                <tr v-for="(supply, index) in getSummaryTable" :key="index">
+                                    <td>{{ supply.id }}</td>                                    
+                                    <td>{{ supply.supply_name }}</td>                                    
+                                    <td>{{ supply.supply_type }}</td>                                    
+                                    <td>{{ supply.supply_for }}</td>   
+                                    <td>{{ supply.purchaseOrder_qty }}</td>                                 
+                                    <td>{{ supply.purchaseOrder_unit }}</td>                                 
+                                    <td>{{ supply.supply_initialPrice }}</td>                                    
+                                    <td>{{ supply.purchaseOrder_subTotal }}</td>                             
                                 </tr>
                             </tbody>
                         </table>
@@ -60,7 +66,7 @@
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_transactedBy" class="form-label me-4" >Transacted By</label>
-                            <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="orderSummary.transactedBy">
+                            <input type="text" name="orderSummary_transactedBy" id="" class="form-control" disabled v-model="orderSummary.transactedBy">
                         </div>
                     </div>
                     <div class="btn-toolbar pt-4" role="toolbar">
@@ -123,16 +129,36 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { format } from 'date-fns'
 export default {
     name: "PurchaseOrderSummary",
     created() {
-        this.readyApp()
+        if(!this.$route.query.supplier_id || !this.$route.query.supply_id
+        || !this.$route.query.purchaseOrder_num || !this.$route.query.purchaseOrder_status
+        || !this.$route.query.purchaseOrder_qty || !this.$route.query.purchaseOrder_unit
+        || !this.$route.query.purchaseOrder_subTotal){
+            this.$router.push({ name: 'InitialPurchaseOrder' })
+        } 
+        this.formForAddPO() 
+        .then(() => {
+            this.orderSummary.transactedBy = this.getName        
+            this.supplies = this.getFormPO.supplies
+            this.readyApp()
+        })         
+    },
+    beforeRouteEnter(to, from, next){
+        if(from.name != 'InitialPurchaseOrder'){
+            next({ name: 'InitialPurchaseOrder' })
+        }
+        else{
+            next()
+        }
     },
     data() {
         return {
             orderSummary: {
-                transactedBy: '',
+                transactedBy: null,
                 paymentType: null,
                 paymentAccountName: '',
                 paymentAccountNum: '',
@@ -140,7 +166,18 @@ export default {
                 paymentOtherAccountName: '',
                 paymentOtherAccountNum: '',
                 paymentOtherWallet: '',
-            }
+            },
+            data: {
+                supplier_id: this.$route.query.supplier_id,
+                supply_id: this.$route.query.supply_id, 
+                purchaseOrder_num: this.$route.query.purchaseOrder_num, 
+                purchaseOrder_status: this.$route.query.purchaseOrder_status, 
+                purchaseOrder_qty: this.$route.query.purchaseOrder_qty, 
+                purchaseOrder_unit: this.$route.query.purchaseOrder_unit,
+                purchaseOrder_subTotal: this.$route.query.purchaseOrder_subTotal,   
+            },
+            supplies: null,
+            dateToday: format(new Date(), 'yyyy-MM-dd')
         }
     },
     watch: {
@@ -191,8 +228,32 @@ export default {
         triggerModal(){
             this.$bvModal.show("paymentModal")                                 
         },
-        ...mapActions(['readyApp'])
+        ...mapActions(['readyApp', 'formForAddPO'])
     },
+    computed: {
+        ...mapGetters(['getName', 'getFormPO']),
+        getSummaryTable(){
+            var items = []
+            var item = null
+            this.data.supply_id.forEach((s, i) => {
+                var supplyObj = this.supplies.filter((ss) => {
+                    return parseInt(ss.id) === parseInt(s)
+                })
+                item = {
+                    id: s,
+                    supply_name: supplyObj[0].supply_name,
+                    supply_type: supplyObj[0].supply_type,
+                    supply_for: supplyObj[0].supply_for,
+                    supply_initialPrice: supplyObj[0].supply_initialPrice,
+                    purchaseOrder_qty: this.data.purchaseOrder_qty[i],
+                    purchaseOrder_unit: this.data.purchaseOrder_unit[i],
+                    purchaseOrder_subTotal: this.data.purchaseOrder_subTotal[i],
+                }
+                items.push(item)
+            })
+            return items
+        }
+    }
 }
 </script>
 

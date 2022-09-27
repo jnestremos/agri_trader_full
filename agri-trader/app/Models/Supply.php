@@ -16,6 +16,7 @@ class Supply extends Model
         'supply_type',
         'supply_description',
         'supply_unit',
+        'supply_reorderLevel',
         'supply_initialPrice',
     ];
 
@@ -24,5 +25,8 @@ class Supply extends Model
     }
     public function produce(){
         return $this->belongsTo(Produce::class);
+    }
+    public function supply_purchase_order(){
+        return $this->hasMany(SupplyPurchaseOrder::class);
     }
 }
