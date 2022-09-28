@@ -177,7 +177,7 @@ export default {
                     supplier.value = oldVal
                     this.data.supplier_id = oldVal
                 }     
-            }                                    
+        }                                    
         },
     },
     methods: {
@@ -204,16 +204,22 @@ export default {
                 this.data.purchaseOrder_unit.splice(index, 1)                
                 this.data.purchaseOrder_subTotal.splice(index, 1)   
             }
-            else{
-                this.data.supply_id.push(e.target.value)
+            else{                            
                 qty = parseInt(prompt('Please set your desired quantity'))
-                this.data.purchaseOrder_qty.push(qty)
-                supplyObj = this.filteredSupplies.filter((s) => {
-                    return parseInt(e.target.value) === parseInt(s.id)
-                })
-                this.data.purchaseOrder_subTotal.push(supplyObj[0].supply_initialPrice * qty)
-                this.data.purchaseOrder_unit.push(supplyObj[0].supply_unit)
-                this.totalBalance += parseFloat(supplyObj[0].supply_initialPrice) * parseFloat(qty)                               
+                console.log(qty != null && !isNaN(qty))
+                if(qty != null && !isNaN(qty)){            
+                    this.data.supply_id.push(e.target.value)
+                    this.data.purchaseOrder_qty.push(qty)
+                    supplyObj = this.filteredSupplies.filter((s) => {
+                        return parseInt(e.target.value) === parseInt(s.id)
+                    })
+                    this.data.purchaseOrder_subTotal.push(supplyObj[0].supply_initialPrice * qty)
+                    this.data.purchaseOrder_unit.push(supplyObj[0].supply_unit)
+                    this.totalBalance += parseFloat(supplyObj[0].supply_initialPrice) * parseFloat(qty)
+                }
+                else{
+                    e.target.checked = false
+                }
             }
         },
         checkID(id){  
