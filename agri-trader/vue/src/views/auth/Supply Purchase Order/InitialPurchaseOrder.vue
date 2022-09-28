@@ -181,7 +181,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions(['readyApp', 'formForAddPO']), 
+        ...mapActions(['readyApp', 'formForAddPO', 'initPO']), 
         setSupplier(e){
             this.data.supplier_id = e.target.value
         },
@@ -231,16 +231,9 @@ export default {
             })
             return supplierObj[0].supplier_name
         },
-        sendData(){             
-            this.$router.push({ name:'PurchaseOrderSummary', query: {
-                supplier_id: this.data.supplier_id,
-                supply_id: this.data.supply_id,
-                purchaseOrder_num: this.data.purchaseOrder_num,
-                purchaseOrder_status: this.data.purchaseOrder_status,
-                purchaseOrder_qty: this.data.purchaseOrder_qty,
-                purchaseOrder_unit: this.data.purchaseOrder_unit,
-                purchaseOrder_subTotal: this.data.purchaseOrder_subTotal,
-            }})
+        sendData(){  
+            this.initPO(this.data)           
+            this.$router.push({ name:'PurchaseOrderSummary' })
         }
     },
     computed: {   

@@ -42,11 +42,11 @@
                                     <th scope="col">Quantity</th>
                                     <th scope="col">Unit</th>
                                     <th scope="col">Price per unit</th>
-                                    <th scope="col">Total Amount</th>
+                                    <th scope="col">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody align="center" v-if="supplies">
-                                <tr v-for="(supply, index) in getSummaryTable" :key="index">
+                                <tr v-for="(supply, index) in getSummaryTable()" :key="index">
                                     <td>{{ supply.id }}</td>                                    
                                     <td>{{ supply.supply_name }}</td>                                    
                                     <td>{{ supply.supply_type }}</td>                                    
@@ -62,7 +62,7 @@
                     <div class="row">
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_totalAmount" class="form-label me-4" >Total Amount</label>
-                            <input type="text" name="orderSummary_totalAmount" id="" class="form-control" placeholder="Php 7,500.00" disabled>
+                            <input type="text" name="orderSummary_totalAmount" id="" class="form-control" placeholder="Php 7,500.00" disabled v-model="data.purchaseOrder_totalBalance">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_transactedBy" class="form-label me-4" >Transacted By</label>
@@ -71,52 +71,54 @@
                     </div>
                     <div class="btn-toolbar pt-4" role="toolbar">
                         <div class="btn-group me-3">
-                            <b-button variant="success" style="width:200px; height:60px" @click="triggerModal()" v-if="!orderSummary.paymentMethod">Select Payment Option</b-button>
-                            <b-button variant="success" style="width:200px; height:60px" v-else>Proceed to Payment</b-button>
-                            <b-modal id="paymentModal" title="Payment Options" size="lg">
-                                <div class="form-row text-center">
-                                    <div class="col">                                        
-                                        <input class="form-check-input" type="checkbox" ref="bank" value="Bank" :checked="orderSummary.paymentType == 'Bank'" @change="setPaymentMethod($event)"/>Bank/Wire Transfer
+                            <b-button variant="success" style="width:200px; height:60px" @click="triggerModal()">Select Payment Option</b-button>                            
+                            <template>
+                                <b-modal id="paymentModal" title="Payment Options" size="lg">
+                                    <div class="form-row text-center">
+                                        <div class="col">                                        
+                                            <input class="form-check-input" type="checkbox" ref="bank" value="Bank" :checked="data.purchaseOrder_paymentMethod == 'Bank'" @change="setPaymentMethod($event)"/>Bank/Wire Transfer
+                                        </div>
+                                        <div class="col">
+                                            <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentMethod == 'Cash'" ref="cash" value="Cash" @change="setPaymentMethod($event)"/>Cash
+                                        </div>
+                                        <div class="col">
+                                            <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentMethod == 'Others'" ref="others" value="Others" @change="setPaymentMethod($event)"/>Others
+                                        </div>
                                     </div>
-                                    <div class="col">
-                                        <input class="form-check-input" type="checkbox" :checked="orderSummary.paymentType == 'Cash'" ref="cash" value="Cash" @change="setPaymentMethod($event)"/>Cash
+                                    <div class="form-row" v-if="data.purchaseOrder_paymentMethod == 'Bank'">
+                                            <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Name</label>
+                                            <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="data.purchaseOrder_accName">
+                                            <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Banking Institution</label>
+                                            <select class="form-select" @change="setBank($event)">
+                                                <option selected value="None">Select Bank</option>
+                                                <option value="BDO">BDO Unibank</option>
+                                                <option value="BPI">BPI</option>
+                                                <option value="LBP">LandBank</option>
+                                            </select>
+                                            <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Number</label>
+                                            <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="data.purchaseOrder_accNum">
                                     </div>
-                                    <div class="col">
-                                        <input class="form-check-input" type="checkbox" :checked="orderSummary.paymentType == 'Others'" ref="others" value="Others" @change="setPaymentMethod($event)"/>Others
-                                    </div>
-                                </div>
-                                <div class="form-row" v-if="orderSummary.paymentType == 'Bank'">
+                                    <div class="form-row" v-if="data.purchaseOrder_paymentMethod == 'Others'">
+                                            <label for="supplyOrder_SupplyType" class="form-label me-4 mt-3" >Choose Payment Option</label>
+                                            <select class="form-select" @change="setWallet($event)">
+                                                <option selected value="None">Select Payment Type</option>
+                                                <option value="GCash">GCash</option>
+                                                <option value="PayMaya/MAYA">PayMaya/MAYA</option>
+                                            </select>
                                         <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Name</label>
-                                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="orderSummary.paymentAccountName">
-                                        <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Banking Institution</label>
-                                        <select class="form-select" @change="setBank($event)">
-                                            <option selected value="None">Select Bank</option>
-                                            <option value="BDO">BDO Unibank</option>
-                                            <option value="BPI">BPI</option>
-                                            <option value="LBP">LandBank</option>
-                                        </select>
-                                        <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Name</label>
-                                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="orderSummary.paymentAccountNum">
-                                </div>
-                                <div class="form-row text-center" v-if="orderSummary.paymentType == 'Cash'">
-                                        <div class="col-md-12 mt-4 center-block text-center" style="font-size:larger">Proceed to Payment</div>  
-                                </div>
-                                <div class="form-row" v-if="orderSummary.paymentType == 'Others'">
-                                        <label for="supplyOrder_SupplyType" class="form-label me-4 mt-3" >Choose Payment Option</label>
-                                        <select class="form-select" @change="setWallet($event)">
-                                            <option selected value="None">Select Payment Type</option>
-                                            <option value="GCash">GCash</option>
-                                            <option value="PayMaya/MAYA">PayMaya/MAYA</option>
-                                        </select>
-                                    <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Name</label>
-                                    <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="orderSummary.paymentOtherAccountName">
-                                    <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Number</label>
-                                    <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="orderSummary.paymentOtherAccountNum">
-                                </div>
-                            </b-modal>
+                                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="data.purchaseOrder_accName">
+                                        <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Number</label>
+                                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="data.purchaseOrder_accNum">
+                                    </div>
+                                    <template #modal-footer="{ok, cancel}">
+                                        <b-button size="md" variant="primary" @click="ok()" :disabled="validateFields">Ok</b-button>
+                                        <b-button size="md" variant="secondary" @click="cancel()">Cancel</b-button>
+                                    </template>
+                                </b-modal>
+                            </template>
                         </div>
                         <div class="btn-group me-3">
-                            <router-link to="/supplyOrder/payment"><b-button variant="success" style="width:200px; height:60px">Proceed to Payment</b-button></router-link>
+                            <b-button variant="success" style="width:200px; height:60px" @click="orderPayment()" :disabled="validateFields">Proceed to Payment</b-button>
                         </div>
                         <div class="btn-group me-3">
                             <router-link to="/supplyOrder/add"><b-button variant="secondary" style="width:200px; height:60px">Back to Supplier List</b-button></router-link>
@@ -133,28 +135,47 @@ import { mapActions, mapGetters } from 'vuex'
 import { format } from 'date-fns'
 export default {
     name: "PurchaseOrderSummary",
-    created() {
-        if(!this.$route.query.supplier_id || !this.$route.query.supply_id
-        || !this.$route.query.purchaseOrder_num || !this.$route.query.purchaseOrder_status
-        || !this.$route.query.purchaseOrder_qty || !this.$route.query.purchaseOrder_unit
-        || !this.$route.query.purchaseOrder_subTotal){
-            this.$router.push({ name: 'InitialPurchaseOrder' })
-        } 
+    created() {        
         this.formForAddPO() 
-        .then(() => {
-            this.orderSummary.transactedBy = this.getName        
-            this.supplies = this.getFormPO.supplies
-            this.readyApp()
+        .then(() => {                     
+            if(!this.getPO.purchaseOrder_subTotal){
+                this.$router.push({ name: "InitialPurchaseOrder" })
+            }
+            else{
+                this.getPO.purchaseOrder_subTotal.forEach((s) => {
+                    this.data.purchaseOrder_totalBalance = parseFloat(this.data.purchaseOrder_totalBalance) + parseFloat(s)
+                })
+                this.data.supplier_id = this.getPO.supplier_id,
+                this.data.supply_id = this.getPO.supply_id, 
+                this.data.purchaseOrder_num = this.getPO.purchaseOrder_num, 
+                this.data.purchaseOrder_status = this.getPO.purchaseOrder_status, 
+                this.data.purchaseOrder_qty = this.getPO.purchaseOrder_qty, 
+                this.data.purchaseOrder_unit = this.getPO.purchaseOrder_unit,
+                this.data.purchaseOrder_subTotal = this.getPO.purchaseOrder_subTotal,      
+                this.orderSummary.transactedBy = this.getName        
+                this.supplies = this.getFormPO.supplies
+                this.readyApp()
+            }
         })         
     },
-    beforeRouteEnter(to, from, next){
-        if(from.name != 'InitialPurchaseOrder'){
-            next({ name: 'InitialPurchaseOrder' })
-        }
-        else{
-            next()
-        }
+    mounted(){
+        this.$root.$on('bv::modal::hide', (bvEvent) => {
+            if(bvEvent.trigger == 'cancel' || bvEvent.trigger == 'headerclose'){
+                this.data.purchaseOrder_paymentMethod = null
+                this.data.purchaseOrder_bankName = null
+                this.data.purchaseOrder_accNum = null
+                this.data.purchaseOrder_accName = null                
+            }            
+        })      
     },
+    // beforeRouteEnter(to, from, next){
+    //     if(from.name != 'InitialPurchaseOrder'){
+    //         next({ name: 'InitialPurchaseOrder' })
+    //     }
+    //     else{
+    //         next()
+    //     }
+    // },
     data() {
         return {
             orderSummary: {
@@ -168,90 +189,132 @@ export default {
                 paymentOtherWallet: '',
             },
             data: {
-                supplier_id: this.$route.query.supplier_id,
-                supply_id: this.$route.query.supply_id, 
-                purchaseOrder_num: this.$route.query.purchaseOrder_num, 
-                purchaseOrder_status: this.$route.query.purchaseOrder_status, 
-                purchaseOrder_qty: this.$route.query.purchaseOrder_qty, 
-                purchaseOrder_unit: this.$route.query.purchaseOrder_unit,
-                purchaseOrder_subTotal: this.$route.query.purchaseOrder_subTotal,   
+                supplier_id: null,
+                supply_id: null, 
+                purchaseOrder_num: null, 
+                purchaseOrder_status: null, 
+                purchaseOrder_qty: null, 
+                purchaseOrder_unit: null,
+                purchaseOrder_subTotal: null,
+                purchaseOrder_totalBalance: 0,
+                purchaseOrder_paymentMethod: null,
+                purchaseOrder_bankName: null,
+                purchaseOrder_accNum: null,
+                purchaseOrder_accName: null,                
             },
             supplies: null,
-            dateToday: format(new Date(), 'yyyy-MM-dd')
+            dateToday: format(new Date(), 'yyyy-MM-dd'),                
         }
     },
     watch: {
-        'orderSummary.paymentType'(newVal){
-            if(newVal == 'Bank'){
-                this.$refs.cash.checked = false
-                this.$refs.others.checked = false
-                this.orderSummary.paymentOtherAccountName = null
-                this.orderSummary.paymentOtherAccountNum = null
-                this.orderSummary.paymentOtherWallet = 'None'
-            }
-            else if(newVal == 'Cash'){
-                this.$refs.bank.checked = false
-                this.$refs.others.checked = false
-                this.orderSummary.paymentAccountName = null
-                this.orderSummary.paymentAccountNum = null
-                this.orderSummary.paymentOtherAccountName = null
-                this.orderSummary.paymentOtherAccountNum = null
-                this.orderSummary.paymentBankName = 'None'
-                this.orderSummary.paymentOtherWallet = 'None'
-            }
-            else if(newVal == 'Others'){
-                this.$refs.bank.checked = false
-                this.$refs.cash.checked = false
-                this.orderSummary.paymentAccountName = null
-                this.orderSummary.paymentAccountNum = null
-                this.orderSummary.paymentBankName = 'None'
-            }            
+        'data.purchaseOrder_paymentMethod'(){
+            this.data.purchaseOrder_bankName = null
+            this.data.purchaseOrder_accNum = null
+            this.data.purchaseOrder_accName = null
         }
     },
     methods: {
+        ...mapActions(['readyApp', 'formForAddPO', 'initPO']),
         setPaymentMethod(e){   
             if(e.target.checked){
-                this.orderSummary.paymentType = e.target.value
-                    
+                this.data.purchaseOrder_paymentMethod = e.target.value                    
             }   
             else{
-                this.orderSummary.paymentType = null
-            }                  
-                   
+                this.data.purchaseOrder_paymentMethod = null
+            }                                     
         },
         setBank(e){
-            this.orderSummary.paymentBankName = e.target.value
+            this.data.purchaseOrder_bankName = e.target.value
         },
         setWallet(e){
-            this.orderSummary.paymentOtherWallet = e.target.value
+            this.data.purchaseOrder_bankName = e.target.value
         },
         triggerModal(){
             this.$bvModal.show("paymentModal")                                 
         },
-        ...mapActions(['readyApp', 'formForAddPO'])
-    },
-    computed: {
-        ...mapGetters(['getName', 'getFormPO']),
+        orderPayment(){
+            this.initPO(this.data)
+            this.$router.push({ path: '/supplyOrder/payment' })
+        },
         getSummaryTable(){
             var items = []
-            var item = null
-            this.data.supply_id.forEach((s, i) => {
-                var supplyObj = this.supplies.filter((ss) => {
-                    return parseInt(ss.id) === parseInt(s)
+            var item = null 
+            var supplyObj = null;   
+            if(typeof this.data.supply_id == 'string'){
+                supplyObj = this.supplies.filter((ss) => {
+                    return parseInt(ss.id) === parseInt(this.data.supply_id)
                 })
                 item = {
-                    id: s,
+                    id: this.data.supply_id,
                     supply_name: supplyObj[0].supply_name,
                     supply_type: supplyObj[0].supply_type,
                     supply_for: supplyObj[0].supply_for,
                     supply_initialPrice: supplyObj[0].supply_initialPrice,
-                    purchaseOrder_qty: this.data.purchaseOrder_qty[i],
-                    purchaseOrder_unit: this.data.purchaseOrder_unit[i],
-                    purchaseOrder_subTotal: this.data.purchaseOrder_subTotal[i],
+                    purchaseOrder_qty: this.data.purchaseOrder_qty,
+                    purchaseOrder_unit: this.data.purchaseOrder_unit,
+                    purchaseOrder_subTotal: this.data.purchaseOrder_subTotal,
                 }
+                // this.totalBalance += parseFloat(this.data.purchaseOrder_subTotal).toFixed(2)
                 items.push(item)
-            })
+            } 
+            else{
+                this.data.supply_id.forEach((s, i) => {
+                    supplyObj = this.supplies.filter((ss) => {
+                        return parseInt(ss.id) === parseInt(s)
+                    })
+                    item = {
+                        id: s,
+                        supply_name: supplyObj[0].supply_name,
+                        supply_type: supplyObj[0].supply_type,
+                        supply_for: supplyObj[0].supply_for,
+                        supply_initialPrice: supplyObj[0].supply_initialPrice,
+                        purchaseOrder_qty: this.data.purchaseOrder_qty[i],
+                        purchaseOrder_unit: this.data.purchaseOrder_unit[i],
+                        purchaseOrder_subTotal: this.data.purchaseOrder_subTotal[i],
+                    }
+                    // this.totalBalance += parseFloat(this.data.purchaseOrder_subTotal[i]).toFixed(2)
+                    items.push(item)                    
+                })
+            }                     
             return items
+        },
+        
+    },
+    computed: {
+        ...mapGetters(['getName', 'getFormPO', 'getPO']),
+        validateFields(){
+            if(this.data.purchaseOrder_paymentMethod == 'Bank'){
+                if((this.data.purchaseOrder_bankName && this.data.purchaseOrder_bankName != 'None') && this.data.purchaseOrder_accNum
+                && this.data.purchaseOrder_accName){
+                    return false
+                }
+                else{
+                    return true
+                }
+            }
+            else if(this.data.purchaseOrder_paymentMethod == 'Cash'){
+                return false
+            }
+            else if(this.data.purchaseOrder_paymentMethod == 'Others'){
+                if(this.data.purchaseOrder_accName && this.data.purchaseOrder_accNum
+                && (this.data.purchaseOrder_bankName && this.data.purchaseOrder_bankName != 'None')){
+                    return false
+                }
+                else{
+                    return true
+                }
+            }
+            else{
+                return true
+            }
+        },
+        getTotal(){
+            var records = this.getSummaryTable()
+            var initBalance = 0
+            records.forEach((r) => {
+                initBalance += parseFloat(r.purchaseOrder_subTotal).toFixed(2)
+            })
+            return initBalance
         }
     }
 }
