@@ -22,12 +22,12 @@
     <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
       <div style="background-color:green; width:100%; height:50%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
-          <li><router-link style="color:black" to="/supplier/list">Suppliers</router-link></li>
+          <li v-if="role == 'trader'"><router-link style="color:black" to="/supplier/list">Suppliers</router-link></li>
           <li><router-link style="color:black" to="/projects">Projects</router-link></li>
           <li><router-link style="color:black" to="/produces">Produces</router-link></li>
-          <li><router-link style="color:black" to="/farms">Farms and Owners</router-link></li>
-          <li><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
-          <li><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
+          <li><router-link style="color:black" to="/farms">{{ role == 'trader' ? 'Farms and Owners' : 'Farms' }}</router-link></li>
+          <li v-if="role == 'trader'"><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
+          <li v-if="role == 'trader'"><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
           <li>Delivery</li>
           <li>Sales Income Report</li>
           <li>Profit Sharing Report</li>
@@ -40,11 +40,13 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import auth from '../store/modules/Auth/auth'
 export default {    
     name: 'AuthLayout',  
     data(){
       return{
-        show:false
+        show:false,
+        role: auth.state.user.role
       }      
     },  
     computed: {

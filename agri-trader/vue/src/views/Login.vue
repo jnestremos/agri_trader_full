@@ -55,8 +55,17 @@ export default {
     loginUser(){
       this.login(this.data)        
       .then(() => {
-        if(auth.state.user.role == 'trader' && this.$route.name == 'LoginTrader'){
-          this.$router.push({name: 'Dashboard'})
+        if(this.$route.name == 'LoginTrader'){
+          if(auth.state.user.role == 'trader'){
+            this.$router.push({name: 'Dashboard'})
+          }
+          else if(auth.state.user.role == 'farm_owner'){
+            this.$router.push({name: 'DashboardOwner'})
+          }
+          else{
+            this.logout()
+            this.$toastr.e('Unauthorized access!')
+          }
         }
         else if(auth.state.user.role == 'distributor' && this.$route.name == 'LoginDistributor'){
           this.$router.push({name: 'Catalog'})
@@ -67,6 +76,7 @@ export default {
         }       
       })       
       .catch((err) => {
+        console.error(err)
         this.errors = err.response.data.errors
         for(var error in this.errors){
             this.$toastr.e(this.errors[error][0])

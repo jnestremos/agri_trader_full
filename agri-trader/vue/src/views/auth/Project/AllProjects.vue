@@ -89,8 +89,7 @@ export default {
             this.fetchAllFarms(query)
             .then(() => {
                 this.filtered = this.filteredProjectArray()   
-            })
-            
+            })            
         },
         showNext(){
             var query = this.getProjectData.next_page_url.split('?')[1]
@@ -134,7 +133,7 @@ export default {
             var shareObj = this.getShareList.filter((s) => {
                 return parseInt(contract.contract_share_id) === parseInt(s.id)
             })
-            return shareObj[0].contractShare_typpe
+            return shareObj[0].contractShare_type
         },
         getProduceName(contract){
             var prodObj = this.getProduceList.filter((p) => {

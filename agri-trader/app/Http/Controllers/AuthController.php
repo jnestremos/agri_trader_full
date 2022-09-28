@@ -153,8 +153,7 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
+        $user = User::where('email', $request->email)->first();        
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
                 'error' => 'Invalid email/password!'
@@ -174,7 +173,7 @@ class AuthController extends Controller
                 'id' => Distributor::where('user_id',$user->id)->first()->id
             ], 201);
         }
-        else{
+        else if($role == 'trader'){
             $name = Trader::where('user_id',$user->id)->first()->trader_firstName . ' ' . 
             Trader::where('user_id',$user->id)->first()->trader_lastName;
             return response([
@@ -183,6 +182,17 @@ class AuthController extends Controller
                 'role' => $role,
                 'name' => $name,  
                 'id' => Trader::where('user_id',$user->id)->first()->id          
+            ], 201);
+        }
+        else if($role == 'farm_owner'){
+            $name = FarmOwner::where('user_id', $user->id)->first()->owner_firstName . ' ' . 
+            FarmOwner::where('user_id',$user->id)->first()->owner_lastName;
+            return response([
+                'token' => $token,
+                'user' => $user,
+                'role' => $role,
+                'name' => $name,  
+                'id' => FarmOwner::where('user_id',$user->id)->first()->id          
             ], 201);
         }
 

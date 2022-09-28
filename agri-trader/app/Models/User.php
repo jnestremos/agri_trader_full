@@ -53,6 +53,6 @@ class User extends Authenticatable
     }
     public function farm_owner()
     {
-        return $this->hasOne(FarmOwner::class, 'farm_owner_id');
+        return $this->hasOne(FarmOwner::class);
     }
 }

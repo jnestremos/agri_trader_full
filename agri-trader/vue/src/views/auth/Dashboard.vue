@@ -48,13 +48,19 @@
 import { mapActions, mapGetters } from 'vuex'
 import TotalSalesGraph from '../../components/TotalSalesGraph.vue';
 import IncomeSummaryGraph from '../../components/IncomeSummaryGraph.vue';
+import auth from '../../store/modules/Auth/auth';
 export default {
     name: 'Dashboard',
     created(){
-      this.fetchDashboardData()
-      .then(() => {
+      if(auth.state.user.role == 'trader'){
+        this.fetchDashboardData()
+        .then(() => {
+          this.readyApp()
+        })   
+      }  
+      else{
         this.readyApp()
-      })      
+      }       
     },  
     components: { TotalSalesGraph, IncomeSummaryGraph },      
     computed: {

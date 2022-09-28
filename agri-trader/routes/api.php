@@ -75,6 +75,51 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         return response()->download($path, 'Farm Image');        
     });
 
+    Route::group(['middleware' => ['role:farm_owner']], function (){
+        Route::get('/projects/owner', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = $user->farm()->get();
+            $trader = Trader::all();
+            // make sure the owner can remove his partnership with trader
+            $contracts = null;
+            $produces = [];
+            $shares = [];
+            $start_dates = [];
+            foreach($farms as $farm){
+                $contracts = Contract::where([
+                    ['farm_id', $farm->id],                
+                ]);                
+            }
+            foreach($contracts->get() as $contract){
+                if(!in_array($contract->produce()->first(), $produces)){
+                    array_push($produces, $contract->produce()->first());
+                }
+                array_push($shares, $contract->contract_share()->first());             
+                array_push($start_dates, $contract->project()->first());             
+            }            
+            if(count($contracts->get()) > 6){
+                return response([
+                    'projects' => $contracts->paginate(6),
+                    'trader' => $trader,
+                    'produces' => $produces,
+                    'shares' => $shares,
+                    'start_dates' => $start_dates,
+                    'farms' => $farms,
+                ]);
+            }
+            else{
+                return response([
+                    'projects' => $contracts->get(),
+                    'trader' => $trader,
+                    'produces' => $produces,
+                    'shares' => $shares,
+                    'start_dates' => $start_dates,
+                    'farms' => $farms,
+                ]);
+            }
+        });
+    });
+
     Route::group(['middleware' => ['role:trader']], function () {
 
         Route::controller(SupplierController::class)->prefix('supplier')->group(function () {

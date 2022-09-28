@@ -46,6 +46,8 @@ import ErrorPage from '../views/404.vue'
 import auth from '../store/modules/Auth/auth'
 import store from '../store'
 
+import AllProjectsOwner from '../views/auth/Farm Owner/AllProjects.vue'
+
 Vue.use(VueRouter)
 
 const routes = [ 
@@ -247,6 +249,25 @@ const routes = [
         component:PurchaseOrderDashboard
       },
     ]
+  },
+  {
+    path: '/farm_owner',
+    redirect: '/dashboard/owner',
+    component: AuthLayout,
+    children: [
+      {
+        path: '/dashboard/owner',
+        name: 'DashboardOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: Dashboard
+      },
+      {
+        path: '/projects/owner/all',
+        name: 'ProjectsOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: AllProjectsOwner
+      },
+    ]
   }, 
   {
     path: '/distributor',
@@ -385,6 +406,10 @@ router.beforeEach((to, from, next) => {
       if(auth.state.user.role == 'trader'){
         console.log(1)
         next({name: 'Dashboard'});
+      }
+      else if(auth.state.user.role == 'farm_owner'){
+        console.log(1)
+        next({name: 'DashboardOwner'});
       }   
       else{
         console.log(1)
@@ -393,18 +418,48 @@ router.beforeEach((to, from, next) => {
       
     }
     else{
-      if(to.meta.role == 'distributor' && auth.state.user.role == 'trader'){
-        console.log(1)
-        next({name: 'Dashboard'});
+      if(auth.state.user.role == 'trader'){
+        if(to.meta.role == 'distributor' || to.meta.role == 'farm_owner'){
+          console.log(1)
+          next({name: 'Dashboard'});
+        }
+        else{
+          next()
+        }        
       }
-      else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){        
-        console.log(1)
-        next({name: 'Catalog'});
+      else if(auth.state.user.role == 'distributor'){
+        if(to.meta.role == 'trader' || to.meta.role == 'farm_owner'){
+          console.log(1)
+          next({name: 'Catalog'});
+        }
+        else{
+          next()
+        } 
+      }
+      else if(auth.state.user.role == 'farm_owner'){
+        if(to.meta.role == 'trader' || to.meta.role == 'distributor'){
+          console.log(1)
+          next({name: 'DashboardOwner'});
+        }
+        else{
+          next()
+        } 
       }
       else{
-        console.log(1)
-        next();
-      }     
+        next()
+      }
+      // if(to.meta.role == 'distributor' && auth.state.user.role == 'trader'){
+      //   console.log(1)
+      //   next({name: 'Dashboard'});
+      // }
+      // else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){        
+      //   console.log(1)
+      //   next({name: 'Catalog'});
+      // }
+      // else{
+      //   console.log(1)
+      //   next();
+      // }     
     }
   }
   
