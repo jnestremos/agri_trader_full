@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['middleware' => ['role:farm_owner']], function (){
-        Route::get('/projects/owner', function (){
+        Route::get('/projects/owner/all', function (){
             $user = User::find(auth()->id())->farm_owner()->first();
             $farms = $user->farm()->get();
             $trader = Trader::all();
@@ -118,6 +118,42 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 ]);
             }
         });
+
+        Route::get('/farms/owner/all', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id);
+            $contracts = [];
+            $projects = [];
+            $farm_produces = [];
+            foreach($farms as $farm){
+                $contractss = Contract::where('farm_id', $farm->id)->get();
+                foreach($contractss as $contract){
+                    array_push($contracts, $contract);
+                    array_push($projects, $contract->project()->first());
+                }
+                $produces = DB::table('farm_produce')->where('farm_id', $farm->id)->get();
+                foreach($produces as $produce){
+                    array_push($farm_produces, $produce);
+                }
+            }
+            if(count($farms->get()) > 6){
+                return response([
+                    'contracts' => $contracts,
+                    'projects' => $projects,
+                    'farm_produces' => $farm_produces,
+                    'farms' => $farms->paginate(6)
+                ]);
+            }
+            else{
+                return response([
+                    'contracts' => $contracts,
+                    'projects' => $projects,
+                    'farm_produces' => $farm_produces,
+                    'farms' => $farms->get()
+                ]);
+            }        
+        });
+
     });
 
     Route::group(['middleware' => ['role:trader']], function () {

@@ -23,9 +23,9 @@
       <div style="background-color:green; width:100%; height:50%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supplier/list">Suppliers</router-link></li>
-          <li><router-link style="color:black" to="/projects">Projects</router-link></li>
+          <li><router-link style="color:black" :to="role == 'trader' ? '/projects' : '/projects/owner/all'">Projects</router-link></li>
           <li><router-link style="color:black" to="/produces">Produces</router-link></li>
-          <li><router-link style="color:black" to="/farms">{{ role == 'trader' ? 'Farms and Owners' : 'Farms' }}</router-link></li>
+          <li><router-link style="color:black" :to="role == 'trader' ? '/farms' : '/farms/owner/all'">{{ role == 'trader' ? 'Farms and Owners' : 'Farms' }}</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
           <li>Delivery</li>

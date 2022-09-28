@@ -17,13 +17,32 @@ const state = {
     trader_list: null,
     produce_list: null,
     share_list: null,
-    date_list: null
+    date_list: null,
+
+    farm_data: {
+        farms: [],
+        current_page: null,
+        first_page_url: null,
+        last_page: null,
+        last_page_url: null,
+        next_page_url: null,
+        per_page: null,
+        prev_page_url: null,
+        total: null,
+        links: null        
+    },
+    contract_list: null,
+    project_list: null,
+    farmProduce_list: null
 }
 
 
 const getters = {
     getProjectDataForOwner(){
         return state.project_data
+    },
+    getFarmDataForOwner(){
+        return state.farm_data
     },
     getFarmListForOwner(){
         return state.farm_list
@@ -40,12 +59,21 @@ const getters = {
     getDateListForOwner(){
         return state.date_list
     },
+    getContractListForOwner(){
+        return state.contract_list
+    },
+    getProjectListForOwner(){
+        return state.project_list
+    },
+    getFarmProduceListForOwner(){
+        return state.farmProduce_list
+    },
 }
 
 const actions = {
     fetchAllProjectsForOwner({ commit }, query = null){
         if(query){
-            return axiosClient.get('/projects/owner?'+query)
+            return axiosClient.get('/projects/owner/all?'+query)
             .then((res) => {                
                 console.log(res.data);            
                 commit('setAllProjects', res.data)                                  
@@ -55,7 +83,7 @@ const actions = {
             })
         }
         else{            
-            return axiosClient.get('/projects/owner')
+            return axiosClient.get('/projects/owner/all')
             .then((res) => {               
                 console.log(res.data);            
                 commit('setAllProjects', res.data)                                               
@@ -64,6 +92,29 @@ const actions = {
                 console.log(err)
             })
         }        
+    },
+    fetchAllFarmsForOwner({ commit }, query = null){
+        if(query){
+            return axiosClient.get('/farms/owner/all?'+query)
+            .then((res) => {                
+                console.log(res.data);            
+                commit('setFarms', res.data)                                  
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+        else{            
+            return axiosClient.get('/farms/owner/all')
+            .then((res) => {               
+                console.log(res.data);            
+                commit('setFarms', res.data)                                               
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+        
     },
 }
 
@@ -91,6 +142,29 @@ const mutations = {
         state.produce_list = data.produces
         state.share_list = data.shares
         state.date_list = data.start_dates        
+    },
+    setFarms: (state, data) => {
+        if(data.farms.data){
+            state.farm_data.farms = data.farms.data
+            state.farm_data.current_page = data.farms.current_page
+            state.farm_data.first_page_url = data.farms.first_page_url
+            state.farm_data.last_page = data.farms.last_page
+            state.farm_data.last_page_url = data.farms.last_page_url
+            state.farm_data.next_page_url = data.farms.next_page_url
+            state.farm_data.per_page = data.farms.per_page
+            state.farm_data.prev_page_url = data.farms.prev_page_url
+            state.farm_data.total = data.farms.total                        
+            state.farm_data.links = data.farms.links
+            state.farm_data.links.splice(0, 1)
+            state.farm_data.links.splice(state.farm_data.links.length - 1, 1)            
+        }
+        else{
+            state.farm_data.farms = data.farms
+        }        
+        state.contract_list = data.contracts          
+        state.project_list = data.projects 
+        state.farmProduce_list = data.farm_produces         
+        
     },
 }
 
