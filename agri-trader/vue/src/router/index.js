@@ -38,6 +38,10 @@ import InitialPurchaseOrder from '../views/auth/Supply Purchase Order/InitialPur
 import PurchaseOrderSummary from '../views/auth/Supply Purchase Order/PurchaseOrderSummary.vue'
 import PurchaseOrderPayment from '../views/auth/Supply Purchase Order/POPayment.vue'
 import PurchaseOrderDashboard from '../views/auth/Supply Purchase Order/PurchaseOrderDashboard.vue'
+import PurchaseReturnDashboard from '../views/auth/Supply Purchase Order/PurchaseReturnDashboard.vue'
+import PaymentDashboard from '../views/auth/Supply Purchase Order/PaymentDashboard.vue'
+import PurchaseOrderStatus from '../views/auth/Supply Purchase Order/PurchaseOrderStatus.vue'
+import InitialStockIn from '../views/auth/Stock In Inventory/InitialStockIn.vue'
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
@@ -245,6 +249,30 @@ const routes = [
         name:"PurchaseOrderDashboard",
         meta:{needsAuth: true, role: "trader"},
         component:PurchaseOrderDashboard
+      },
+      {
+        path:"/supplyOrder/returnsDashboard",
+        name:"PurchaseReturnDashboard",
+        meta:{needsAuth: true, role: "trader"},
+        component:PurchaseReturnDashboard
+      },
+      {
+        path:"/supplyOrder/outstandingBalance",
+        name:"PaymentDashboard",
+        meta:{needsAuth: true, role: "trader"},
+        component:PaymentDashboard
+      },
+      {
+        path:"/supplyOrder/:id",
+        name:"PurchaseOrderStatus",
+        meta:{needsAuth: true, role: "trader"},
+        component:PurchaseOrderStatus
+      },
+      {
+        path:"/stockIn/",
+        name:"InitialStockIn",
+        meta:{needsAuth: true, role: "trader"},
+        component:InitialStockIn
       },
     ]
   }, 
