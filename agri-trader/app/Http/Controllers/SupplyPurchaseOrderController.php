@@ -114,7 +114,7 @@ class SupplyPurchaseOrderController extends Controller
         $trader = User::find(auth()->id())->trader()->first();
         $purchaseOrders = SupplyPurchaseOrder::where('trader_id', $trader->id)->get();
         $purchaseOrders_filtered = SupplyPurchaseOrder::select(DB::raw('supplier_id, purchaseOrder_num, count(supply_id) as qty, purchaseOrder_status'))->where('trader_id', $trader->id)
-        ->orderBy('purchaseOrder_num');
+        ->groupBy('purchaseOrder_num');
         $purchaseOrder_accs = [];
         $suppliers = [];
         $supplies = [];
