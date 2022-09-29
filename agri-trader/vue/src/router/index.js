@@ -42,6 +42,7 @@ import PurchaseReturnDashboard from '../views/auth/Supply Purchase Order/Purchas
 import PaymentDashboard from '../views/auth/Supply Purchase Order/PaymentDashboard.vue'
 import PurchaseOrderStatus from '../views/auth/Supply Purchase Order/PurchaseOrderStatus.vue'
 import InitialStockIn from '../views/auth/Stock In Inventory/InitialStockIn.vue'
+import ForReturns from '../views/auth/Stock In Inventory/ForReturns.vue'
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
@@ -276,6 +277,12 @@ const routes = [
         name:"InitialStockIn",
         meta:{needsAuth: true, role: "trader"},
         component:InitialStockIn
+      },
+      {
+        path:"/stockIn/orderReturn",
+        name:"ForReturns",
+        meta:{needsAuth: true, role: "trader"},
+        component:ForReturns
       },
     ]
   },
