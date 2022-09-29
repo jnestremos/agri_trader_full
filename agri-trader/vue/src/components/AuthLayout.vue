@@ -6,7 +6,7 @@
             <font-awesome-icon icon="fa-regular fa-user" style="font-size:40px; color:white;"/>
           </b-nav-item>
         <div style="width:100%; color:black;">          
-          <b-nav-item @mouseenter="moduleLeave()"><router-link style="color:black" to="/dashboard">Home</router-link></b-nav-item>
+          <b-nav-item @mouseenter="moduleLeave()"><router-link style="color:black" :to="role == 'trader' ? '/dashboard' : '/dashboard/owner'">Home</router-link></b-nav-item>
           <b-nav-item @mouseenter="showModules()" @mouseleave="hideModules()" class="w-100"><p style="color:black; margin:0">Modules</p></b-nav-item>
           <b-nav-item @mouseenter="moduleLeave()"><p style="color:black; margin:0">Settings</p></b-nav-item>
         </div>
@@ -26,6 +26,7 @@
           <li><router-link style="color:black" :to="role == 'trader' ? '/projects' : '/projects/owner/all'">Projects</router-link></li>
           <li><router-link style="color:black" to="/produces">Produces</router-link></li>
           <li><router-link style="color:black" :to="role == 'trader' ? '/farms' : '/farms/owner/all'">{{ role == 'trader' ? 'Farms and Owners' : 'Farms' }}</router-link></li>
+          <li v-if="role == 'trader'"><router-link style="color:black" to="/supplyOrder/statusDashboard">Supply Purchase Orders</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
           <li>Delivery</li>

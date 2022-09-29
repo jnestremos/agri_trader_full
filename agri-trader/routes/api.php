@@ -172,8 +172,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
 
         Route::controller(SupplyPurchaseOrderController::class)->prefix('supplyOrder')->group(function (){
+            Route::get('/dashboard', 'setDashboard');
             Route::get('/', 'formForAddPO');
             Route::post('/add', 'addPO');
+            Route::patch('/{id}', 'updateStatus');
+            Route::patch('/{id}/payment', 'updatePayment');
         });
         
 

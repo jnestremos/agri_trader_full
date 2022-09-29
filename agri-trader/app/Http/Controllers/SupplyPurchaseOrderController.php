@@ -7,11 +7,21 @@ use App\Models\SupplyOrderPayment;
 use App\Models\SupplyPurchaseOrder;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class SupplyPurchaseOrderController extends Controller
 {
-    public function formForAddPO(){
+    public function formForAddPO(){        
+        $uuid = null;        
+        while(true){
+            $uuid = mt_rand(000000, 999999);
+            // $uuid = Str::uuid()->toString();
+            if(!SupplyPurchaseOrder::where('purchaseOrder_num', 'PO-'.$uuid)->first()){
+                break;
+            }
+        }        
         $trader = User::find(auth()->id())->trader()->first();
         $suppliers = $trader->supplier()->get();
         $supplies = [];
@@ -33,6 +43,7 @@ class SupplyPurchaseOrderController extends Controller
             ], 400);
         }
         return response([
+            'uuid' => $uuid,
             'suppliers' => $suppliers,
             'supplies' => $supplies,
             'produces' => Produce::groupBy('prod_type')->get()
@@ -64,6 +75,7 @@ class SupplyPurchaseOrderController extends Controller
                 'error' => "Error adding Purchase Order!"
             ], 400);
         }
+        
 
         $trader = User::find(auth()->id())->trader()->first();
         $supplyPO = null;
@@ -90,11 +102,80 @@ class SupplyPurchaseOrderController extends Controller
             'purchaseOrder_dpAmount' => $request->purchaseOrder_dpAmount,                  
             'purchaseOrder_percentage' => $request->purchaseOrder_percentage,                  
             'purchaseOrder_balance' => $request->purchaseOrder_balance, 
+            'purchaseOrder_totalBalance' => $request->purchaseOrder_totalBalance, 
         ]);
     
 
         return response([
             'message' => 'Purchase Order added successfully!'  
+        ]);        
+    }
+    public function setDashboard(){
+        $trader = User::find(auth()->id())->trader()->first();
+        $purchaseOrders = SupplyPurchaseOrder::where('trader_id', $trader->id)->get();
+        $purchaseOrders_filtered = SupplyPurchaseOrder::select(DB::raw('supplier_id, purchaseOrder_num, count(supply_id) as qty, purchaseOrder_status'))->where('trader_id', $trader->id)
+        ->orderBy('purchaseOrder_num');
+        $purchaseOrder_accs = [];
+        $suppliers = [];
+        $supplies = [];
+        foreach($purchaseOrders as $purchaseOrder){
+            if(!in_array($purchaseOrder->supplier()->first(), $suppliers)){
+                array_push($suppliers, $purchaseOrder->supplier()->first());
+            }
+            if(!in_array($purchaseOrder->supply()->first(), $supplies)){
+                array_push($supplies, $purchaseOrder->supply()->first());
+            }
+            $purchaseOrder_acc = SupplyOrderPayment::where('purchaseOrder_num', $purchaseOrder->purchaseOrder_num)->latest()->first();
+            if(!in_array($purchaseOrder_acc, $purchaseOrder_accs)){
+                array_push($purchaseOrder_accs, $purchaseOrder_acc);
+            }
+        }
+       
+        if(count($purchaseOrders_filtered->get()) > 6){
+            return response([
+                'purchaseOrders' => $purchaseOrders,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                'purchaseOrders_filtered' => $purchaseOrders_filtered->paginate(6),
+                'purchaseOrder_accs' => $purchaseOrder_accs,
+            ]);
+        }
+        else{
+            return response([
+                'purchaseOrders' => $purchaseOrders,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                'purchaseOrders_filtered' => $purchaseOrders_filtered->get(),
+                'purchaseOrder_accs' => $purchaseOrder_accs,
+            ]);
+        }
+
+    }
+
+    public function updateStatus($id){
+        SupplyPurchaseOrder::where('purchaseOrder_num', $id)->update([
+            'purchaseOrder_status' => "For Delivery"
+        ]);
+
+        return response([
+            'message' => 'Purchase Order updated successfully!'
+        ]);
+    }
+
+    public function updatePayment($id){
+        $purchaseOrder = SupplyOrderPayment::where('purchaseOrder_num', $id)->first();
+        SupplyOrderPayment::where('purchaseOrder_num', $id)->update([
+            'purchaseOrder_dpAmount' => $purchaseOrder->purchaseOrder_totalBalance,
+            'purchaseOrder_percentage' => 1,
+            'purchaseOrder_balance' => 0,
+        ]);
+
+        SupplyPurchaseOrder::where('purchaseOrder_num', $id)->update([
+            'purchaseOrder_status' => "Delivered"
+        ]);
+
+        return response([
+            'message' => 'Payment Successful!'   
         ]);
 
     }

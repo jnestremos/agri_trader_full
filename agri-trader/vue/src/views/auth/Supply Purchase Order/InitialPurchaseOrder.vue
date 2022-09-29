@@ -13,7 +13,7 @@
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
-                            <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" v-model="data.purchaseOrder_num" placeholder="PO-123456">
+                            <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" v-model="data.purchaseOrder_num" disabled placeholder="PO-123456">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="supplyOrder_purchaseOrderStatus" class="form-label me-4" >Purchase Order Status</label>
@@ -131,7 +131,12 @@ export default {
     created() {
         this.formForAddPO()
         .then(() => {
+            this.data.purchaseOrder_num = 'PO-'+this.getFormPO.uuid
             this.readyApp()
+        })
+        .catch((err) => {
+            console.error(err)
+            this.$router.push({ name: 'AddSupply' })
         })    
     },
     data() {

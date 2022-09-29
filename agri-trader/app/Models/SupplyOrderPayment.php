@@ -19,5 +19,6 @@ class SupplyOrderPayment extends Model
         'purchaseOrder_dpAmount',                  
         'purchaseOrder_percentage',                  
         'purchaseOrder_balance',                  
+        'purchaseOrder_totalBalance'                  
     ];
 }

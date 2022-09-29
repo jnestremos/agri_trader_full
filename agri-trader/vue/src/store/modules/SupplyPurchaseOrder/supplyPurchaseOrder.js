@@ -2,6 +2,7 @@ import axiosClient from '../../../axios'
 
 const state = {
     form_PO: {
+        uuid: null,
         suppliers: null,
         supplies: null,
         produces: null,
@@ -23,7 +24,23 @@ const state = {
         purchaseOrder_dpAmount: null,
         purchaseOrder_percentage: null,
         purchaseOrder_balance: null,
-    },    
+    },
+    purchaseOrder_dashboard: {
+        purchaseOrders_filtered: null,
+        current_page: null,
+        first_page_url: null,
+        last_page: null,
+        last_page_url: null,
+        next_page_url: null,
+        per_page: null,
+        prev_page_url: null,
+        total: null,
+        links: null,
+        purchaseOrders: null,
+        purchaseOrder_accs: null,        
+        suppliers: null,        
+        supplies: null,        
+    }    
 }   
 
 const getters = {
@@ -32,6 +49,9 @@ const getters = {
     },
     getPO(){
         return state.purchaseOrder
+    },
+    getPODashboard(){
+        return state.purchaseOrder_dashboard
     }
 }
 
@@ -53,10 +73,41 @@ const actions = {
     initPO({ commit }, data){
         commit('setPO', data)
     },
+    fetchPODashboard({ commit }, query = null){
+        if(query){
+            return axiosClient.get(`/supplyOrder/dashboard?${query}`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setPODashboard', res.data)
+            })
+        }
+        else{
+            return axiosClient.get(`/supplyOrder/dashboard`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setPODashboard', res.data)
+            })
+        }
+    },
+    updatePOStatus({ commit }, id){
+        return axiosClient.patch(`/supplyOrder/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
+    updatePOPayment({ commit }, id){
+        return axiosClient.patch(`/supplyOrder/${id}/payment`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    }
 }
 
 const mutations = {
     setFormPO: (state, data) => {
+        state.form_PO.uuid = data.uuid
         state.form_PO.suppliers = data.suppliers
         state.form_PO.supplies = data.supplies
         state.form_PO.produces = data.produces
@@ -78,7 +129,30 @@ const mutations = {
         state.purchaseOrder.purchaseOrder_dpAmount = data.purchaseOrder_dpAmount 
         state.purchaseOrder.purchaseOrder_percentage = data.purchaseOrder_percentage 
         state.purchaseOrder.purchaseOrder_balance = data.purchaseOrder_balance                        
-    },   
+    },  
+    setPODashboard: (state, data) => {
+        if(data.purchaseOrders_filtered.data){
+            state.purchaseOrder_dashboard.purchaseOrders_filtered = data.purchaseOrders_filtered.data
+            state.purchaseOrder_dashboard.current_page = data.purchaseOrders_filtered.current_page
+            state.purchaseOrder_dashboard.first_page_url = data.purchaseOrders_filtered.first_page_url
+            state.purchaseOrder_dashboard.last_page = data.purchaseOrders_filtered.last_page
+            state.purchaseOrder_dashboard.last_page_url = data.purchaseOrders_filtered.last_page_url
+            state.purchaseOrder_dashboard.next_page_url = data.purchaseOrders_filtered.next_page_url
+            state.purchaseOrder_dashboard.per_page = data.purchaseOrders_filtered.per_page
+            state.purchaseOrder_dashboard.prev_page_url = data.purchaseOrders_filtered.prev_page_url
+            state.purchaseOrder_dashboard.total = data.purchaseOrders_filtered.total                        
+            state.purchaseOrder_dashboard.links = data.purchaseOrders_filtered.links
+            state.purchaseOrder_dashboard.links.splice(0, 1)
+            state.purchaseOrder_dashboard.links.splice(state.purchaseOrder_dashboard.links.length - 1, 1)            
+        }
+        else{
+            state.purchaseOrder_dashboard.purchaseOrders_filtered = data.purchaseOrders_filtered
+        }
+        state.purchaseOrder_dashboard.purchaseOrders = data.purchaseOrders
+        state.purchaseOrder_dashboard.purchaseOrder_accs = data.purchaseOrder_accs        
+        state.purchaseOrder_dashboard.suppliers = data.suppliers        
+        state.purchaseOrder_dashboard.supplies = data.supplies        
+    },
     asd: () => {
         console.log(1)
     }

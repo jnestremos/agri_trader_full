@@ -24,6 +24,7 @@ return new class extends Migration
             $table->double('purchaseOrder_dpAmount');                  
             $table->double('purchaseOrder_percentage');                  
             $table->double('purchaseOrder_balance');                  
+            $table->double('purchaseOrder_totalBalance');                  
             $table->timestamps();
         });
     }
