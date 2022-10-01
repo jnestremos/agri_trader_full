@@ -7,7 +7,7 @@
         <div class="w-100" v-if="getFarmDataForOwner.farms.length > 0">
             <div class="row mb-5" v-for="(farm, index) in filtered" :key="index">
                 <div class="col-4" style="height:30vh" v-for="(f, i) in farm" :key="i">
-                    <div class="d-flex farm" style="height:100%; border-radius:50px; position: relative;">
+                    <div class="d-flex farm" @click="viewFarm(f)" style="height:100%; border-radius:50px; position: relative; cursor: pointer;">
                         <div class="" style="position: absolute; top:5%; left:5%; 
                         width:85%;">
                             <div class="d-flex mb-4">
@@ -16,6 +16,7 @@
                             </div>                             
                             <h4 class="d-flex">Projects Pending: <p class="ms-3">{{ getProjectsPending(f) }}</p></h4>
                             <h4 class="d-flex">Produce Count: <p class="ms-3">{{ getProduceCount(f) }}</p></h4>
+                            <h4 class="d-flex">Trader In Charge: <p class="ms-3">{{ getTraderName(f) }}</p></h4>
                         </div>
                     </div>
                 </div>
@@ -24,7 +25,7 @@
         <div class="" style="top:42%; left:42%; position: absolute" v-else>
            <h2 class="text-black">No Farms Added!</h2>
         </div> 
-        <div class="" style="position:absolute; right:5%; bottom:5%">
+        <div class="" style="position:absolute; right:5%; bottom:5%" v-if="getFarmDataForOwner.total > 6">
             <p class="text-center">Page 1 out of 5</p>
             <ul class="pagination" id="pagination">
                 <li :class="[getFarmDataForOwner.current_page != 1 ? 'page-item ' : 'page-item disabled']"><a class="page-link" @click="showPrevious()">Previous</a></li>
@@ -79,6 +80,15 @@ export default {
             })
             return farmProdObj.length
         },
+        getTraderName(f){
+            var traderObj = this.getTraderListForOwner.filter((t) => {
+                return parseInt(f.trader_id) === parseInt(t.id)
+            })
+            return traderObj[0].trader_firstName + ' ' + traderObj[0].trader_lastName
+        },
+        viewFarm(f){            
+            this.$router.push({ path: `/farm/owner/details/${f.id}` })
+        },
         filteredFarmArray(){
             var filtered = [];
             var arr = this.getFarmDataForOwner.farms;             
@@ -115,7 +125,13 @@ export default {
         }
     },
     computed:{
-        ...mapGetters(['getFarmDataForOwner', 'getProjectListForOwner', 'getContractListForOwner', 'getFarmProduceListForOwner'])
+        ...mapGetters([
+            'getFarmDataForOwner', 
+            'getProjectListForOwner', 
+            'getContractListForOwner', 
+            'getFarmProduceListForOwner',
+            'getTraderListForOwner'
+        ])
     }
 }
 </script>

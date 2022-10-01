@@ -24,7 +24,7 @@
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supplier/list">Suppliers</router-link></li>
           <li><router-link style="color:black" :to="role == 'trader' ? '/projects' : '/projects/owner/all'">Projects</router-link></li>
-          <li><router-link style="color:black" to="/produces">Produces</router-link></li>
+          <li><router-link style="color:black" :to="role == 'trader' ? '/produces' : '/produces/owner/all'">Produces</router-link></li>
           <li><router-link style="color:black" :to="role == 'trader' ? '/farms' : '/farms/owner/all'">{{ role == 'trader' ? 'Farms and Owners' : 'Farms' }}</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supplyOrder/statusDashboard">Supply Purchase Orders</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>

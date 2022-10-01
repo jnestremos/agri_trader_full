@@ -14,11 +14,13 @@ const state = {
         links: null        
     },
     produce_details: {
-        prod_name: null,
-        prod_type: null,
-        prod_timeOfHarvest: null,
-        produce_numOfGrades: null,
-        produce_yield_dateHarvestTo: null
+       produce: null,
+       produce_trader: null,
+       produce_yields: null,
+       projects: null,
+       contracts: null,
+       farms: null,
+       farm_owners: null,
     },
     produces: null,
     filtered_produces: [],
@@ -116,13 +118,14 @@ const mutations = {
     asd: () => {
         console.log(1)
     },
-    setProduce: (state, data) => {   
-        state.produce_details.prod_name = data.produce.prod_name
-        state.produce_details.prod_type = data.produce.prod_type
-        state.produce_details.prod_timeOfHarvest = data.produce.prod_timeOfHarvest
-        state.produce_details.produce_numOfGrades = data.grades            
-        state.produce_details.prod_numOfFarms = data.farms            
-        state.produce_details.produce_yield_dateHarvestTo = data.produce_yield_dateHarvestTo            
+    setProduce: (state, data) => {                         
+        state.produce_details.produce = data.produce
+        state.produce_details.produce_trader = data.produce_trader
+        state.produce_details.produce_yields = data.produce_yields      
+        state.produce_details.projects = data.projects      
+        state.produce_details.contracts = data.contracts      
+        state.produce_details.farms = data.farms      
+        state.produce_details.farm_owners = data.farm_owners      
     },
     setFilteredProduces: (state, data) => {
         state.filtered_produces = data.produces

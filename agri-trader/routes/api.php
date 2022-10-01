@@ -79,24 +79,28 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/projects/owner/all', function (){
             $user = User::find(auth()->id())->farm_owner()->first();
             $farms = $user->farm()->get();
-            $trader = Trader::all();
+            $trader = [];
             // make sure the owner can remove his partnership with trader
             $contracts = null;
             $produces = [];
             $shares = [];
             $start_dates = [];
             foreach($farms as $farm){
+                if(!in_array($farm->trader()->first(), $trader)){
+                    array_push($trader, $farm->trader()->first());
+                }
                 $contracts = Contract::where([
                     ['farm_id', $farm->id],                
-                ]);                
+                ]);  
+                foreach($contracts->get() as $contract){
+                    if(!in_array($contract->produce()->first(), $produces)){
+                        array_push($produces, $contract->produce()->first());
+                    }
+                    array_push($shares, $contract->contract_share()->first());             
+                    array_push($start_dates, $contract->project()->first());             
+                }               
             }
-            foreach($contracts->get() as $contract){
-                if(!in_array($contract->produce()->first(), $produces)){
-                    array_push($produces, $contract->produce()->first());
-                }
-                array_push($shares, $contract->contract_share()->first());             
-                array_push($start_dates, $contract->project()->first());             
-            }            
+           
             if(count($contracts->get()) > 6){
                 return response([
                     'projects' => $contracts->paginate(6),
@@ -125,7 +129,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $contracts = [];
             $projects = [];
             $farm_produces = [];
-            foreach($farms as $farm){
+            $traders = [];
+            foreach($farms->get() as $farm){
+                if(!in_array($farm->trader()->first(), $traders)){
+                    array_push($traders, $farm->trader()->first());
+                }
                 $contractss = Contract::where('farm_id', $farm->id)->get();
                 foreach($contractss as $contract){
                     array_push($contracts, $contract);
@@ -140,6 +148,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 return response([
                     'contracts' => $contracts,
                     'projects' => $projects,
+                    'traders' => $traders,
                     'farm_produces' => $farm_produces,
                     'farms' => $farms->paginate(6)
                 ]);
@@ -148,10 +157,93 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 return response([
                     'contracts' => $contracts,
                     'projects' => $projects,
+                    'traders' => $traders,
                     'farm_produces' => $farm_produces,
                     'farms' => $farms->get()
                 ]);
             }        
+        });
+
+        Route::get('/farm/owner/{id}', function ($id){
+            $farm_produces = DB::table('farm_produce')->where('farm_id', $id)->get();
+            $farm = Farm::find($id);
+            $farm_address = $farm->farm_address()->first();
+            $owner = $farm->farm_owner()->first();
+            $contracts = Contract::where('farm_id', $farm->id)->get();
+            $projects = [];
+            foreach($contracts as $contract){
+                if(!$contract->project()->first()->project_completionDate){
+                    array_push($projects, $contract->project()->first());
+                }
+            }
+
+            return response([
+                'farm_produces' => $farm_produces,
+                'farm' => $farm,
+                'farm_address' => $farm_address,
+                'owner' => $owner,
+                'projects' => $projects
+            ]);
+        });
+
+        Route::get('/produces/owner/all', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();            
+            $farm_ids = [];
+            $produce_trader_ids = [];
+            $produce_list = Produce::all();
+            foreach($farms as $farm){
+                array_push($farm_ids, $farm->id);
+                $farm_produces = DB::table('farm_produce')->where('farm_id', $farm->id)->get();
+                foreach($farm_produces as $produce){
+                    if(!in_array($produce->produce_trader_id, $produce_trader_ids)){
+                        array_push($produce_trader_ids, $produce->produce_trader_id);                        
+                    }
+                }
+            }
+            $produces = ProduceTrader::whereIn('id', $produce_trader_ids);
+            if(count($produces->get()) > 6){
+                return response([
+                    'produces' => $produces->paginate(6),
+                    'produce_list' => $produce_list,
+                ]);
+            }
+            else{
+                return response([
+                    'produces' => $produces->get(),
+                    'produce_list' => $produce_list,
+                ]);
+            }
+        }); 
+        
+        
+        Route::get('/produce/owner/{id}', function ($id) {
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();
+            $produce_trader = ProduceTrader::find($id);
+            $produce_history = [];
+            $projects = [];
+            $contractss = [];
+            foreach($farms as $farm){
+               $contracts = Contract::where('farm_id', $farm->id)->get();
+               foreach($contracts as $contract){
+                array_push($contractss, $contract);
+                $project = $contract->project()->first();
+                array_push($projects, $project);
+                array_push($produce_history, $project->produce_yield()->where('produce_trader_id', $id)->latest()->first());
+               }                
+            }
+           $produce = ProduceTrader::find($id)->produce()->first();
+
+            return response([
+                'produce_history' => $produce_history,
+                'produce' => $produce,
+                'produce_trader' => $produce_trader,
+                'projects' => $projects,
+                'contracts' => $contractss,
+                'farms' => $farms,
+            ]);
+
         });
 
     });
@@ -348,24 +440,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             });
 
             Route::get('/owners', function (){
-               $farmOwners = []; 
-               $trader = Trader::where('user_id', auth()->id())->first();        
-               $owners = DB::table('owner_trader')->where('trader_id', $trader->id)->get();
-
-            //    return response([
-            //     'id' => auth()->id(),
-            //    ], 200);
-
-               foreach($owners as $owner){
-                $farmOwner = [
-                    'id' => $owner->farm_owner_id,
-                    'owner_firstName' => FarmOwner::find($owner->farm_owner_id)->owner_firstName,
-                    'owner_lastName' => FarmOwner::find($owner->farm_owner_id)->owner_lastName,
-                ];
-                array_push($farmOwners, $farmOwner);               
-               }
+            //    $farmOwners = []; 
+               $farmOwners = FarmOwner::all();; 
+            //    $trader = Trader::where('user_id', auth()->id())->first();        
+            //    $owners = DB::table('owner_trader')->where('trader_id', $trader->id)->get();
+            //    $owners = FarmOwner::all();
+           
+            //    foreach($owners as $owner){
+            //     $farmOwner = [
+            //         'id' => $owner->farm_owner_id,
+            //         'owner_firstName' => FarmOwner::find($owner->farm_owner_id)->owner_firstName,
+            //         'owner_lastName' => FarmOwner::find($owner->farm_owner_id)->owner_lastName,
+            //     ];
+            //     array_push($farmOwners, $farmOwner);               
+            //    }
                return response([                
-                'owners' => $farmOwners
+                    'owners' => $farmOwners
                 ], 200);
               
             });
@@ -461,11 +551,36 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('/produce/details/{id}', function ($id){
             $trader = Trader::where('user_id', auth()->id())->first();
+            $produce_trader = Produce::find($id)->produce_trader()->where('trader_id', $trader->id)->get();
+            $produce_ids = [];            
+            foreach($produce_trader as $produce){
+                array_push($produce_ids, $produce->id);
+            }
+            $produce_yields = ProduceYield::whereIn('produce_trader_id', $produce_ids)->latest()->get();
+            $projects = [];
+            $farms = [];
+            $farm_owners = [];
+            $contracts = [];
+            foreach($produce_yields as $yield){
+                if(!in_array($yield->project()->first(), $projects)){
+                    array_push($projects, $yield->project()->first());
+                    array_push($contracts, $yield->project()->first()->contract()->first());
+                }
+                $farm = $yield->project()->first()->contract()->first()->farm()->first();
+                if(!in_array($farm, $farms)){
+                    array_push($farms, $farm);
+                    array_push($farm_owners, $farm->farm_owner()->first());
+                }
+
+            }
             return response([
                 'produce' => Produce::find($id),
-                'grades' => ProduceTrader::where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_numOfGrades,
-                'farms' => ProduceTrader::where([['trader_id', $trader->id], ['produce_id', $id]])->first()->prod_numOfFarms,
-                'dateOfHarvest' => ProduceTrader::where([['trader_id', $trader->id], ['produce_id', $id]])->first()->produce_yield_dateHarvestTo,
+                'produce_trader' => $produce_trader,
+                'produce_yields' => $produce_yields,
+                'projects' => $projects,
+                'contracts' => $contracts,
+                'farms' => $farms,
+                'farm_owners' => $farm_owners,
             ], 200);
         });
 

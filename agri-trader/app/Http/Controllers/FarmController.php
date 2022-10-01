@@ -63,7 +63,24 @@ class FarmController extends Controller
             'farm_zipcode' => $request->farm_zipcode,
             'farm_city' => $request->farm_city,
         ]);
+        
+        $farmOwner = FarmOwner::find($request->owner_id);
+        
+        $trader = Trader::where('user_id', auth()->id())->first();       
 
+        if(!DB::table('owner_trader')->where([
+            ['trader_id', $trader->id],
+            ['farm_owner_id', $farmOwner->id]
+            ])->first()){
+
+            $trader->farm_owners()->attach($farmOwner);
+
+            DB::table('owner_trader')->where([['trader_id', $trader->id], ['farm_owner_id', $farmOwner->id]])->update([
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+     
         return response([
             'farm_id' => $farm->id,
             'farm_owner_id' => $farm->farm_owner_id,

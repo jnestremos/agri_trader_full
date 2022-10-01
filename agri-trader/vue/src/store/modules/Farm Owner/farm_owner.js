@@ -33,7 +33,39 @@ const state = {
     },
     contract_list: null,
     project_list: null,
-    farmProduce_list: null
+    farmProduce_list: null,
+
+    produce_data: {
+        produces: [],
+        current_page: null,
+        first_page_url: null,
+        last_page: null,
+        last_page_url: null,
+        next_page_url: null,
+        per_page: null,
+        prev_page_url: null,
+        total: null,
+        links: null,        
+    },
+
+    farm_info: {
+        farm: null,
+        farm_produce: null,
+        farm_address: null,
+        owner: null,
+        projects: null,
+    },
+
+    produce_info: {
+        produce_history: null,
+        produce: null,
+        produce_trader: null,
+        farms: null,
+        projects: null,
+        contracts: null,
+    }
+
+
 }
 
 
@@ -43,6 +75,9 @@ const getters = {
     },
     getFarmDataForOwner(){
         return state.farm_data
+    },
+    getProduceDataForOwner(){
+        return state.produce_data
     },
     getFarmListForOwner(){
         return state.farm_list
@@ -68,6 +103,12 @@ const getters = {
     getFarmProduceListForOwner(){
         return state.farmProduce_list
     },
+    getFarmInfoForOwner(){
+        return state.farm_info
+    },
+    getProduceInfoForOwner(){
+        return state.produce_info
+    },    
 }
 
 const actions = {
@@ -113,9 +154,38 @@ const actions = {
             .catch((err) => {
                 console.log(err)
             })
-        }
-        
+        }        
     },
+    fetchAllProducesForOwner({ commit }, query = null){
+        if(query){
+            return axiosClient.get(`/produces/owner/all?${query}`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setAllProduces', res.data)
+            })
+        }
+        else{
+            return axiosClient.get(`/produces/owner/all`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setAllProduces', res.data)
+            })
+        }
+    },
+    fetchFarmForOwner({ commit }, id){
+        return axiosClient.get(`/farm/owner/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setFarmForOwner', res.data)
+        })
+    },
+    fetchProduceForOwner({ commit }, id){
+        return axiosClient.get(`/produce/owner/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProduceForOwner', res.data)
+        })
+    }
 }
 
 const mutations = {
@@ -164,8 +234,41 @@ const mutations = {
         state.contract_list = data.contracts          
         state.project_list = data.projects 
         state.farmProduce_list = data.farm_produces         
-        
+        state.trader_list = data.traders
     },
+    setAllProduces: (state, data) => {
+        if(data.produces.data){
+            state.produce_data.farms = data.produces.data
+            state.produce_data.current_page = data.produces.current_page
+            state.produce_data.first_page_url = data.produces.first_page_url
+            state.produce_data.last_page = data.produces.last_page
+            state.produce_data.last_page_url = data.produces.last_page_url
+            state.produce_data.next_page_url = data.produces.next_page_url
+            state.produce_data.per_page = data.produces.per_page
+            state.produce_data.prev_page_url = data.produces.prev_page_url
+            state.produce_data.total = data.produces.total                        
+            state.produce_data.links = data.produces.links
+            state.produce_data.links.splice(0, 1)
+            state.produce_data.links.splice(state.produce_data.links.length - 1, 1)            
+        }
+        else{
+            state.produce_data.produces = data.produces
+        }
+        state.produce_list = data.produce_list
+    },
+    setFarmForOwner: (state, data) => {
+        state.farm_info.farm = data.farm
+        state.farm_info.farm_produces = data.farm_produces
+        state.farm_info.farm_address = data.farm_address
+        state.farm_info.owner = data.owner
+        state.farm_info.projects = data.projects
+    },
+    setProduceForOwner: (state, data) => {
+        state.produce_info.produce_history = data.produce_history
+        state.produce_info.produce = data.produce
+        state.produce_info.produce_trader = data.produce_trader
+        state.produce_info.contracts = data.contracts
+    }
 }
 
 export default {

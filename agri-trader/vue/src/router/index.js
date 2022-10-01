@@ -53,6 +53,9 @@ import store from '../store'
 
 import AllProjectsOwner from '../views/auth/Farm Owner/AllProjects.vue'
 import AllFarmsOwner from '../views/auth/Farm Owner/AllFarms.vue'
+import AllProducesOwner from '../views/auth/Farm Owner/AllProduces.vue'
+import ShowFarmOwner from '../views/auth/Farm Owner/ShowFarm.vue'
+import ShowProduceOwner from '../views/auth/Farm Owner/ShowProduce.vue'
 
 Vue.use(VueRouter)
 
@@ -308,6 +311,24 @@ const routes = [
         name: 'FarmsOwner',
         meta: {needsAuth: true, role: 'farm_owner'},
         component: AllFarmsOwner
+      },
+      {
+        path: '/produces/owner/all',
+        name: 'ProducesOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: AllProducesOwner
+      },
+      {
+        path: '/farm/owner/details/:id',
+        name: 'FarmOwnerDetails',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: ShowFarmOwner
+      },
+      {
+        path: '/produce/owner/details/:id',
+        name: 'ProduceOwnerDetails',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: ShowProduceOwner
       },
     ]
   }, 
