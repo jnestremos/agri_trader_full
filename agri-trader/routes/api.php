@@ -11,9 +11,12 @@ use App\Http\Controllers\OnHandBidController;
 use App\Http\Controllers\ProduceController;
 use App\Http\Controllers\ProduceYieldController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ReceivingReportController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\SupplyOrderRefundController;
+use App\Http\Controllers\SupplyOrderReturnController;
 use App\Http\Controllers\SupplyPurchaseOrderController;
 use App\Models\BidOrder;
 use App\Models\Contract;
@@ -29,7 +32,9 @@ use App\Models\ProduceYield;
 use App\Models\Project;
 use App\Models\ProjectBid;
 use App\Models\ProjectStatus;
+use App\Models\ReceivingReport;
 use App\Models\Sale;
+use App\Models\SupplyOrderReturn;
 use App\Models\Trader;
 use App\Models\TraderContactNumber;
 use App\Models\User;
@@ -269,7 +274,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/add', 'addPO');
             Route::patch('/{id}', 'updateStatus');
             Route::patch('/{id}/payment', 'updatePayment');
+
         });
+
+        Route::controller(ReceivingReportController::class)->prefix('receiving/report')->group(function () {
+            Route::post('/add', 'addReceivingReport');
+        });
+
+        Route::controller(SupplyOrderReturnController::class)->prefix('supplyReturn')->group(function (){
+            Route::post('/add', 'addSupplyReturn');
+        });
+        Route::controller(SupplyOrderRefundController::class)->prefix('supplyRefund')->group(function (){
+            Route::post('/add', 'addSupplyRefund');
+            Route::patch('/{id}', 'confirmSupplyRefund');
+        });
+        
         
 
         Route::get('/dashboard', function(){

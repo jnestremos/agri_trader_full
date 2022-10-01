@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Produce;
 use App\Models\SupplyOrderPayment;
+use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,7 +19,8 @@ class SupplyPurchaseOrderController extends Controller
         while(true){
             $uuid = mt_rand(000000, 999999);
             // $uuid = Str::uuid()->toString();
-            if(!SupplyPurchaseOrder::where('purchaseOrder_num', 'PO-'.$uuid)->first()){
+            if(!SupplyPurchaseOrder::where('purchaseOrder_num', 'PO-'.$uuid)->first()
+            || !SupplyOrderReturn::where('returnOrder_num', 'PO-'.$uuid)->first()){
                 break;
             }
         }        
@@ -165,8 +167,7 @@ class SupplyPurchaseOrderController extends Controller
     public function updatePayment($id){
         $purchaseOrder = SupplyOrderPayment::where('purchaseOrder_num', $id)->first();
         SupplyOrderPayment::where('purchaseOrder_num', $id)->update([
-            'purchaseOrder_dpAmount' => $purchaseOrder->purchaseOrder_totalBalance,
-            'purchaseOrder_percentage' => 1,
+            'purchaseOrder_dpAmount' => $purchaseOrder->purchaseOrder_totalBalance,            
             'purchaseOrder_balance' => 0,
         ]);
 
