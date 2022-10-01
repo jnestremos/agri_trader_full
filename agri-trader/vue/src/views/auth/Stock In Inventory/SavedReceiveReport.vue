@@ -1,7 +1,7 @@
 <template>
-  <div class="InitialStockIn">
+  <div class="SavedReceiveReport">
     <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
-            <h3>Supply | Receive from Supply Purchase Order</h3>
+            <h3>Supply | Receive Report Summary</h3>
     </div>
     <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">
@@ -13,12 +13,7 @@
                     </div>
                     <div class="col-lg-3 me-3">
                         <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
-                        <!-- <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567"> -->
-                        <select class="form-select">
-                                <option>123456789</option>
-                                <option>55369872</option>
-                                <option >22365124</option>
-                            </select>
+                        <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567">
                     </div>
                 </div>
                 <div class="row">
@@ -36,7 +31,6 @@
                     <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                         <thead align="center">
                             <tr>
-                                <th scope="col">Select</th>
                                 <th scope="col">Supply Name</th>
                                 <th scope="col">Supply Type</th>
                                 <th scope="col">Supply For</th>                                    
@@ -44,44 +38,33 @@
                                 <th scope="col">Unit</th>
                                 <th scope="col">Subtotal</th>
                                 <th scope="col">Received</th>
-                                <th scope="col">Defective / For Return</th>
+                                <th scope="col">Defective</th>
                             </tr>
                         </thead>
                         <tbody align="center">
                             <tr>
-                                <td><input type="checkbox"></td>
                                 <td>Yara Mila Unik-16</td>
                                 <td>Fertilizer</td>
                                 <td>Mango</td>
                                 <td>15</td>
                                 <td>Sack</td>
                                 <td>7,500.00</td>
-                                <td><i>Insert Quantity Received here</i></td>
-                                <td><i>Insert Defective / For Return here</i></td>
+                                <td><i>10</i></td>
+                                <td><i>5</i></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td><input type="checkbox"></td>
                                 <td>Yara Mila Unik-16</td>
                                 <td>Fertilizer</td>
-                                <td>Banana</td>
+                                <td></td>
                                 <td>15</td>
                                 <td>Sack</td>
                                 <td>7,500.00</td>
                                 <td><i>Insert Quantity Received here</i></td>
                                 <td><i>Insert Defective / For Return here</i></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
-                </div>
-                <div class="form-row mt-2 mb-2">
-                    <div class="col-sm-2">
-                        <label for="orderSummary_quantityReceived" class="form-label me-4" >Received</label>
-                        <input type="text" name="orderSummary_totalAmount" id="" class="form-control" style="width: 40%" v-model="stockIn_quantityReceived">
-                    </div>
-                    <div class="col-sm-2">
-                        <label for="orderSummary_quantityReturned" class="form-label me-4" >For Return</label>
-                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" style="width: 40%;" v-model="stockIn_quantityReturned">
-                    </div>
                 </div>
                 <div class="form-row">
                     <div class="col-lg-3 me-3">
@@ -90,13 +73,17 @@
                     </div>
                     <div class="col-lg-3 me-3">
                         <label for="stockIn_Remarks" class="form-label me-4" >Remarks</label>
-                        <input type="text" name="stockIn_transactedBy" id="" class="form-control" v-model="stockIn_remarks">
+                        <input type="text" name="stockIn_transactedBy" id="" class="form-control" v-model="SavedReceiveReport_remarks">
                     </div>
                 </div>
                 <div class="btn-toolbar pt-4" role="toolbar">
                     <div class="btn-group me-3">
-                       <router-link to="/stockIn/ReceiveReport"> <b-button variant="success" style="width:200px; height:60px">Stock In</b-button> </router-link>
+                        <b-button variant="success" style="width:200px; height:60px">Return and Exchange Item</b-button>
                     </div>
+                    <div class="btn-group me-3">
+                        <b-button variant="warning" style="width:200px; height:60px">Refund</b-button>
+                    </div>
+                    
                 </div>
             </form>
         </div>
@@ -107,15 +94,13 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
-    name: "InitialStockIn",
+    name: "SavedReceiveReport",
     created() {
         this.readyApp()
     },
     data(){
         return{
-            stockIn: {
-                quantityReceived: '',
-                quantityReturned: '',
+          SavedReceiveReport: {
                 remarks: '',
             }
         }
