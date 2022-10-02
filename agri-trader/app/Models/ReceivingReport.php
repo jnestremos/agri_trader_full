@@ -16,6 +16,7 @@ class ReceivingReport extends Model
         'purchaseOrder_qtyDefect',
         'purchaseOrder_unit',
         'purchaseOrder_subTotal',
+        'report_remark'
     ];
 
     public function supply(){

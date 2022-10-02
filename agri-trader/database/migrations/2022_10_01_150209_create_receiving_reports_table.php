@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('purchaseOrder_qtyDefect');
             $table->string('purchaseOrder_unit');
             $table->double('purchaseOrder_subTotal');
+            $table->string('report_remark');
             $table->timestamps();
         });
     }

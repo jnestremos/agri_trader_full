@@ -100,7 +100,7 @@ export default {
             .then(() => {
                 this.$toastr.s('Payment Successful!')
                 setTimeout(() => {
-                    this.$router.push({ name: 'InitialStockIn' })
+                    this.$router.push({ path: `/stockIn/${this.getPO.purchaseOrder_num}` })
                 }, 5000)
             })
         }

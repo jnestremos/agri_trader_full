@@ -16,6 +16,7 @@ class SupplyOrderRefund extends Model
         'purchaseOrder_unit',
         'refundOrder_status',
         'purchaseOrder_subTotal',
+        'refund_remark',
     ];
 
     public function supply(){

@@ -40,6 +40,21 @@ const state = {
         purchaseOrder_accs: null,        
         suppliers: null,        
         supplies: null,        
+    },    
+    returns_dashboard: {
+        returns_filtered: null,
+        current_page: null,
+        first_page_url: null,
+        last_page: null,
+        last_page_url: null,
+        next_page_url: null,
+        per_page: null,
+        prev_page_url: null,
+        total: null,
+        links: null,
+        returns: null,       
+        suppliers: null,        
+        supplies: null,        
     }    
 }   
 
@@ -52,6 +67,9 @@ const getters = {
     },
     getPODashboard(){
         return state.purchaseOrder_dashboard
+    },
+    getReturnDashboard(){
+        return state.returns_dashboard
     }
 }
 
@@ -102,7 +120,23 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
-    }
+    },
+    fetchReturnDashboard({ commit }, query = null){
+        if(query){
+            return axiosClient.get(`/supplyReturn/dashboard?${query}`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setReturnDashboard', res.data)
+            })
+        }
+        else{
+            return axiosClient.get(`/supplyReturn/dashboard`)
+            .then((res) => {
+                console.log(res.data)
+                commit('setReturnDashboard', res.data)
+            })
+        }
+    },
 }
 
 const mutations = {
@@ -152,6 +186,28 @@ const mutations = {
         state.purchaseOrder_dashboard.purchaseOrder_accs = data.purchaseOrder_accs        
         state.purchaseOrder_dashboard.suppliers = data.suppliers        
         state.purchaseOrder_dashboard.supplies = data.supplies        
+    },
+    setReturnDashboard: (state, data) => {
+        if(data.returns_filtered.data){
+            state.returns_dashboard.returns_filtered = data.returns_filtered.data
+            state.returns_dashboard.current_page = data.returns_filtered.current_page
+            state.returns_dashboard.first_page_url = data.returns_filtered.first_page_url
+            state.returns_dashboard.last_page = data.returns_filtered.last_page
+            state.returns_dashboard.last_page_url = data.returns_filtered.last_page_url
+            state.returns_dashboard.next_page_url = data.returns_filtered.next_page_url
+            state.returns_dashboard.per_page = data.returns_filtered.per_page
+            state.returns_dashboard.prev_page_url = data.returns_filtered.prev_page_url
+            state.returns_dashboard.total = data.returns_filtered.total                        
+            state.returns_dashboard.links = data.returns_filtered.links
+            state.returns_dashboard.links.splice(0, 1)
+            state.returns_dashboard.links.splice(state.returns_dashboard.links.length - 1, 1)            
+        }
+        else{
+            state.returns_dashboard.returns_filtered = data.returns_filtered
+        }
+        state.returns_dashboard.returns = data.returns        
+        state.returns_dashboard.suppliers = data.suppliers        
+        state.returns_dashboard.supplies = data.supplies        
     },
     asd: () => {
         console.log(1)

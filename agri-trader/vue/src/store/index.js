@@ -14,6 +14,7 @@ import dashboard from './modules/Dashboard/dashboard'
 import supplier from './modules/Supplier/supplier'
 import supply from './modules/Supply/supply'
 import supplyPurchaseOrder from './modules/SupplyPurchaseOrder/supplyPurchaseOrder'
+import receivingReport from "./modules/Receiving Report/report"
 import farm_owner from './modules/Farm Owner/farm_owner'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -55,6 +56,7 @@ export default new Vuex.Store({
     supplier,
     supply,
     supplyPurchaseOrder, 
-    farm_owner   
+    farm_owner,
+    receivingReport
   },
 })

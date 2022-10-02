@@ -45,6 +45,14 @@ class SupplyController extends Controller
             ], 400);
         }
 
+        $supply = Supply::where('supply_name', $request->supply_name)->first();
+
+        if($supply){
+            return response([
+                'error' => 'Supply was already added!'
+            ], 400);
+        }
+
         Supply::create([
            'supplier_id' => $request->supplier_id,
            'supply_name' => $request->supply_name,

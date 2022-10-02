@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produce;
+use App\Models\Supplier;
 use App\Models\SupplyOrderPayment;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
@@ -93,14 +94,14 @@ class SupplyPurchaseOrderController extends Controller
                 'purchaseOrder_subTotal' => $request->purchaseOrder_subTotal[$i],
             ]);
         }
-
+        $supplier = Supplier::find($request->supplier_id)->supplier_contact_person()->first();
         SupplyOrderPayment::create([
             'purchaseOrder_num' => $supplyPO->purchaseOrder_num,            
             'purchaseOrder_paymentMethod' => $request->purchaseOrder_paymentMethod,                                                       
             'purchaseOrder_paymentType' => $request->purchaseOrder_paymentType,                                                       
             'purchaseOrder_bankName' => $request->purchaseOrder_bankName,    
             'purchaseOrder_accNum' => $request->purchaseOrder_accNum,   
-            'purchaseOrder_accName' => $request->purchaseOrder_accName ?? $trader->trader_firstName . ' ' . $trader->trader_lastName,                  
+            'purchaseOrder_accName' => $request->purchaseOrder_accName ?? $supplier->contact_firstName . ' ' . $supplier->contact_lastName,                  
             'purchaseOrder_dpAmount' => $request->purchaseOrder_dpAmount,                  
             'purchaseOrder_percentage' => $request->purchaseOrder_percentage,                  
             'purchaseOrder_balance' => $request->purchaseOrder_balance, 
@@ -166,11 +167,13 @@ class SupplyPurchaseOrderController extends Controller
 
     public function updatePayment($id){
         $purchaseOrder = SupplyOrderPayment::where('purchaseOrder_num', $id)->first();
-        SupplyOrderPayment::where('purchaseOrder_num', $id)->update([
-            'purchaseOrder_dpAmount' => $purchaseOrder->purchaseOrder_totalBalance,            
-            'purchaseOrder_balance' => 0,
-        ]);
-
+        if($purchaseOrder->purchaseOrder_paymentType != 'Full (Return Order)'){
+            SupplyOrderPayment::where('purchaseOrder_num', $id)->update([
+                'purchaseOrder_dpAmount' => $purchaseOrder->purchaseOrder_totalBalance,            
+                'purchaseOrder_balance' => 0,
+            ]);
+               
+        }
         SupplyPurchaseOrder::where('purchaseOrder_num', $id)->update([
             'purchaseOrder_status' => "Delivered"
         ]);

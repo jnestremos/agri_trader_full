@@ -15,6 +15,7 @@ class SupplyOrderRefundController extends Controller
             'purchaseOrder_qtyDefect' => 'required|array',
             'purchaseOrder_unit' => 'required|array',
             'purchaseOrder_subTotal' => 'required|array',
+            'refund_remark' => 'required'
         ]);
 
         if(!$refund){
@@ -31,6 +32,7 @@ class SupplyOrderRefundController extends Controller
                 'purchaseOrder_unit' => $request->purchaseOrder_unit[$i],
                 'refundOrder_status' => 'Pending',
                 'purchaseOrder_subTotal' => $request->purchaseOrder_subTotal[$i],
+                'refund_remark' => $request->refund_remark
             ]);
         }
     }

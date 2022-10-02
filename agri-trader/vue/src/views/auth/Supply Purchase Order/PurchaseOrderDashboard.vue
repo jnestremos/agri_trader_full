@@ -21,7 +21,7 @@
                                     <label class="d-flex align-items-baseline">Status: <p class="ms-3 font-weight-bold" style="color:red">{{ o.purchaseOrder_status }}</p></label>
                                 </div>
                             </div>
-                            <b-modal size="xl" :hide-footer="o.purchaseOrder_status == 'Delivered'" scrollable :id="`modal-${o.purchaseOrder_num}`" :title="`Purchase Order No. ${o.purchaseOrder_num}`">
+                            <b-modal size="xl" :hide-footer="checkStatus(o.purchaseOrder_status)" scrollable :id="`modal-${o.purchaseOrder_num}`" :title="`Purchase Order No. ${o.purchaseOrder_num}`">
                                 <div class="w-100 h-100">
                                     <div class="d-flex w-100 h-100">
                                         <div class="h-100" :style="[getOrders(o).length > 9 ? {'overflow-y': 'scroll'} : {}, {'width':'60%'}]">
@@ -74,14 +74,16 @@
                                                     <option :selected="o.purchaseOrder_status == 'Pending'" value="Pending">Pending</option>
                                                     <option :selected="o.purchaseOrder_status == 'For Delivery'" value="For Delivery">For Delivery</option>
                                                 </select>
-                                                <input v-else type="text" name="" disabled id="" class="form-control" :value="o.purchaseOrder_status" style="width:150px">
+                                                <input v-else type="text" name="" disabled id="" class="form-control" :value="o.purchaseOrder_status" style="width:300px">
                                             </div>
                                         </div>  
                                     </div>
                                 </div>
                                 <template #modal-footer="{ok}">
                                     <b-button variant="primary" v-if="o.purchaseOrder_status == 'Pending'" :disabled="data.purchaseOrder_status == 'Pending' || !data.purchaseOrder_status" @click="ok()">Update Status</b-button>
-                                    <b-button variant="primary" v-else :disabled="data.purchaseOrder_status == 'Pending' || !data.purchaseOrder_status" @click="ok()">Pay Outstanding Balance</b-button>                                    
+                                    <b-button variant="primary" v-else-if="o.purchaseOrder_status == 'For Delivery'" :disabled="data.purchaseOrder_status == 'Pending' || !data.purchaseOrder_status" @click="ok()">Pay Outstanding Balance</b-button>                                    
+                                    <b-button variant="primary" v-else-if="o.purchaseOrder_status == 'Delivered'" :disabled="data.purchaseOrder_status == 'Pending' || !data.purchaseOrder_status" @click="ok()">Create Receiving Report</b-button>                                    
+                                    <b-button variant="primary" v-else-if="o.purchaseOrder_status == 'Pending for Return/Refund Approval'" :disabled="!data.purchaseOrder_status" @click="ok()" >View Receiving Report</b-button>                                                                                                            
                                 </template>
                             </b-modal>
                         </div>                        
@@ -143,6 +145,15 @@ export default {
             })
             return supplierObj[0].supplier_name
         },
+        checkStatus(status){
+            if(status == 'Pending' || status == 'For Delivery' 
+            || status == 'Delivered'){
+                return false
+            }
+            else{
+                return true
+            }            
+        },
         getTotalBalance(order){
             var supplyPaymentObj = this.getPODashboard.purchaseOrder_accs.filter((a) => {
                 return order.purchaseOrder_num === a.purchaseOrder_num
@@ -153,6 +164,9 @@ export default {
             var supplyPaymentObj = this.getPODashboard.purchaseOrder_accs.filter((a) => {
                 return order.purchaseOrder_num === a.purchaseOrder_num
             })
+            if(supplyPaymentObj[0].purchaseOrder_dpAmount == 0){
+                return supplyPaymentObj[0].purchaseOrder_dpAmount.toFixed(2) + ' (Reorder for Defects)'
+            }
             return supplyPaymentObj[0].purchaseOrder_dpAmount.toFixed(2)
         },
         getRemainingBalance(order){
@@ -276,6 +290,12 @@ export default {
                 else if(orderObj[0].purchaseOrder_status == 'For Delivery'){  
                     this.initPO(this.data)                  
                     this.$router.push({ name: 'PaymentDashboard' })
+                }
+                else if(orderObj[0].purchaseOrder_status == 'Delivered'){
+                    this.$router.push({ path: `/stockIn/${orderObj[0].purchaseOrder_num}` })
+                }
+                else if(orderObj[0].purchaseOrder_status == 'Pending for Return/Refund Approval'){
+                    this.$router.push({ path: `/receiving/report/${orderObj[0].purchaseOrder_num}` })
                 }
                 
             }

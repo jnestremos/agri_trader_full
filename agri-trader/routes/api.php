@@ -278,10 +278,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
 
         Route::controller(ReceivingReportController::class)->prefix('receiving/report')->group(function () {
+            Route::get('/{id}', 'getPOForRR');
+            Route::get('/{id}/update', 'updateRR');
             Route::post('/add', 'addReceivingReport');
         });
 
         Route::controller(SupplyOrderReturnController::class)->prefix('supplyReturn')->group(function (){
+            Route::get('/dashboard', 'setReturnDashboard');
             Route::post('/add', 'addSupplyReturn');
         });
         Route::controller(SupplyOrderRefundController::class)->prefix('supplyRefund')->group(function (){

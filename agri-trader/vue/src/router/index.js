@@ -277,13 +277,13 @@ const routes = [
         component:PurchaseOrderStatus
       },
       {
-        path:"/stockIn/",
+        path:"/stockIn/:id",
         name:"InitialStockIn",
         meta:{needsAuth: true, role: "trader"},
         component:InitialStockIn
       },
       {
-        path:"/stockIn/ReceiveReport",
+        path:"/receiving/report/:id",
         name:"SavedReceivedReport",
         meta:{needsAuth: true, role: "trader"},
         component:SavedReceiveReport

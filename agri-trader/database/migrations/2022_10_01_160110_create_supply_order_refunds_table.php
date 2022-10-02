@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('purchaseOrder_unit');            
             $table->string('refundOrder_status');
             $table->double('purchaseOrder_subTotal');
+            $table->string('refund_remark');
             $table->timestamps();
         });
     }

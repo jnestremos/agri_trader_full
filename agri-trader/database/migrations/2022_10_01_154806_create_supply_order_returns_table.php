@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('purchaseOrder_unit');            
             $table->string('returnOrder_status');
             $table->double('purchaseOrder_subTotal');
+            $table->string('return_remark');
             $table->timestamps();
         });
     }

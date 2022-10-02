@@ -6,6 +6,7 @@ use App\Models\Supply;
 use App\Models\SupplyOrderPayment;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SupplyOrderReturnController extends Controller
@@ -17,6 +18,7 @@ class SupplyOrderReturnController extends Controller
             'purchaseOrder_qtyDefect' => 'required|array',
             'purchaseOrder_unit' => 'required|array',
             'purchaseOrder_subTotal' => 'required|array',
+            'return_remark' => 'required'
         ]);
 
         if(!$return){
@@ -50,8 +52,10 @@ class SupplyOrderReturnController extends Controller
                 'purchaseOrder_unit' => $request->purchaseOrder_unit[$i],
                 'returnOrder_status' => 'Pending',
                 'purchaseOrder_subTotal' => $request->purchaseOrder_subTotal[$i],
+                'return_remark' => $request->return_remark
             ]);
             SupplyPurchaseOrder::create([
+                'trader_id' => User::find(auth()->id())->trader()->first()->id,
                 'supplier_id' => Supply::find($request->supply_id[$i])->supplier()->first()->id,
                 'supply_id' => $request->supply_id[$i],
                 'purchaseOrder_num' => 'PO-'.$uuid,
@@ -81,5 +85,46 @@ class SupplyOrderReturnController extends Controller
         return response([
             'message' => 'Supply Return Successful'
         ]);
+    }
+
+    public function setReturnDashboard(){
+        $user = User::find(auth()->id())->trader()->first();
+        $orders = SupplyPurchaseOrder::where('trader_id', $user->id)->groupBy('purchaseOrder_num')->latest()->get();        
+        $return_ids = [];
+        $returns = [];
+        $suppliers = [];
+        $supplies = [];
+        foreach($orders as $order){
+            if(!in_array($order->supplier()->first(), $suppliers)){
+                array_push($suppliers, $order->supplier()->first());
+            }
+            if(!in_array($order->supply()->first(), $supplies)){
+                array_push($supplies, $order->supply()->first());
+            }
+            if(SupplyOrderReturn::where('purchaseOrder_num', $order->purchaseOrder_num)->latest()->first()){
+                array_push($return_ids, SupplyOrderReturn::where('purchaseOrder_num', $order->purchaseOrder_num)->latest()->first()->id);
+            }            
+            $container = SupplyOrderReturn::where('purchaseOrder_num', $order->purchaseOrder_num)->get();
+            foreach($container as $return){
+                array_push($returns, $return);
+            }
+        }              
+        $returns_filtered = SupplyOrderReturn::whereIn('id', $return_ids);
+        if(count($returns_filtered->get()) > 6){
+            return response([
+                'returns_filtered' => $returns_filtered->paginate(6),
+                'returns' => $returns,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+            ]);
+        }
+        else{
+            return response([
+                'returns_filtered' => $returns_filtered->get(),
+                'returns' => $returns,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+            ]);
+        }
     }
 }
