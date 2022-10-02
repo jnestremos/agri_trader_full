@@ -32,4 +32,7 @@ class Supplier extends Model
     public function supply_purchase_order(){
         return $this->hasMany(SupplyPurchaseOrder::class);
     }
+    public function supply_inventory(){
+        return $this->hasMany(SupplyInventory::class);
+    }
 }

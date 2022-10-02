@@ -33,6 +33,7 @@
                         <tr>
                             <th>Transaction No.</th>
                             <th>Order No.</th>
+                            <th>Project Name</th>
                             <th>Produce Name</th>
                             <th>Distributor Name</th>                 
                             <th>Order Type</th>
@@ -44,6 +45,7 @@
                         <tr v-for="(order, index) in incomeSumm" :key="index">
                             <td>{{ order.id }}</td>
                             <td>{{ order.bid_order_id }}</td>
+                            <td>{{ getProjectName(order) }}</td>
                             <td>{{ getProduceName(order) }}</td>
                             <td>{{ getDistName(order) }}</td>                            
                             <td>{{ getOrderType(order) }}</td>
@@ -101,6 +103,29 @@ export default {
             type.value = 'None'
             produce.value = 'None'
             this.incomeSumm = this.getIncomeSummary.incomeSumm       
+        },
+        getProjectName(order){
+            var bidOrderObj = this.getIncomeSummary.bidOrders.filter((o) => {
+                return parseInt(order.bid_order_id) === parseInt(o.id)
+            })
+            var projectObj = this.getIncomeSummary.projects.filter((p) => {
+                return parseInt(bidOrderObj[0].project_id) === parseInt(p.id)
+            })
+            var contractObj = this.getIncomeSummary.contracts.filter((c) => {
+                return parseInt(projectObj[0].contract_id) === parseInt(c.id)
+            })
+            var projBidObj = this.getIncomeSummary.project_bids.filter((pp) => {
+                return parseInt(bidOrderObj[0].id) === parseInt(pp.bid_order_id)
+            })
+            var onHandBidObj = this.getIncomeSummary.on_hand_bids.filter((o) => {
+                return parseInt(bidOrderObj[0].id) === parseInt(o.bid_order_id)
+            })
+            if(projBidObj[0]){
+                return contractObj[0].farm_name + ' Project'
+            }
+            else if(onHandBidObj[0]){
+                return contractObj[0].farm_name + ' On-Hand'
+            }
         },
         getProduceName(order){
             var bidOrderObj = this.getIncomeSummary.bidOrders.filter((o) => {
