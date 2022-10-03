@@ -34,7 +34,9 @@ use App\Models\ProjectBid;
 use App\Models\ProjectStatus;
 use App\Models\ReceivingReport;
 use App\Models\Sale;
+use App\Models\StockIn;
 use App\Models\SupplyOrderReturn;
+use App\Models\SupplyPurchaseOrder;
 use App\Models\Trader;
 use App\Models\TraderContactNumber;
 use App\Models\User;
@@ -290,6 +292,34 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::controller(SupplyOrderRefundController::class)->prefix('supplyRefund')->group(function (){
             Route::post('/add', 'addSupplyRefund');
             Route::patch('/{id}', 'confirmSupplyRefund');
+        });
+
+        Route::get('/stockIn/history', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $orders = SupplyPurchaseOrder::where('trader_id', $user->id)->groupBy('purchaseOrder_num')->get();
+            $stockIn_history = [];
+            $suppliers = [];
+            $supplies = [];            
+            foreach($orders as $order){
+                $stocks = StockIn::where('purchaseOrder_num', $order->purchaseOrder_num)->get();
+                foreach($stocks as $stock){
+                    array_push($stockIn_history, $stock);
+                    if(!in_array($stock->supply()->first(), $supplies)){
+                        array_push($supplies, $stock->supply()->first());
+                    }
+                    if(!in_array($stock->supply()->first()->supplier()->first(), $suppliers)){
+                        array_push($suppliers, $stock->supply()->first()->supplier()->first());
+                    }
+                }
+            }
+            $produces = Produce::groupBy('prod_type')->get();
+            return response([
+                'stockIn_history' => $stockIn_history,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                'produces' => $produces,
+            ]);
+
         });
         
         
