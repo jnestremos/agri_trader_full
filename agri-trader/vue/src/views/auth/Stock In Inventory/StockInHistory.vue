@@ -29,7 +29,7 @@
                         <div class="col-lg-3 me-3">
                             <label for="stockInHistory_SupplyFor" class="form-label me-4">Choose Supply For</label>
                             <select class="form-select" id="supply_type">
-                                <option selected value="None">Select Supply Type</option> 
+                                <option selected value="None">Select Supply For</option> 
                                 <option value="Mango">Mango</option>                                
                                 <option value="Banana">Banana</option>                                
                                 <option value="Pineapple">Pineapple</option>                                
@@ -37,7 +37,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mb-2 mt-3" style="width:100% height:90%; clear:left;">
+                    <div class="mb-2 mt-4" style="width:100% height:90%; clear:left;">
                         <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                             <thead align="center">
                                 <tr>
