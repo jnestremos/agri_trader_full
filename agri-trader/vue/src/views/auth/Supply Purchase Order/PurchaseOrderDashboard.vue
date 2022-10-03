@@ -13,7 +13,7 @@
                         <div class="col-4" v-for="(o, i) in order" :key="i">
                             <div class="card mt-3 ms-3" style="height: 90%; background-color: #E0EDCA; border-radius: 20px;">
                                 <div class="card-body" style="position:relative">
-                                    <div @click="triggerModal(o)" style="position:absolute; height:100%; width:100%; z-index:999; top:0; left:0; cursor: pointer;"></div>
+                                    <div @click="triggerModal(o)" style="position:absolute; height:100%; width:100%; z-index:9; top:0; left:0; cursor: pointer;"></div>
                                     <label class="card-title font-weight-bold">{{ getSupplierName(o) }}</label> <!-- name of supply -->
                                     <label class="d-flex align-items-baseline">Purchase Order No. <p class="ms-3">{{ o.purchaseOrder_num }}</p></label>
                                     <label class="d-flex align-items-baseline">Number of Products: <p class="ms-3">{{ o.qty }}</p></label>                                    

@@ -41,4 +41,8 @@ class Supply extends Model
     public function stock_in(){
         return $this->hasMany(StockIn::class);
     }
+    public function supply_inventory(){
+        return $this->hasOne(SupplyInventory::class);
+    }
+
 }
