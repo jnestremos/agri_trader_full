@@ -293,7 +293,7 @@ const routes = [
         component:SavedReceiveReport
       },
       {
-        path:"/inventory/stockInHistory",
+        path:"/supplyInventory/stockInHistory",
         name:"StockInHistory",
         meta:{needsAuth: true, role: "trader"},
         component:StockInHistory
