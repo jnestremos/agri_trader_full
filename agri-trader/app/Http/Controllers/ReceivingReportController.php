@@ -52,7 +52,7 @@ class ReceivingReportController extends Controller
             if($request->purchaseOrder_qtyGood[$i] > 0){
                 StockIn::create([
                     'supply_id' => $request->supply_id[$i],
-                    'purchaseOrder_num' => $return->purchaseOrder_num,
+                    'purchaseOrder_num' => $request->purchaseOrder_num,
                     'supply_qty' => $request->purchaseOrder_qtyGood[$i],
                     'supply_unit' => $request->purchaseOrder_unit[$i],
                 ]);
