@@ -110,11 +110,11 @@
         </div>  
         <div class="col-3 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
-            <div class="col-12 p-0 d-flex align-items-baseline">
+            <div v-if="getProject && getProject.project_status_id == 2" class="col-12 p-0 d-flex align-items-baseline">
               <label for="project_status_id" class="form-label me-4">Project Status:</label>
               <select name="project_status_id" class="form-select" style="width:250px" id="" @change="setStatus($event)" v-if="getProject">               
-                  <option v-if="getProject.project_status_id == 1" value="2" selected>Approved</option>
-                  <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>                                
+                  <!-- <option v-if="getProject.project_status_id == 1" value="2" selected>Approved</option>
+                  <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>                                 -->
                   <option v-if="getProject.project_status_id == 2" value="4" selected>Terminated Successfully</option>
                   <option v-if="getProject.project_status_id == 2" value="5">Terminated w/ Complications</option>                                
               </select>
@@ -154,9 +154,9 @@
               <input type="submit" value="Update Project" class="btn btn-primary">                        
               <input type="button" value="Upload Image" class="btn btn-primary">                        
             </div>
-            <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>                                                  
+            <!-- <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>                                                  
               <input type="submit" value="Update Project" class="btn btn-primary">                                      
-            </div> 
+            </div>  -->
           </div>    
         </div>                
       </div>

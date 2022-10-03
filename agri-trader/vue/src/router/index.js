@@ -56,6 +56,7 @@ import auth from '../store/modules/Auth/auth'
 import store from '../store'
 
 import AllProjectsOwner from '../views/auth/Farm Owner/AllProjects.vue'
+import ShowProjectOwner from '../views/auth/Farm Owner/ShowProject.vue'
 import AllFarmsOwner from '../views/auth/Farm Owner/AllFarms.vue'
 import AllProducesOwner from '../views/auth/Farm Owner/AllProduces.vue'
 import ShowFarmOwner from '../views/auth/Farm Owner/ShowFarm.vue'
@@ -327,6 +328,12 @@ const routes = [
         name: 'ProjectsOwner',
         meta: {needsAuth: true, role: 'farm_owner'},
         component: AllProjectsOwner
+      },
+      {
+        path: '/projects/owner/:id',
+        name: 'ShowProjectOwner', 
+        meta: {needsAuth : true, role:'farm_owner'},
+        component: ShowProjectOwner
       },
       {
         path: '/farms/owner/all',

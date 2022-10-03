@@ -11,7 +11,8 @@ const state = {
         per_page: null,
         prev_page_url: null,
         total: null,
-        links: null        
+        links: null,
+        projectss: null    
     },
     farm: null,
     history: null,
@@ -167,6 +168,7 @@ const mutations = {
         else{
             state.project_data.projects = data.projects
         }
+        state.project_data.projectss = data.projectss
         state.farm_list = data.farms
         state.owner_list = data.farm_owners
         state.produce_list = data.produces

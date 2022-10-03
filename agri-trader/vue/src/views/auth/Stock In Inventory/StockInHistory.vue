@@ -9,35 +9,27 @@
                     <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                            <select class="form-select" id="supplier_name">
+                            <select class="form-select" id="supplier_name" @change="setSupplier($event)">
                                 <option selected value="None">Select Supplier</option>
-                                <option value="Pacifica Agrivet">Pacifica Agrivet</option>                                
-                                <option value="Agway">Agway</option>                                
-                                <option value="Inson Agro Farm">Inson Agro Farm</option>  
+                                <option v-for="(supplier, index) in getStockInHistory.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option> 
                             </select>                    
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="stockInHistory_supplyType" class="form-label me-4" >Choose Supply Type</label>
-                            <select class="form-select" id="supply_type">
+                            <select class="form-select" :disabled="filter_supplier == 'None'" id="supply_type" @change="setSupplyType($event)">
                                 <option selected value="None">Select Supply Type</option>
-                                <option value="Fertilizer">Fertilizer</option>                                
-                                <option value="Insecticide">Insecticide</option>                                
-                                <option value="Fungicide">Fungicide</option>                                
-                                <option value="Herbicide">Herbicide</option>
+                                <option v-for="(type, index) in getTypes" :key="index" :value="type">{{ type }}</option>
                             </select>
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="stockInHistory_SupplyFor" class="form-label me-4">Choose Supply For</label>
-                            <select class="form-select" id="supply_type">
+                            <select class="form-select" id="supply_for" :disabled="filter_supplier == 'None'" @change="setSupplyFor($event)">
                                 <option selected value="None">Select Supply For</option> 
-                                <option value="Mango">Mango</option>                                
-                                <option value="Banana">Banana</option>                                
-                                <option value="Pineapple">Pineapple</option>                                
-                                <option value="Grapes">Grapes</option>                    
+                                <option v-for="(produce, index) in getSupplyForFiltered" :key="index" :value="produce">{{ produce }}</option>                 
                             </select>
                         </div>
                     </div>
-                    <div class="mb-2 mt-4" style="width:100% height:90%; clear:left;">
+                    <div class="mb-2 mt-3" style="width:100%; height:90%; clear:left;">
                         <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                             <thead align="center">
                                 <tr>
@@ -52,15 +44,15 @@
                                 </tr>
                             </thead>
                             <tbody align="center">
-                                <tr>
-                                    <td>12345678</td>
-                                    <td>Pacifica Agrivet Supply</td>
-                                    <td>Yara Mila Unik-16</td>
-                                    <td>Fertilizer</td>
-                                    <td>Mango</td>
-                                    <td>15</td>
-                                    <td>Sack</td>
-                                    <td>10/05/2022</td>
+                                <tr v-for="(stock, index) in filteredTable" :key="index">
+                                    <td>{{ stock.purchaseOrder_num }}</td>
+                                    <td>{{ getSupplierName(stock) }}</td>
+                                    <td>{{ getSupplyName(stock) }}</td>
+                                    <td>{{ getSupplyType(stock) }}</td>
+                                    <td>{{ getSupplyFor(stock) }}</td>
+                                    <td>{{ stock.supply_qty }}</td>
+                                    <td>{{ stock.supply_unit }}</td>
+                                    <td>{{ stock.created_at.split('T')[0] }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -73,14 +65,165 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 export default {
     name: "StockInHistory",
     created() {
-        this.readyApp()
+        this.fetchStockInHistory()
+        .then(() => {
+            this.readyApp()
+        })
+        
+    },
+    data(){
+        return {
+            filter_supplier: 'None',
+            filter_type: 'None',
+            filter_for: 'None'
+        }
+    },
+    watch: {
+        'filter_supplier'(newVal){
+            if(newVal == "None"){
+                this.filter_type = "None"
+                this.filter_for = 'None'
+                var supply_type = document.getElementById('supply_type')
+                var supply_for = document.getElementById('supply_for')
+                supply_type.value = 'None'
+                supply_for.value = 'None' 
+            }
+        }
     },
     methods: {
-        ...mapActions(['readyApp'])
+        ...mapActions(['readyApp', 'fetchStockInHistory']),
+        setSupplier(e){
+            this.filter_supplier = e.target.value
+        },
+        setSupplyType(e){
+            this.filter_type = e.target.value
+        },
+        setSupplyFor(e){
+            this.filter_for = e.target.value
+        },
+        getSupplierName(stock){
+            var supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            var supplierObj = this.getStockInHistory.suppliers.filter((ss) => {
+                return parseInt(supplyObj[0].supplier_id) === parseInt(ss.id)
+            })
+            return supplierObj[0].supplier_name
+        },
+        getSupplyName(stock){
+            var supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_name
+        },
+        getSupplyType(stock){
+            var supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_type
+        },
+        getSupplyFor(stock){
+            var supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_for
+        }
+    },
+    computed: {
+        ...mapGetters(['getStockInHistory']),
+        filteredTable(){
+            var table = [];
+            var supplyObj = null;
+            var container = null
+            if(this.filter_supplier != 'None'){
+                supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                    return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
+                })
+                supplyObj.forEach((s) => {
+                    container = this.getStockInHistory.stockIn_history.filter((ss) => {
+                        return parseInt(s.id) === parseInt(ss.supply_id)
+                    })
+                    container.forEach((c) => {
+                        table.push(c)
+                    })
+                })                
+                if(this.filter_type != 'None' && this.filter_for != 'None'){
+                    console.log(1)
+                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                        return (this.filter_type) === (s.supply_type)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                       
+                    })
+                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                        return (this.filter_for) === (s.supply_for)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                        
+                    })                    
+                }
+                else if(this.filter_type != 'None'){
+                    console.log(2)
+                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                        return (this.filter_type) === (s.supply_type)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                        
+                    })
+                }
+                else if(this.filter_for != 'None'){
+                    console.log(3)
+                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                        return (this.filter_for) === (s.supply_for)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                        
+                    })                    
+                }  
+                return table 
+            }
+            else{
+                return this.getStockInHistory.stockIn_history
+            }
+        },
+        getTypes(){
+            var types = new Set()
+            var arr = [];
+            if(this.getStockInHistory.supplies){
+                this.getStockInHistory.supplies.forEach((s) => {
+                    types.add(s.supply_type)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        },
+        getSupplyForFiltered(){
+            var types = new Set()
+            var arr = [];
+            if(this.getStockInHistory.supplies){
+                this.getStockInHistory.supplies.forEach((s) => {
+                    types.add(s.supply_for)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        }
     }
 }
 </script>

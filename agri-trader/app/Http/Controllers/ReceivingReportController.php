@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ReceivingReport;
 use App\Models\StockIn;
+use App\Models\Supply;
+use App\Models\SupplyInventory;
 use App\Models\SupplyOrderRefund;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
@@ -50,10 +52,29 @@ class ReceivingReportController extends Controller
             if($request->purchaseOrder_qtyGood[$i] > 0){
                 StockIn::create([
                     'supply_id' => $request->supply_id[$i],
-                    'purchaseOrder_num' => $return->purchaseOrder_num,
+                    'purchaseOrder_num' => $request->purchaseOrder_num,
                     'supply_qty' => $request->purchaseOrder_qtyGood[$i],
                     'supply_unit' => $request->purchaseOrder_unit[$i],
                 ]);
+                if(SupplyInventory::where('supply_id', $request->supply_id[$i])->first()){
+                    $supply = SupplyInventory::where('supply_id', $request->supply_id[$i])->first();
+                    SupplyInventory::where('supply_id', $request->supply_id[$i])->update([
+                        'supply_qty' => $supply->supply_qty + $request->purchaseOrder_qtyGood[$i]
+                    ]);
+                }
+                else{
+                    $supply = Supply::find($request->supply_id[$i]);
+                    $supplier = $supply->supplier()->first();                    
+                    SupplyInventory::create([
+                        'supplier_id' => $supplier->id,
+                        'supply_id' => $request->supply_id[$i],
+                        'supply_name' => $supply->supply_name,
+                        'supply_type' => $supply->supply_type,
+                        'supply_for' => $supply->supply_for,
+                        'supply_reorderLevel' => $supply->supply_reorderLevel,
+                        'supply_qty' => $request->purchaseOrder_qtyGood[$i]
+                    ]);
+                }
             }
         }        
         if(array_sum($request->purchaseOrder_qtyDefect) == 0){
@@ -64,7 +85,7 @@ class ReceivingReportController extends Controller
                 SupplyPurchaseOrder::where('purchaseOrder_num', $return->purchaseOrder_num)->update([
                     'purchaseOrder_status' => 'Confirmed'
                 ]);    
-                SupplyOrderRefund::where('purchaseOrder_num', $return->purchaseOrder_num)->update([
+                SupplyOrderReturn::where('purchaseOrder_num', $return->purchaseOrder_num)->update([
                     'returnOrder_status' => 'Confirmed'
                 ]);
             }

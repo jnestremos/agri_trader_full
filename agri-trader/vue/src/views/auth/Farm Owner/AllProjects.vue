@@ -7,8 +7,8 @@
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getProjectDataForOwner.projects.length > 0">
             <div class="row mb-5" v-for="(project, index) in filtered" :key="index">
-                <div class="col-4" style="height:30vh" v-for="(p, i) in project" :key="i">
-                    <div class="d-flex project" style="height:100%; border-radius:50px; position: relative;">
+                <div class="col-4" style="height:35vh" v-for="(p, i) in project" :key="i">
+                    <div class="d-flex project" style="height:100%; border-radius:50px; position: relative;" @click="showProject(p.id)">
                         <div class="" style="position: absolute; top:5%; left:5%; 
                         width:85%;"> 
                             <div class="d-flex mb-4">
@@ -56,8 +56,16 @@ export default {
             this.readyApp()           
         })        
     },
+    data(){
+        return {
+            filtered: null
+        }
+    },
     methods:{
         ...mapActions(['readyApp', 'fetchAllProjectsForOwner']),
+        showProject(id){
+            this.$router.push({ path: `/projects/owner/${id}` })
+        },
         filteredProjectArray(){
             var filtered = [];
             var arr = this.getProjectDataForOwner.projects;             
