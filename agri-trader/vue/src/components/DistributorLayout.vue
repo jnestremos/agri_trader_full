@@ -19,6 +19,7 @@
                 <li>Produces</li>
                 <li>Traders</li>
                 <li>Contact</li>
+                <li><router-link to="/bid_order/history">Orders</router-link></li>
             </ul>
         </div>
     </div>
