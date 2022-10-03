@@ -83,6 +83,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['middleware' => ['role:farm_owner']], function (){
+
+        Route::get('projects/owner/{id}', function ($id){                
+            return response([
+                'farm' => Project::find($id)->contract()->first()->farm()->first(),
+                'contract' => Project::find($id)->contract()->first(),
+                'project' => Project::find($id),
+                'share' => Project::find($id)->contract()->first()->contract_share()->first(),
+                'farm_owner' => Project::find($id)->contract()->first()->farm()->first()->farm_owner()->first(),
+                'produce' => Project::find($id)->contract()->first()->produce()->first(),
+                'history' => DB::table('project_status_history')->where('project_id', $id)->get()                  
+            ], 200);
+        });
+
+        Route::patch('projects/owner/{id}', [ProjectController::class, 'update']);
+
+
         Route::get('/projects/owner/all', function (){
             $user = User::find(auth()->id())->farm_owner()->first();
             $farms = $user->farm()->get();
@@ -663,13 +679,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 $start_dates = [];
                 $trader = Trader::where('user_id', auth()->id())->first();
                 $contracts = Contract::where('trader_id', $trader->id);    
-
+                $projects = [];
                 foreach($contracts->get() as $contract){
+                    $project = $contract->project()->first();                    
                     $farm = $contract->farm()->first();
                     $farm_owner = $farm->farm_owner()->first();
                     $produce = $contract->produce()->first();
                     $share = $contract->contract_share()->first();
                     $start_date = $contract->project()->first();
+                    array_push($projects, $project);
                     array_push($farms, $farm);
                     array_push($farm_owners, $farm_owner);
                     array_push($produces, $produce);
@@ -679,6 +697,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 if(count($contracts->get()) > 6){
                     return response([
                         'projects' => $contracts->paginate(6),
+                        'projectss' => $projects,
                         'farms' => $farms,
                         'farm_owners' => $farm_owners,
                         'produces' => $produces,
@@ -688,6 +707,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 } 
                 return response([
                     'projects' => $contracts->get(),
+                    'projectss' => $projects,
                     'farms' => $farms,
                     'farm_owners' => $farm_owners,
                     'produces' => $produces,

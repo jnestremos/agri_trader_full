@@ -21,6 +21,7 @@
                             </div>                                                                
                             <h4 class="d-flex">Produce: <p class="ms-3">{{ getProduceName(p) }}</p></h4>
                             <h4 class="d-flex">Estimated Harvest (in kg): <p class="ms-3">{{ p.contract_estimatedHarvest + ' kg'}}</p></h4>
+                            <h4 class="d-flex">Status: <p class="ms-3">{{ getStatus(p) }}</p></h4>
                         </div>                                                
                     </div>
                 </div>                
@@ -140,6 +141,20 @@ export default {
                 return parseInt(contract.produce_id) === parseInt(p.id)
             })
             return prodObj[0].prod_name
+        },
+        getStatus(contract){
+            var projObj = this.getProjectData.projectss.filter((p) => {
+                return parseInt(contract.id) === parseInt(p.contract_id)
+            })
+            if(!projObj[0].project_completionDate){
+                if(projObj[0].project_status_id == 1){
+                    return 'Pending'
+                }
+                return 'Active'
+            }
+            else{
+                return 'Completed'
+            }
         }
     }
 }

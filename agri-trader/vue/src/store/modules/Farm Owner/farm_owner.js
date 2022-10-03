@@ -63,13 +63,41 @@ const state = {
         farms: null,
         projects: null,
         contracts: null,
-    }
+    },
 
+    project: null,
+    contract: null,
+    farm: null,
+    share: null,
+    farm_owner: null,
+    produce: null,
+    history: null
 
 }
 
 
 const getters = {
+    getProjectOwner(){
+        return state.project
+    },
+    getFarmForOwner(){
+        return state.farm
+    },
+    getFarmOwner(){
+        return state.owner
+    },
+    getContractOwner(){
+        return state.contract
+    },
+    getProduceOwner(){
+        return state.produce
+    },
+    getShareOwner(){
+        return state.share
+    },
+    getHistoryOwner(){
+        return state.history
+    },
     getProjectDataForOwner(){
         return state.project_data
     },
@@ -134,6 +162,20 @@ const actions = {
             })
         }        
     },
+    fetchProjectOwner({ commit }, id){
+        return axiosClient.get(`/projects/owner/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProjectOwner', res.data)
+        })
+    },
+    updateProjectOwner({ commit }, data){       
+        return axiosClient.patch(`/projects/owner/${data.id}`, data.data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
     fetchAllFarmsForOwner({ commit }, query = null){
         if(query){
             return axiosClient.get('/farms/owner/all?'+query)
@@ -189,6 +231,15 @@ const actions = {
 }
 
 const mutations = {
+    setProjectOwner(state, data){
+        state.project = data.project
+        state.contract = data.contract
+        state.farm = data.farm
+        state.share = data.share
+        state.farm_owner = data.farm_owner
+        state.produce = data.produce
+        state.history = data.history
+    },
     setAllProjects(state, data){
         if(data.projects.data){
             state.project_data.projects = data.projects.data
