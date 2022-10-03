@@ -46,6 +46,7 @@ import InitialStockIn from '../views/auth/Stock In Inventory/InitialStockIn.vue'
 import SavedReceiveReport from '../views/auth/Stock In Inventory/SavedReceiveReport.vue'
 import StockInHistory from '../views/auth/Stock In Inventory/StockInHistory.vue'
 import StockOut from '../views/auth/Stock Out/StockOut.vue'
+import SupplyInventory from '../views/auth/Supply Inventory/SupplyInventory.vue'
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
@@ -297,10 +298,16 @@ const routes = [
         component:StockInHistory
       },
       {
-        path:"/inventory/stockOut",
+        path:"/supplyInventory/stockOut",
         name:"StockOut",
         meta:{needsAuth: true, role: "trader"},
         component:StockOut
+      },
+      {
+        path:"/supplyInventory/dashboard",
+        name:"SupplyInventory",
+        meta:{needsAuth: true, role: "trader"},
+        component:SupplyInventory
       }
     ]
   },

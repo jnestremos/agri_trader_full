@@ -30,6 +30,7 @@
           <li v-if="role == 'trader'"><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
           <li>Delivery</li>
+          <li><router-link style="color:black" to="/supplyInventory/dashboard"> Inventory </router-link></li>
           <li>Sales Income Report</li>
           <li>Profit Sharing Report</li>
         </ul>

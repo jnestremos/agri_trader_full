@@ -11,9 +11,9 @@
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
                             <select class="form-select" id="supplier_name">
                                 <option selected value="None">Select Supplier</option>
-                                <option value="Pacifica Agrivet">Fertilizer</option>                                
-                                <option value="Agway">Insecticide</option>                                
-                                <option value="Inson Agro Farm">Fungicide</option>  
+                                <option value="Pacifica Agrivet">Pacifica Agrivet</option>                                
+                                <option value="Agway">Agway</option>                                
+                                <option value="Inson Agro Farm">Inson Agro Farm</option>  
                             </select>                    
                         </div>
                         <div class="col-lg-3 me-3">
