@@ -81,17 +81,17 @@
                   </div>
                   <div class="form-row mt-2 mb-2">
                       <div class="col-sm-2">
-                          <label for="orderSummary_quantityReceived" class="form-label me-4" >For Stock Out</label>
+                          <label for="orderSummary_quantityReceived" class="form-label me-4" >Amount</label>
                           <input type="text" name="orderSummary_totalAmount" id="" class="form-control" style="width: 40%" v-model="stockOut_quantity">
                       </div>
                   </div>
                   <div class="form-row">
                       <div class="col-lg-3 me-3">
-                          <label for="stockIn_transactedBy" class="form-label me-4" >Transacted By</label>
+                          <label for="stockOut_transactedBy" class="form-label me-4" >Transacted By</label>
                           <input type="text" name="stockIn_transactedBy" id="" class="form-control" disabled>
                       </div>
                       <div class="col-lg-3 me-3">
-                          <label for="stockIn_Remarks" class="form-label me-4" >Remarks</label>
+                          <label for="stockOut_Remarks" class="form-label me-4" >Remarks</label>
                           <input type="text" name="stockIn_transactedBy" id="" class="form-control" v-model="stockOut_remarks">
                       </div>
                   </div>
