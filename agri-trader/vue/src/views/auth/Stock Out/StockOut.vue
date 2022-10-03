@@ -97,7 +97,7 @@
                   </div>
                   <div class="btn-toolbar pt-4" role="toolbar">
                       <div class="btn-group me-3">
-                         <router-link to="/stockIn/ReceiveReport"> <b-button variant="success" style="width:200px; height:60px">Stock Out To Project</b-button> </router-link>
+                        <b-button variant="success" style="width:200px; height:60px">Stock Out To Project</b-button>
                       </div>
                   </div>
               </form>
