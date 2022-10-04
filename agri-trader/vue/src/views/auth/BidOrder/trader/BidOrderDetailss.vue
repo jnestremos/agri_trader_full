@@ -165,7 +165,9 @@
             <h5 v-if="getDeliveryForm.bid_order || (bid_order_status_id == 4 && getOrder.on_hand_bid)" class="pt-2" style="border-top: 2px solid black">Remaining Amount: {{ getRemaining }}</h5> 
         </div>
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-3">
-            <h5 v-if="((getOrder.project_bid && getOrder.project_bid.project_bid_minQty && getOrder.project_bid.project_bid_maxQty) || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_qty))">{{ getOrder.bidOrder && getOrder.bidOrder.order_finalQty ? 'Quantity to be Given:' : 'Quantity Needed:' }} {{ getOrder.bidOrder && getOrder.bidOrder.order_finalQty ? getOrder.bidOrder.order_finalQty.toFixed(2) + ' kg/s' : getOrder.project_bid ? getOrder.project_bid.project_bid_minQty.toFixed(2) + ' - ' + getOrder.project_bid.project_bid_maxQty.toFixed(2) + ' kg/s' : getOrder.on_hand_bid.on_hand_bid_qty.toFixed(2) + ' kg/s' }}</h5>                    
+            <h5 v-if="((getOrder.project_bid && getOrder.project_bid.project_bid_minQty && getOrder.project_bid.project_bid_maxQty) || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_qty))">
+                {{ getOrder.bidOrder && getOrder.bidOrder.order_finalQty ? 'Quantity to be Given:' : 'Quantity Needed:' }} 
+                {{ getOrder.bidOrder && getOrder.bidOrder.order_finalQty ? getOrder.bidOrder.order_finalQty.toFixed(2) + ' kg/s' : getOrder.project_bid ? getOrder.project_bid.project_bid_maxQty.toFixed(2) + ' kg/s' : getOrder.on_hand_bid.on_hand_bid_qty.toFixed(2) + ' kg/s' }}</h5>                    
             <div v-if="bid_order_status_id == 7 && getOrder.refund && getOrder.bid_order_acc[0].bid_order_acc_type != 'Refund'" class="d-flex align-items-baseline">
                 <h5 class="me-3">Date Paid:</h5>
                 <input type="date" class="form-control" style="width:150px" v-model="data.bid_order_acc_datePaid">
@@ -176,7 +178,7 @@
             </div>
         </div>
         <div v-if="bid_order_status_id == 1 || bid_order_status_id == 2" class="d-flex align-items-baseline justify-content-between w-100 mt-3">
-            <h5 v-if="getOrder.project_bid || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_total)">Initial Total Balance: {{ getOrder.project_bid ? getOrder.project_bid.project_bid_total : getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) }}</h5>                    
+            <h5 v-if="getOrder.project_bid || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_total)">Initial Total Balance: {{ getOrder.project_bid ? getOrder.project_bid.project_bid_total.split('-')[1] : getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) }}</h5>                    
         </div>
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-3">
             <h5 v-if="getOrder.project_bid || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_total)">Updated Total Balance: {{ getOrder.bidOrder && getOrder.bidOrder.order_finalTotal ? getOrder.bidOrder.order_finalTotal.toFixed(2) : getTotal }}</h5>                    
@@ -521,7 +523,7 @@ export default {
         getTotal(){
             var total = null;
             if(this.getOrder.project_bid){
-                total = (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_maxQty).toFixed(2)
+                total = (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_maxQty).toFixed(2)
                 return total
             }
             else{

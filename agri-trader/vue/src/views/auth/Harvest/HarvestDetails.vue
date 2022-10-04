@@ -89,11 +89,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr @click="triggerModal(order)" v-for="(order, index) in getHarvestDetails.bid_orders" :key="index">
+            <tr @click="triggerModal(order)" v-for="(order, index) in getHarvestDetails.bid_orders" :key="index" style="cursor:pointer">
               <td style="border-left:2px solid black;">{{ getName(order) }}</td>
               <td>{{ order.order_grade ? order.order_grade : 'None' }}</td>
               <td>Php {{ order.order_negotiatedPrice.toFixed(2) }}</td>
-              <td>{{ getQty(order) }} kgs</td>
+              <td>{{ getQty(order).split('-')[1] }} kgs</td>
               <td style="border-right:2px solid black;">{{ order.order_dateNeededFrom }} - {{ order.order_dateNeededTo }}</td>
               <template>
                 <b-modal no-close-on-esc no-close-on-backdrop centered :id="`modal-${order.id}`" size="lg" :title="getProduceName(order)">
@@ -141,7 +141,7 @@
                       </div>                                 
                       <div class="d-flex align-items-baseline w-50">                        
                         <h5 class="me-3">Quantity Needed:</h5>
-                        <p style="word-spacing:10px;">{{ getQty(order) }} kgs</p>                                                                                                           
+                        <p style="word-spacing:10px;">{{ getQty(order).split('-')[1] }} kgs</p>                                                                                                           
                       </div>
                     </div> 
                     <div class="d-flex align-items-baseline justify-content-between mb-2" style="width:60%;">
@@ -154,10 +154,10 @@
                         <h5 class="me-3">Negotiated Price:</h5>
                         <p>Php {{ order.order_negotiatedPrice.toFixed(2) }}</p> 
                       </div>                                 
-                      <div class="d-flex align-items-baseline w-50">                        
+                      <!-- <div class="d-flex align-items-baseline w-50">                        
                         <h5 class="me-3">Minimum Price:</h5>
                         <p>Php {{ getMinPrice(order) }}</p>                                                                                                          
-                      </div>
+                      </div> -->
                     </div>                   
                     <div class="d-flex align-items-baseline justify-content-between mb-2" style="width:100%;">
                       <div class="d-flex align-items-baseline w-50">

@@ -163,14 +163,14 @@ const actions = {
         }        
     },
     fetchProjectOwner({ commit }, id){
-        return axiosClient.get(`/projects/owner/${id}`)
+        return axiosClient.get(`/project/owner/${id}`)
         .then((res) => {
             console.log(res.data)
             commit('setProjectOwner', res.data)
         })
     },
     updateProjectOwner({ commit }, data){       
-        return axiosClient.patch(`/projects/owner/${data.id}`, data.data)
+        return axiosClient.patch(`/project/owner/${data.id}`, data.data)
         .then((res) => {
             console.log(res.data)
             commit('asd')

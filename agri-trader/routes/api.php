@@ -87,7 +87,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['middleware' => ['role:farm_owner']], function (){
 
-        Route::get('projects/owner/{id}', function ($id){                
+        Route::get('project/owner/{id}', function ($id){                
             return response([
                 'farm' => Project::find($id)->contract()->first()->farm()->first(),
                 'contract' => Project::find($id)->contract()->first(),
@@ -99,7 +99,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ], 200);
         });
 
-        Route::patch('projects/owner/{id}', [ProjectController::class, 'update']);
+        Route::patch('project/owner/{id}', [ProjectController::class, 'update']);
 
 
         Route::get('/projects/owner/all', function (){

@@ -328,7 +328,7 @@
             }         
             this.updateProjectOwner(data)
             .then(() => {
-              this.$router.push({ 'name' : 'AllProjectsOwner' })
+              this.$router.push({ name : 'AllProjectsOwner' })
             })
             .catch((err) => {
               console.log(err)

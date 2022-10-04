@@ -101,8 +101,8 @@
       <div class="d-flex align-items-baseline mt-3">
         <h5 class="me-4">Quantity Needed:</h5>
         <div class="d-flex align-items-baseline" v-if="$route.name == 'BidOrderProject'">
-          <input type="number" class="form-control me-4" id="minQty" style="width:100px;" :disabled="disabled" step="1" value="1" min="1" @change="setMinQty($event)" onkeydown="return false">
-          <h5 class="me-4">To</h5>
+          <!-- <input type="number" class="form-control me-4" id="minQty" style="width:100px;" :disabled="disabled" step="1" value="1" min="1" @change="setMinQty($event)" onkeydown="return false"> -->
+          <!-- <h5 class="me-4">To</h5> -->
           <input type="number" class="form-control" id="maxQty" style="width:100px;" :disabled="disabled" step="1" value="5" min="1" @change="setMaxQty($event)" onkeydown="return false">
         </div>
         <div v-else class="d-flex align-items-baseline">
@@ -193,7 +193,7 @@ export default {
             }          
           } 
           this.data.order_initialPrice = this.getProgressData.contract_estimatedPrice.toFixed(2);
-          this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)                                                    
+          this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)                                                    
           if(this.getProgressData.produce_trader.length > 1){            
             this.data.order_grade = 'A'
           }          
@@ -275,12 +275,12 @@ export default {
           this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)  
         },
         setMaxQty(e){
-          var minQty = document.getElementById("minQty")
-          if(parseFloat(e.target.value) <= parseFloat(minQty.value)){
-            e.target.value = parseFloat(minQty.value) + 4
-          }        
+          // var minQty = document.getElementById("minQty")
+          // if(parseFloat(e.target.value) <= parseFloat(minQty.value)){
+          //   e.target.value = parseFloat(minQty.value) + 4
+          // }        
           this.data.project_bid_maxQty = parseFloat(e.target.value)
-          this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)          
+          this.data.project_bid_total = (this.data.order_initialPrice * this.data.project_bid_maxQty).toFixed(2)          
         },
         setOnHandQty(e){
           this.data.on_hand_bid_qty = parseFloat(e.target.value)
@@ -337,9 +337,9 @@ export default {
         },
         setTotal(){
           if(this.$route.name == 'BidOrderProject'){
-            var minTotal = parseFloat(parseFloat(this.data.order_initialPrice) * parseFloat(this.data.project_bid_minQty)).toFixed(2)
+            // var minTotal = parseFloat(parseFloat(this.data.order_initialPrice) * parseFloat(this.data.project_bid_minQty)).toFixed(2)
             var maxTotal = parseFloat(parseFloat(this.data.order_initialPrice) * parseFloat(this.data.project_bid_maxQty)).toFixed(2)
-            this.data.project_bid_total = minTotal + ' - ' + maxTotal
+            this.data.project_bid_total = maxTotal
           }
           else{
             this.data.on_hand_bid_total = (this.data.order_initialPrice * this.data.on_hand_bid_qty).toFixed(2)

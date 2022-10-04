@@ -439,7 +439,7 @@ export default {
               return parseInt(order.id) === parseInt(o.bid_order_id)
             }) 
             if(projectBidObj[0]){
-              return projectBidObj[0].project_bid_minQty + ' - ' + projectBidObj[0].project_bid_maxQty
+              return projectBidObj[0].project_bid_maxQty
             }  
             if(onHandBidObj[0]){
               return onHandBidObj[0].on_hand_bid_qty
@@ -495,7 +495,7 @@ export default {
             var projectBidObj = this.getOrderHistory.project_bids.filter((p) => {
               return parseInt(order.id) === parseInt(p.bid_order_id)
             })
-            return (order.order_initialPrice * projectBidObj[0].project_bid_minQty).toFixed(2) + ' - ' + (order.order_initialPrice * projectBidObj[0].project_bid_maxQty).toFixed(2)
+            return (order.order_initialPrice * projectBidObj[0].project_bid_maxQty).toFixed(2)
           }
           else{
             var onHandBidObj = this.getOrderHistory.on_hand_bids.filter((o) => {
@@ -512,7 +512,7 @@ export default {
             return parseInt(order.id) === parseInt(o.bid_order_id)
           })            
           if(projectBidObj[0]){
-            return projectBidObj[0].project_bid_total
+            return projectBidObj[0].project_bid_total.split('-')[1]
           } 
           if(onHandBidObj[0]){
             return onHandBidObj[0].on_hand_bid_total.toFixed(2)
