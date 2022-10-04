@@ -35,4 +35,7 @@ class Supplier extends Model
     public function supply_inventory(){
         return $this->hasMany(SupplyInventory::class);
     }
+    public function stock_out(){
+        return $this->hasMany(StockOut::class);
+    }
 }

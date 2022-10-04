@@ -52,4 +52,7 @@ class Project extends Model
     public function sale(){
         return $this->hasMany(Sale::class);
     }
+    public function stock_out(){
+        return $this->hasMany(StockOut::class);
+    }
 }

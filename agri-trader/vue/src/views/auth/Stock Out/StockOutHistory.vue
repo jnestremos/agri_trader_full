@@ -11,7 +11,7 @@
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
                             <select class="form-select" id="supplier_name" @change="setSupplier($event)">
                                 <option selected value="None">Select Supplier</option>
-                                <option v-for="(supplier, index) in getStockInHistory.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option> 
+                                <option v-for="(supplier, index) in getStockOutHistory.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option> 
                             </select>                    
                         </div>
                         <div class="col-lg-3 me-3">
@@ -67,7 +67,152 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 export default {
-   
+    name: 'StockOutHistory',
+    created(){
+        this.fetchStockOutHistory()
+        .then(() => {
+            this.readyApp()
+        })
+        
+    },
+    data(){
+        return {
+            filter_supplier: 'None',
+            filter_type: 'None',
+            filter_for: 'None'
+        }
+    },
+    methods: {
+        ...mapActions(['readyApp', 'fetchStockOutHistory']),
+        setSupplier(e){
+            this.filter_supplier = e.target.value
+        },
+        setSupplyType(e){
+            this.filter_type = e.target.value
+        },
+        setSupplyFor(e){
+            this.filter_for = e.target.value
+        },
+        getSupplierName(stock){
+            var supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            var supplierObj = this.getStockOutHistory.suppliers.filter((ss) => {
+                return parseInt(supplyObj[0].supplier_id) === parseInt(ss.id)
+            })
+            return supplierObj[0].supplier_name
+        },
+        getSupplyName(stock){
+            var supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_name
+        },
+        getSupplyType(stock){
+            var supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_type
+        },
+        getSupplyFor(stock){
+            var supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_for
+        }
+    },
+    computed: {
+        ...mapGetters(['getStockOutHistory']),
+        filteredTable(){
+            var table = [];
+            var supplyObj = null;
+            var container = null
+            if(this.filter_supplier != 'None'){
+                supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                    return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
+                })
+                supplyObj.forEach((s) => {
+                    container = this.getStockOutHistory.stockOut_history.filter((ss) => {
+                        return parseInt(s.id) === parseInt(ss.supply_id)
+                    })
+                    container.forEach((c) => {
+                        table.push(c)
+                    })
+                })                
+                if(this.filter_type != 'None' && this.filter_for != 'None'){
+                    console.log(1)
+                    supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                        return (this.filter_type) === (s.supply_type)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                       
+                    })
+                    supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                        return (this.filter_for) === (s.supply_for)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                        
+                    })                    
+                }
+                else if(this.filter_type != 'None'){
+                    console.log(2)
+                    supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                        return (this.filter_type) === (s.supply_type)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                        
+                    })
+                }
+                else if(this.filter_for != 'None'){
+                    console.log(3)
+                    supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                        return (this.filter_for) === (s.supply_for)
+                    })
+                    supplyObj.forEach((s) => {
+                        table = table.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id)
+                        })                        
+                    })                    
+                }  
+                return table 
+            }
+            else{
+                return this.getStockOutHistory.stockOut_history
+            }
+        },
+        getTypes(){
+            var types = new Set()
+            var arr = [];
+            if(this.getStockOutHistory.supplies){
+                this.getStockOutHistory.supplies.forEach((s) => {
+                    types.add(s.supply_type)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        },
+        getSupplyForFiltered(){
+            var types = new Set()
+            var arr = [];
+            if(this.getStockOutHistory.supplies){
+                this.getStockOutHistory.supplies.forEach((s) => {
+                    types.add(s.supply_for)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        }
+    }
 }
 </script>
 

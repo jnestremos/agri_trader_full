@@ -8,31 +8,23 @@
             <div class="form-row mt-3">
                 <div class="col-lg-3 me-3">
                     <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                    <select class="form-select" id="supplier_name">
+                    <select class="form-select" id="supplier_name" v-for="(supplier, index) in getSupplyInventory.suppliers" :key="index">
                         <option selected value="None">Select Supplier</option>
-                        <option value="Pacifica Agrivet">Pacifica Agrivet</option>                                
-                        <option value="Agway">Agway</option>                                
-                        <option value="Inson Agro Farm">Inson Agro Farm</option>  
+                        <option :value="supplier.id">{{ supplier.supplier_name }}</option>                        
                     </select>                    
                 </div>
                 <div class="col-lg-3 me-3">
                     <label for="stockInHistory_supplyType" class="form-label me-4" >Choose Supply Type</label>
-                    <select class="form-select" id="supply_type">
+                    <select class="form-select" id="supply_type" v-for="(type, index) in getTypes" :key="index">
                         <option selected value="None">Select Supply Type</option>
-                        <option value="Fertilizer">Fertilizer</option>                                
-                        <option value="Insecticide">Insecticide</option>                                
-                        <option value="Fungicide">Fungicide</option>                                
-                        <option value="Herbicide">Herbicide</option>
+                        <option :value="type">{{ type }}</option>
                     </select>
                 </div>
                 <div class="col-lg-3 me-3">
                     <label for="stockInHistory_SupplyFor" class="form-label me-4">Choose Supply For</label>
-                    <select class="form-select" id="supply_type">
-                        <option selected value="None">Select Supply Type</option> 
-                        <option value="Mango">Mango</option>                                
-                        <option value="Banana">Banana</option>                                
-                        <option value="Pineapple">Pineapple</option>                                
-                        <option value="Grapes">Grapes</option>                    
+                    <select class="form-select" id="supply_type" v-for="(produce, index) in getSupplyForFiltered" :key="index">
+                        <option selected value="None">Select Supply For</option>  
+                        <option :value="produce">{{ produce }}</option>                                      
                     </select>
                 </div>
             </div>
@@ -51,15 +43,15 @@
                         </tr>
                     </thead>
                     <tbody align="center">
-                        <tr>
-                            <td>Pacifica Agrivet Supply</td>
-                            <td>Yara Mila Unik-16</td>
-                            <td>Fertilizer</td>
-                            <td>Mango</td>
-                            <td>5</td>
-                            <td>15</td>
-                            <td>Sack</td>
-                            <td>10/05/2022</td>
+                        <tr v-for="(supply, index) in filteredInventory" :key="index">
+                            <td>{{ getSupplierName(supply) }}</td>
+                            <td>{{ supply.supply_name }}</td>
+                            <td>{{ supply.supply_type }}</td>
+                            <td>{{ supply.supply_for }}</td>
+                            <td>{{ supply.supply_qty }}</td>
+                            <td>{{ supply.supply_reorderLevel }}</td>
+                            <td>{{ supply.supply_unit }}</td>
+                            <td>{{ supply.updated_at.split('T')[0] }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -76,23 +68,86 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: "SupplyInventory",
     created() {
-        this.readyApp()
+        this.fetchSupplyInventory()
+        .then(() => {
+            this.readyApp()
+        })        
     },
     data(){
         return{
-            stockOut: {
-                quantity: '',
-                remarks: '',
-            }
+           filter_supplier: null,
+           filter_type: null,
+           filter_for: null
+        }
+    },    
+    methods: {
+        ...mapActions(['readyApp', 'fetchSupplyInventory']),
+        getSupplierName(supply){
+            var supplierObj = this.getSupplyInventory.suppliers.filter((s) => {
+                return parseInt(supply.supplier_id) === parseInt(s.id)
+            })
+            return supplierObj[0].supplier_name
         }
     },
-    
-    methods: {
-        ...mapActions(['readyApp'])
+    computed: {
+        ...mapGetters(['getSupplyInventory']),
+        filteredInventory(){
+            var inventory = []            
+            if(this.filter_supplier){
+                inventory = this.getSupplyInventory.supplies.filter((s) => {
+                    return parseInt(this.filter_supplier) === parseInt(s.id)
+                })
+                if(this.filter_type && this.filter_for){
+                    inventory = inventory.filter((ss) => {
+                        return this.filter_type === ss.supply_type && this.filter_for === ss.supply_for
+                    })
+                }
+                else if(this.filter_type){
+                    inventory = inventory.filter((ss) => {
+                        return this.filter_type === ss.supply_type
+                    })
+                }
+                else if(this.filter_for){
+                    inventory = inventory.filter((ss) => {
+                        return this.filter_for === ss.supply_for
+                    })
+                }
+                return inventory
+            }
+            else{
+                return this.getSupplyInventory.inventory
+            }
+        },
+        getTypes(){
+            var types = new Set()
+            var arr = [];
+            if(this.getSupplyInventory.supplies){
+                this.getSupplyInventory.supplies.forEach((s) => {
+                    types.add(s.supply_type)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        },
+        getSupplyForFiltered(){
+            var types = new Set()
+            var arr = [];
+            if(this.getSupplyInventory.supplies){
+                this.getSupplyInventory.supplies.forEach((s) => {
+                    types.add(s.supply_for)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        }
     }
   }
 </script>

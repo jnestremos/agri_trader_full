@@ -45,7 +45,7 @@ import InitialStockIn from '../views/auth/Stock In Inventory/InitialStockIn.vue'
 // import ForReturns from '../views/auth/Stock In Inventory/ForReturns.vue'
 import SavedReceiveReport from '../views/auth/Stock In Inventory/SavedReceiveReport.vue'
 import StockInHistory from '../views/auth/Stock In Inventory/StockInHistory.vue'
-import StockOutHistory from '..views/auth/Stock Out/StockOutHistory.vue'
+import StockOutHistory from "../views/auth/Stock Out/StockOutHistory.vue"
 import StockOut from '../views/auth/Stock Out/StockOut.vue'
 import SupplyInventory from '../views/auth/Supply Inventory/SupplyInventory.vue'
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
@@ -315,7 +315,7 @@ const routes = [
         path:"/supplyInventory/StockOutHistory",
         name:"StockOutHistory",
         meta:{needsAuth: true, role: "trader"},
-        component:SupplyInventory
+        component:StockOutHistory
       },
     ]
   },

@@ -5,25 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SupplyInventory extends Model
+class StockOut extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'project_id',
         'supplier_id',
         'supply_id',
-        'supply_name',
-        'supply_type',
-        'supply_for',
-        'supply_unit',
-        'supply_reorderLevel',
         'supply_qty',
+        'supply_unit'
     ];
+
+    public function project(){
+        return $this->belongsTo(Project::class);
+    }
+
+    public function supplier(){
+        return $this->belongsTo(Supplier::class);
+    }
 
     public function supply(){
         return $this->belongsTo(Supply::class);
-    }
-    public function supplier(){
-        return $this->belongsTo(Supplier::class);
     }
 }

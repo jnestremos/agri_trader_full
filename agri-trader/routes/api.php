@@ -15,6 +15,7 @@ use App\Http\Controllers\ReceivingReportController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\SupplyInventoryController;
 use App\Http\Controllers\SupplyOrderRefundController;
 use App\Http\Controllers\SupplyOrderReturnController;
 use App\Http\Controllers\SupplyPurchaseOrderController;
@@ -35,6 +36,8 @@ use App\Models\ProjectStatus;
 use App\Models\ReceivingReport;
 use App\Models\Sale;
 use App\Models\StockIn;
+use App\Models\StockOut;
+use App\Models\SupplyInventory;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
 use App\Models\Trader;
@@ -309,6 +312,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/add', 'addSupplyRefund');
             Route::patch('/{id}', 'confirmSupplyRefund');
         });
+        
+        Route::controller(SupplyInventoryController::class)->prefix('supply/inventory')->group(function (){
+            Route::get('/', 'getSupplyInventory');
+        });
 
         Route::get('/stockIn/history', function (){
             $user = User::find(auth()->id())->trader()->first();
@@ -336,6 +343,37 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produces' => $produces,
             ]);
 
+        });
+
+        Route::get('/stockOut/history', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $contracts = Contract::where('trader_id', $user->id)->get();
+            $projects = [];
+            foreach($contracts as $contract){                
+                array_push($projects, $contract->project()->first());
+            }
+            $stockOut_history = [];
+            $suppliers = [];
+            $supplies = [];
+            foreach($projects as $project){
+                $stockOuts = StockOut::where('project_id', $project->id)->get();
+                foreach($stockOuts as $stockOut){
+                    array_push($stockOut_history, $stockOut);
+                    if(!in_array($stockOut->supplier()->first(), $suppliers)){
+                        array_push($suppliers, $stockOut->supplier()->first());
+                    }
+                    if(!in_array($stockOut->supply()->first(), $supplies)){
+                        array_push($supplies, $stockOut->supply()->first());
+                    }
+                }
+            }
+            $produces = Produce::groupBy('prod_type')->get();
+            return response([
+                'stockOut_history' => $stockOut_history,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                'produces' => $produces,
+            ]);
         });
         
         
