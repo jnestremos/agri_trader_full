@@ -300,7 +300,7 @@ const routes = [
         component:StockInHistory
       },
       {
-        path:"/supplyInventory/stockOut",
+        path:"/stockOut/:id",
         name:"StockOut",
         meta:{needsAuth: true, role: "trader"},
         component:StockOut

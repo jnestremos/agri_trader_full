@@ -35,6 +35,17 @@ class SupplierController extends Controller
             ], 400);
         }
 
+        $supplier = Supplier::where([
+            ['supplier_name', $request->supplier_name],
+            ['trader_id', Trader::where('user_id', auth()->id())->first()->id]
+        ])->first();
+
+        if($supplier){
+            return response([
+                'error' => 'Supplier already exists!'
+            ], 400);
+        }
+
         $supplier = Supplier::create([
             'trader_id' => User::find(auth()->id())->trader()->first()->id,
             'supplier_name' => $request->supplier_name

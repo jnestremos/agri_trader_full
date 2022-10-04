@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <div class="mb-2 mt-3" style="width:100%; height:90%; clear:left;">
-                        <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
+                        <table id="supplySelect" class="table table-striped table-bordered align-middle" :style="[filteredTable && filteredTable.length > 8 ? {'overflow-y':'scroll'} : {}, {'width': '100%'}]">
                             <thead align="center">
                                 <tr>
                                     <th scope="col">Purchase Order No.</th>

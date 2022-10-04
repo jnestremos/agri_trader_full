@@ -14,7 +14,8 @@ class StockOut extends Model
         'supplier_id',
         'supply_id',
         'supply_qty',
-        'supply_unit'
+        'supply_unit',
+        'stockOut_remark',
     ];
 
     public function project(){

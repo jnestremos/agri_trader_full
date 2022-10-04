@@ -71,6 +71,7 @@ class ReceivingReportController extends Controller
                         'supply_name' => $supply->supply_name,
                         'supply_type' => $supply->supply_type,
                         'supply_for' => $supply->supply_for,
+                        'supply_unit' => $supply->supply_unit,
                         'supply_reorderLevel' => $supply->supply_reorderLevel,
                         'supply_qty' => $request->purchaseOrder_qtyGood[$i]
                     ]);

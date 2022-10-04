@@ -13,6 +13,7 @@ use App\Http\Controllers\ProduceYieldController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReceivingReportController;
 use App\Http\Controllers\RefundController;
+use App\Http\Controllers\StockOutController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\SupplyInventoryController;
@@ -37,6 +38,7 @@ use App\Models\ReceivingReport;
 use App\Models\Sale;
 use App\Models\StockIn;
 use App\Models\StockOut;
+use App\Models\Supplier;
 use App\Models\SupplyInventory;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
@@ -375,7 +377,41 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produces' => $produces,
             ]);
         });
-        
+
+        Route::get('/project/stockOut/{id}', function ($id){
+            if(!Project::find($id)){
+                return response([
+                    'error' => 'Project not found!'
+                ], 400);
+            }
+            $user = User::find(auth()->id())->trader()->first();            
+            $suppliers = Supplier::where('trader_id', $user->id)->get();  
+            $supplier_ids = [];   
+            $supplies = [];                       
+            foreach($suppliers as $supplier){                
+                array_push($supplier_ids, $supplier->id);                               
+            }  
+            $suppliers = [];          
+            $inventory = SupplyInventory::whereIn('supplier_id', $supplier_ids)->where('supply_qty', '>', 0)->get();
+            foreach($inventory as $item){
+                if(!in_array($item->supplier()->first(), $suppliers)){
+                    array_push($suppliers, $item->supplier()->first());
+                }
+                array_push($supplies, $item->supply()->first());
+            }
+            $stockOut = StockOut::where('project_id', $id)->get(); 
+            $produces = Produce::groupBy('prod_type')->get();           
+
+            return response([
+                'inventory' => $inventory,
+                'supplies' => $supplies,
+                'suppliers' => $suppliers,
+                'stockOut' => $stockOut,
+                'produces' => $produces,
+            ]);
+            
+        });
+        Route::post('/project/stockOut/{id}', [StockOutController::class, 'addStockOut']);
         
 
         Route::get('/dashboard', function(){

@@ -280,12 +280,12 @@ export default {
                 })
                 if(orderObj[0].purchaseOrder_status == 'Pending'){
                     this.updatePOStatus(orderObj[0].purchaseOrder_num)
-                    .then(() => {
-                        this.$toastr.s('Purchase Order Added Successfully!')
-                        setTimeout(() => {
-                            location.reload()
-                        }, 5000)
-                    })
+                    // .then(() => {
+                    //     this.$toastr.s('Purchase Order Added Successfully!')
+                    //     setTimeout(() => {
+                    //         location.reload()
+                    //     }, 5000)
+                    // })
                 }
                 else if(orderObj[0].purchaseOrder_status == 'For Delivery'){  
                     this.initPO(this.data)                  

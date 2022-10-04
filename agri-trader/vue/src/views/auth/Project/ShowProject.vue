@@ -148,11 +148,12 @@
           <div class="row w-100 m-0"></div> 
           <div class="row w-100 m-0"></div> 
           <div v-if="getProject">
-            <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-if="getProject.project_status_id == 2">
+            <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%; width:40vw;" v-if="getProject.project_status_id == 2">
               <input type="button" value="Profit Sharing" class="btn btn-primary">                        
               <input type="button" value="Harvest" class="btn btn-primary">                        
               <input type="submit" value="Update Project" class="btn btn-primary">                        
               <input type="button" value="Upload Image" class="btn btn-primary">                        
+              <input type="button" value="Add Supplies to Project" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">                        
             </div>
             <!-- <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>                                                  
               <input type="submit" value="Update Project" class="btn btn-primary">                                      

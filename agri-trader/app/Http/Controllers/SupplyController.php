@@ -47,7 +47,7 @@ class SupplyController extends Controller
 
         $supply = Supply::where('supply_name', $request->supply_name)->first();
 
-        if($supply){
+        if($supply->supplier()->first()->trader_id == Trader::where('user_id', auth()->id())->first()->id){
             return response([
                 'error' => 'Supply was already added!'
             ], 400);

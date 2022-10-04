@@ -8,28 +8,28 @@
             <div class="form-row mt-3">
                 <div class="col-lg-3 me-3">
                     <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                    <select class="form-select" id="supplier_name" v-for="(supplier, index) in getSupplyInventory.suppliers" :key="index">
+                    <select class="form-select" id="supplier_name">
                         <option selected value="None">Select Supplier</option>
-                        <option :value="supplier.id">{{ supplier.supplier_name }}</option>                        
+                        <option v-for="(supplier, index) in getSupplyInventory.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option>                        
                     </select>                    
                 </div>
                 <div class="col-lg-3 me-3">
                     <label for="stockInHistory_supplyType" class="form-label me-4" >Choose Supply Type</label>
-                    <select class="form-select" id="supply_type" v-for="(type, index) in getTypes" :key="index">
+                    <select class="form-select" id="supply_type">
                         <option selected value="None">Select Supply Type</option>
-                        <option :value="type">{{ type }}</option>
+                        <option v-for="(type, index) in getTypes" :key="index" :value="type">{{ type }}</option>
                     </select>
                 </div>
                 <div class="col-lg-3 me-3">
                     <label for="stockInHistory_SupplyFor" class="form-label me-4">Choose Supply For</label>
-                    <select class="form-select" id="supply_type" v-for="(produce, index) in getSupplyForFiltered" :key="index">
+                    <select class="form-select" id="supply_type">
                         <option selected value="None">Select Supply For</option>  
-                        <option :value="produce">{{ produce }}</option>                                      
+                        <option v-for="(produce, index) in getSupplyForFiltered" :key="index" :value="produce">{{ produce }}</option>                                      
                     </select>
                 </div>
             </div>
-            <div class="mb-2 mt-4" style="width:100% height:90%; clear:left;">
-                <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
+            <div class="mb-2 mt-4" style="width:100%; height:90%; clear:left;">
+                <table id="supplySelect" class="table table-striped table-bordered align-middle" :style="[filteredInventory && filteredInventory.length > 8 ? {'overflow-y':'scroll'} : {}, {'width': '100%'}]">
                     <thead align="center">
                         <tr>
                             <th scope="col">Supplier Name</th>
@@ -58,7 +58,8 @@
             </div>
             <div class="btn-toolbar pt-4" role="toolbar">
                 <div class="btn-group me-3">
-                <router-link to="/supplyInventory/stockInHistory"> <b-button variant="info" style="width:200px; height:60px">Stock In History</b-button> </router-link>
+                <router-link to="/supplyInventory/stockInHistory"> <b-button variant="info" style="width:200px; height:60px" class="me-3">Stock In History</b-button> </router-link>
+                <router-link to="/supplyInventory/stockOutHistory"> <b-button variant="info" style="width:200px; height:60px">Stock Out History</b-button> </router-link>
             </div>
         </div>
         </div>
