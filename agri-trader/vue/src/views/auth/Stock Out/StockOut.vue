@@ -4,7 +4,7 @@
               <h3>Supply Inventory | Stock Out</h3>
       </div>
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
-          <div style="width:85%; height:65%" class="pb-5">
+          <div style="width:80%; height:65%" class="pb-5">
               <form class="d-flex flex-column justify-content-between mt-2 ms-2" style="height:20%">
                   <div class="form-row mb-2">
                       <div class="col-lg-3 me-3">
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                   <div class="mb-2 mt-4" style="width:100% height:90%; clear:left;">
-                      <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
+                      <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:90%;">
                           <thead align="center">
                               <tr>
                                   <th scope="col">Select</th>
@@ -97,12 +97,37 @@
                   </div>
                   <div class="btn-toolbar pt-4" role="toolbar">
                       <div class="btn-group me-3">
-                        <b-button variant="success" style="width:200px; height:60px">Stock Out To Project</b-button>
+                        <b-button variant="success" class="fw-bold" style="width:200px; height:60px">Stock Out To Project</b-button>
                       </div>
                   </div>
               </form>
           </div>
-      </div>
+          <div style="width:60%; height:65%" class="pb-5">
+            <div class="mb-2 mt-5" style="width:100% height:90%; clear:left;">
+                <h4 align="center">Supplies used for Project No.</h4>
+                <table id="supplySelect" class="table table-striped table-success table-bordered align-middle" style="width:100%;">
+                    <thead align="center">
+                        <tr>
+                            <th scope="col">Supply Name</th>
+                            <th scope="col">Supply Type</th>
+                            <th scope="col">Supply For</th>                                    
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody align="center">
+                        <tr>
+                            <td>Yara Mila Unik-16</td>
+                            <td>Fertilizer</td>
+                            <td>Banana</td>
+                            <td>8</td>
+                            <td>Sack</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     </div>
   </template>
   
