@@ -140,7 +140,7 @@ export default {
             var prodObj = this.getProduceList.filter((p) => {
                 return parseInt(contract.produce_id) === parseInt(p.id)
             })
-            return prodObj[0].prod_name
+            return prodObj[0].prod_name + ' ' + prodObj[0].prod_type
         },
         getStatus(contract){
             var projObj = this.getProjectData.projectss.filter((p) => {

@@ -48,8 +48,8 @@
                             <td>{{ supply.supply_name }}</td>
                             <td>{{ supply.supply_type }}</td>
                             <td>{{ supply.supply_for }}</td>
-                            <td>{{ supply.supply_qty }}</td>
                             <td>{{ supply.supply_reorderLevel }}</td>
+                            <td>{{ supply.supply_qty }}</td>                            
                             <td>{{ supply.supply_unit }}</td>
                             <td>{{ supply.updated_at.split('T')[0] }}</td>
                         </tr>

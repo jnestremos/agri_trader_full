@@ -8,8 +8,17 @@
                 <form class="d-flex flex-column justify-content-between mt-2 ms-2" style="height:20%">
                     <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
+                            <label for="stockInHitsory_supplierList" class="form-label me-4">Select Purchase Order Number</label>
+                            <select class="form-select" id="purchaseOrder_num" :disabled="!getPurchaseOrderNumbers > 0" @change="setPurchaseOrder($event)">
+                                <option selected value="None">Select Purchase Order</option>
+                                <option v-for="(order, index) in getPurchaseOrderNumbers" :key="index" :value="order">{{ order }}</option>                                
+                            </select>
+                        </div>  
+                    </div>
+                    <div class="form-row mt-3">
+                        <div class="col-lg-3 me-3">
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                            <select class="form-select" id="supplier_name" @change="setSupplier($event)">
+                            <select class="form-select" :disabled="filter_num == 'None'" id="supplier_name" @change="setSupplier($event)">
                                 <option selected value="None">Select Supplier</option>
                                 <option v-for="(supplier, index) in getStockInHistory.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option> 
                             </select>                    
@@ -79,7 +88,8 @@ export default {
         return {
             filter_supplier: 'None',
             filter_type: 'None',
-            filter_for: 'None'
+            filter_for: 'None',
+            filter_num: 'None'
         }
     },
     watch: {
@@ -92,12 +102,28 @@ export default {
                 supply_type.value = 'None'
                 supply_for.value = 'None' 
             }
-        }
+        },
+        'filter_num'(newVal){
+            if(newVal == "None"){
+                this.filter_supplier = "None"
+                this.filter_type = "None"
+                this.filter_for = 'None'
+                var supply_type = document.getElementById('supply_type')
+                var supply_for = document.getElementById('supply_for')
+                var supplier_name = document.getElementById('supplier_name')
+                supply_type.value = 'None'
+                supply_for.value = 'None' 
+                supplier_name.value = 'None' 
+            }
+        },
     },
     methods: {
         ...mapActions(['readyApp', 'fetchStockInHistory']),
         setSupplier(e){
             this.filter_supplier = e.target.value
+        },
+        setPurchaseOrder(e){
+            this.filter_num = e.target.value
         },
         setSupplyType(e){
             this.filter_type = e.target.value
@@ -139,60 +165,60 @@ export default {
             var table = [];
             var supplyObj = null;
             var container = null
-            if(this.filter_supplier != 'None'){
-                supplyObj = this.getStockInHistory.supplies.filter((s) => {
-                    return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
+            if(this.filter_num != 'None'){
+                table = this.getStockInHistory.stockIn_history.filter((s) => {
+                    return (this.filter_num) === (s.purchaseOrder_num)
                 })
-                supplyObj.forEach((s) => {
-                    container = this.getStockInHistory.stockIn_history.filter((ss) => {
-                        return parseInt(s.id) === parseInt(ss.supply_id)
-                    })
-                    container.forEach((c) => {
-                        table.push(c)
-                    })
-                })                
-                if(this.filter_type != 'None' && this.filter_for != 'None'){
-                    console.log(1)
+                if(this.filter_supplier != 'None'){
+                    table = []
                     supplyObj = this.getStockInHistory.supplies.filter((s) => {
-                        return (this.filter_type) === (s.supply_type)
+                        return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
                     })
                     supplyObj.forEach((s) => {
-                        table = table.filter((ss) => {
-                            return parseInt(s.id) === parseInt(ss.supply_id)
-                        })                       
+                        container = this.getStockInHistory.stockIn_history.filter((ss) => {
+                            return parseInt(s.id) === parseInt(ss.supply_id) && (this.filter_num) === (ss.purchaseOrder_num)
+                        })
+                        container.forEach((c) => {
+                            table.push(c)
+                        })
                     })
-                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
-                        return (this.filter_for) === (s.supply_for)
-                    })
-                    supplyObj.forEach((s) => {
-                        table = table.filter((ss) => {
-                            return parseInt(s.id) === parseInt(ss.supply_id)
+                    if(this.filter_type != 'None' && this.filter_for != 'None'){
+                        supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                            return (this.filter_type) === (s.supply_type)
+                        })
+                        supplyObj.forEach((s) => {
+                            table = table.filter((ss) => {
+                                return parseInt(s.id) === parseInt(ss.supply_id)
+                            })                       
                         })                        
-                    })                    
+                    }
+                    else if(this.filter_type != 'None'){
+                        console.log(2)
+                        supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                            return (this.filter_type) === (s.supply_type)
+                        })
+                        supplyObj.forEach((s) => {
+                            table = table.filter((ss) => {
+                                return parseInt(s.id) === parseInt(ss.supply_id)
+                            })                        
+                        })
+                    }
+                    else if(this.filter_for != 'None'){
+                        console.log(3)
+                        supplyObj = this.getStockInHistory.supplies.filter((s) => {
+                            return (this.filter_for) === (s.supply_for)
+                        })
+                        supplyObj.forEach((s) => {
+                            table = table.filter((ss) => {
+                                return parseInt(s.id) === parseInt(ss.supply_id)
+                            })                        
+                        })                    
+                    }
+                    return table                    
                 }
-                else if(this.filter_type != 'None'){
-                    console.log(2)
-                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
-                        return (this.filter_type) === (s.supply_type)
-                    })
-                    supplyObj.forEach((s) => {
-                        table = table.filter((ss) => {
-                            return parseInt(s.id) === parseInt(ss.supply_id)
-                        })                        
-                    })
+                else{
+                    return table
                 }
-                else if(this.filter_for != 'None'){
-                    console.log(3)
-                    supplyObj = this.getStockInHistory.supplies.filter((s) => {
-                        return (this.filter_for) === (s.supply_for)
-                    })
-                    supplyObj.forEach((s) => {
-                        table = table.filter((ss) => {
-                            return parseInt(s.id) === parseInt(ss.supply_id)
-                        })                        
-                    })                    
-                }  
-                return table 
             }
             else{
                 return this.getStockInHistory.stockIn_history
@@ -204,6 +230,19 @@ export default {
             if(this.getStockInHistory.supplies){
                 this.getStockInHistory.supplies.forEach((s) => {
                     types.add(s.supply_type)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        },
+        getPurchaseOrderNumbers(){
+            var types = new Set()
+            var arr = [];
+            if(this.getStockInHistory.stockIn_history){
+                this.getStockInHistory.stockIn_history.forEach((s) => {
+                    types.add(s.purchaseOrder_num)
                 })                
                 types.forEach((ss) => {
                     arr.push(ss)

@@ -319,6 +319,7 @@ const mutations = {
         state.produce_info.produce = data.produce
         state.produce_info.produce_trader = data.produce_trader
         state.produce_info.contracts = data.contracts
+        state.produce_info.projects = data.projects
     }
 }
 

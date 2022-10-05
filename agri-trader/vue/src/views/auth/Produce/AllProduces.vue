@@ -17,7 +17,7 @@
                         width:90%;">
                             <div class="d-flex mb-4">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
-                                <h3 class="mb-4">{{ p.prod_name }}</h3>
+                                <h3 class="mb-4">{{ getProduceName(p) }}</h3>
                             </div>                                                                                
                             <h4 class="d-flex">Quantity: <p class="ms-3">{{ p.prod_totalQty }}</p></h4>
                             <h4 class="d-flex">Farms Associated: <p class="ms-3">{{ p.prod_numOfFarms }}</p></h4>
@@ -83,6 +83,19 @@ export default {
     },
     methods: {
         ...mapActions(['readyApp', 'fetchAllProduces', 'fetchProduce']),
+        getProduceName(p){
+            var arr = p.prod_name.split(' ')
+            var prodObj = this.getProduceData.types.filter((pp) => {
+                return parseInt(pp.id) === parseInt(p.produce_id)
+            })
+            if(arr.indexOf('(Class')){
+              arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)             
+              return arr.join(' ')
+            }
+            else {
+                return p.prod_name + ' ' + prodObj[0].prod_type
+            }
+        },
         filteredProdArray(){
             var filtered = [];
             var arr = this.getProduces;             

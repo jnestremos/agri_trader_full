@@ -6,23 +6,23 @@
     <div class="container-fluid d-flex justify-content-between mb-5" style="width:70%; float:left;">
       <div>
         <h4 v-if="getProduceDetails.produce">Time To Harvest: {{ getProduceDetails.produce.prod_timeOfHarvest }}</h4>
-        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader.produce_numOfGrades > 1">Grades: A, B, C</h4>
+        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">Grades: A, B, C</h4>
         <h4 v-else>Grades: None</h4>
         <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader.length > 0">Farms Associated: {{ getProduceDetails.produce_trader[0].prod_numOfFarms }}</h4>
         <h4 v-if="getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0">Last Date of Harvest: {{ getProduceDetails.produce_yields[0].produce_yield_dateHarvestTo }}</h4>
         <h4 v-else>Last Date of Harvest: No Harvest Date Recorded</h4>
       </div>
       <div class="">
-        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader.produce_numOfGrades > 1">Prices (per class)</h4>
+        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">Prices (per class)</h4>
         <h4 v-else>Price</h4>
-        <div v-if="getProduceDetails.produce_trader &&getProduceDetails.produce_trader.produce_numOfGrades > 1">
+        <div v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">
            <div class="d-flex">
-            <h4 class="me-5">A: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[2].produce_yield_price : 'No Price Data!' }}</h4>
-            <h4>&NonBreakingSpace; B: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[1].produce_yield_price : 'No Price Data!' }}</h4>
+            <h4 class="me-5">A: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[2].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>
+            <h4>&NonBreakingSpace; B: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[1].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>
           </div> 
-          <h4>C: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price : 'No Price Data!' }}</h4>                 
+          <h4>C: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>                 
         </div>
-        <h4 v-else>{{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price : 'No Price Data!' }}</h4>
+        <h4 v-else>{{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>
       </div>
     </div>
     <div style="width:100%; height:65%; clear:left;">
@@ -60,8 +60,8 @@ export default {
             this.fetchProduce(this.$route.params.id) 
             .then(() => {
               new DataTable('#example', {
-                scrollY: 400,
-                pageLength: 2
+                scrollY: 200,
+                pageLength: 5
               })  
             })
           .catch((err) => {

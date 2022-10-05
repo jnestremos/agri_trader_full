@@ -35,13 +35,6 @@ class FarmOwnerController extends Controller
             ], 401);
         }
 
-       
-
-        $newUser = User::create([
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
         $checkOwner = FarmOwner::where([
             ['owner_firstName', $request->firstName],
             ['owner_lastName', $request->lastName]
@@ -52,6 +45,13 @@ class FarmOwnerController extends Controller
                 'error' => 'Farm Owner has been added already by another trader!'
             ], 400);
         }
+       
+
+        $newUser = User::create([
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+       
 
         $farmOwner = FarmOwner::create([
             'user_id' => $newUser->id,
@@ -84,6 +84,17 @@ class FarmOwnerController extends Controller
                 'owner_contactNum' => $request->contactNum
             ]);
         }
+       
+        
+        $trader = Trader::where('user_id', auth()->id())->first();       
+
+        $trader->farm_owners()->attach($farmOwner);
+
+        DB::table('owner_trader')->where([['trader_id', $trader->id], ['farm_owner_id', $farmOwner->id]])->update([
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+       
         return response([
             'message' => 'Farm Owner Added!',
         ], 200);

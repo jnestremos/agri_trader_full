@@ -11,7 +11,8 @@ const state = {
         per_page: null,
         prev_page_url: null,
         total: null,
-        links: null        
+        links: null,
+        types: null        
     },
     produce_details: {
        produce: null,
@@ -114,6 +115,7 @@ const mutations = {
         else{
             state.produce_data.produces = data.produces
         }
+        state.produce_data.types = data.types
     },
     asd: () => {
         console.log(1)

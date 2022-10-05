@@ -61,8 +61,8 @@ export default {
         this.fetchProduceForOwner(this.$route.params.id)
         .then(() => {
             new DataTable('#example', {
-                scrollY: 400,
-                pageLength: 2
+                scrollY: 200,
+                pageLength: 5
             })             
             this.readyApp()
         })        

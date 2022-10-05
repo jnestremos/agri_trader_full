@@ -8,8 +8,17 @@
                 <form class="d-flex flex-column justify-content-between mt-2 ms-2" style="height:20%">
                     <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
+                            <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Project</label>
+                            <select class="form-select" id="project_id" :disabled="!(getProjectIDS > 0)" @change="setProject($event)">
+                                <option selected value="None">Select Project</option>
+                                <option v-for="(id, index) in getProjectIDS" :key="index" :value="id">{{ 'Project # ' + id }}</option> 
+                            </select>  
+                        </div>
+                    </div>
+                    <div class="form-row mt-3">
+                        <div class="col-lg-3 me-3">
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                            <select class="form-select" id="supplier_name" @change="setSupplier($event)">
+                            <select class="form-select" id="supplier_name" :disabled="filter_num == 'None'" @change="setSupplier($event)">
                                 <option selected value="None">Select Supplier</option>
                                 <option v-for="(supplier, index) in getStockOutHistory.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option> 
                             </select>                    
@@ -79,11 +88,40 @@ export default {
         return {
             filter_supplier: 'None',
             filter_type: 'None',
-            filter_for: 'None'
+            filter_for: 'None',
+            filter_num: 'None'
         }
+    },
+    watch: {
+        'filter_supplier'(newVal){
+            if(newVal == "None"){
+                this.filter_type = "None"
+                this.filter_for = 'None'
+                var supply_type = document.getElementById('supply_type')
+                var supply_for = document.getElementById('supply_for')
+                supply_type.value = 'None'
+                supply_for.value = 'None' 
+            }
+        },
+        'filter_num'(newVal){
+            if(newVal == "None"){
+                this.filter_supplier = "None"
+                this.filter_type = "None"
+                this.filter_for = 'None'
+                var supply_type = document.getElementById('supply_type')
+                var supply_for = document.getElementById('supply_for')
+                var supplier_name = document.getElementById('supplier_name')
+                supply_type.value = 'None'
+                supply_for.value = 'None' 
+                supplier_name.value = 'None' 
+            }
+        },
     },
     methods: {
         ...mapActions(['readyApp', 'fetchStockOutHistory']),
+        setProject(e){
+            this.filter_num = e.target.value
+        },
         setSupplier(e){
             this.filter_supplier = e.target.value
         },
@@ -127,6 +165,68 @@ export default {
             var table = [];
             var supplyObj = null;
             var container = null
+            var containerr = null
+            if(this.filter_num != 'None'){
+                table = this.getStockOutHistory.stockOut_history.filter((s) => {
+                    return parseInt(this.filter_num) === parseInt(s.project_id)
+                })
+                if(this.filter_supplier != 'None'){
+                    table = table.filter((s) => {
+                        return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
+                    })
+                    if(this.filter_type != 'None' && this.filter_for != 'None'){                        
+                        supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                            return (this.filter_type) === (s.supply_type) && (this.filter_for) === (s.supply_for)
+                        })
+                        container = []
+                        supplyObj.forEach((s) => {
+                            containerr = table.filter((ss) => {
+                                return parseInt(s.id) === parseInt(ss.supply_id)
+                            })
+                            containerr.forEach((sss) => {
+                                container.push(sss)
+                            })
+                        })
+                        table = container
+                    }
+                    else if(this.filter_type != 'None'){
+                        supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                            return (this.filter_type) === (s.supply_type)
+                        })
+                        container = []
+                        supplyObj.forEach((s) => {
+                            containerr = table.filter((ss) => {
+                                return parseInt(s.id) === parseInt(ss.supply_id)
+                            })
+                            containerr.forEach((sss) => {
+                                container.push(sss)
+                            })
+                        })
+                        table = container
+                    }
+                    else if(this.filter_for != 'None'){
+                        supplyObj = this.getStockOutHistory.supplies.filter((s) => {
+                            return (this.filter_for) === (s.supply_for)
+                        })
+                        container = []
+                        supplyObj.forEach((s) => {
+                            containerr = table.filter((ss) => {
+                                return parseInt(s.id) === parseInt(ss.supply_id)
+                            })
+                            containerr.forEach((sss) => {
+                                container.push(sss)
+                            })
+                        })
+                        table = container
+                    }
+                }
+                else{
+                    return table
+                }
+            }
+            else{
+                return this.getStockOutHistory.stockOut_history
+            }
             if(this.filter_supplier != 'None'){
                 supplyObj = this.getStockOutHistory.supplies.filter((s) => {
                     return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
@@ -192,6 +292,19 @@ export default {
             if(this.getStockOutHistory.supplies){
                 this.getStockOutHistory.supplies.forEach((s) => {
                     types.add(s.supply_type)
+                })                
+                types.forEach((ss) => {
+                    arr.push(ss)
+                })                
+            }
+            return arr
+        },
+        getProjectIDS(){
+            var types = new Set()
+            var arr = [];
+            if(this.getStockOutHistory.stockOut_history){
+                this.getStockOutHistory.stockOut_history.forEach((s) => {
+                    types.add(s.project_id)
                 })                
                 types.forEach((ss) => {
                     arr.push(ss)
