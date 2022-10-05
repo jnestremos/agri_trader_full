@@ -6,6 +6,7 @@ use App\Models\Produce;
 use App\Models\Supplier;
 use App\Models\Supply;
 use App\Models\Trader;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SupplyController extends Controller
@@ -26,6 +27,48 @@ class SupplyController extends Controller
             'suppliers' => $suppliers,
         ]);
         
+    }
+
+    public function getSupplyList(){
+        $user = User::find(auth()->id())->trader()->first();
+        $suppliers = Supplier::where('trader_id', $user->id)->get();
+        $container = [];
+        $supplies = [];
+        foreach($suppliers as $supplier){
+            if(count($supplier->supply()->get()) > 0){
+                array_push($container, $supplier);
+            }
+            foreach($supplier->supply()->get() as $supply){
+                array_push($supplies, $supply);
+            }
+        }
+        $suppliers = $container;
+        return response([
+            'supplies' => $supplies,
+            'suppliers' => $suppliers,
+        ]);
+    }
+
+    public function editSupply(Request $request, $id){
+        $supply = $request->validate([
+            'supply_initialPrice' => 'required|numeric|gt:0',
+            'supply_reorderLevel' => 'required|numeric|gt:0',
+        ]);
+
+        if(!$supply){
+            return response([
+                'error' => "Error updating Supply!"
+            ], 400);
+        }
+
+        Supply::find($id)->update([
+            'supply_initialPrice' => $request->supply_initialPrice,
+            'supply_reorderLevel' => $request->supply_reorderLevel,
+        ]);
+
+        return response([
+            'message' => 'Supply updated successfully'
+        ]);
     }
 
     public function addSupply(Request $request){

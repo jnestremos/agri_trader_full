@@ -290,6 +290,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::controller(SupplyController::class)->prefix('supply')->group(function () {
             Route::get('/', 'formForAddSupply');
+            Route::patch('/{id}', 'editSupply');
+            Route::get('/list', 'getSupplyList');
             Route::post('/add', 'addSupply');
         });
 

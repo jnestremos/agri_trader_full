@@ -3,7 +3,11 @@ import axiosClient from '../../../axios'
 
 const state = {
     suppliers: null,
-    produces: null
+    produces: null,
+    supply_list: {
+        supplies: null,
+        suppliers: null
+    }
 }
 
 const getters = {
@@ -12,8 +16,10 @@ const getters = {
     },
     getProducesForAddSupply(){
         return state.produces
+    },
+    getSupplyList(){
+        return state.supply_list
     }
-
 }
 
 const actions = {
@@ -30,6 +36,20 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    fetchSupplyList({ commit }){
+        return axiosClient.get(`/supply/list`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setSupplyList', res.data)
+        })
+    },
+    updateSupply({ commit }, data){
+        return axiosClient.patch(`/supply/${data.id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
     }
 }
 
@@ -40,6 +60,10 @@ const mutations = {
     },
     asd: () => {
         console.log(1)
+    },
+    setSupplyList: (state, data) => {
+        state.supply_list.supplies = data.supplies
+        state.supply_list.suppliers = data.suppliers
     }
 
 }
