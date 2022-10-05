@@ -33,6 +33,7 @@ import AddSupplier from '../views/auth/Supplier/AddSupplier.vue'
 import SupplierList from '../views/auth/Supplier/SupplierList.vue'
 import SupplierDetails from '../views/auth/Supplier/SupplierDetails.vue'
 import AddSupply from '../views/auth/Supply/AddSupply.vue'
+import SupplyList from '../views/auth/Supply/SupplyList.vue'
 import AddFarmWorker from '../views/auth/Farm Worker/AddFarmWorker.vue'
 import InitialPurchaseOrder from '../views/auth/Supply Purchase Order/InitialPurchaseOrder.vue'
 import PurchaseOrderSummary from '../views/auth/Supply Purchase Order/PurchaseOrderSummary.vue'
@@ -232,6 +233,12 @@ const routes = [
         name:"AddSupply",
         meta:{needsAuth: true, role: "trader"},
         component:AddSupply
+      },
+      {
+        path:"/supply/list",
+        name:"SupplyList",
+        meta:{needsAuth: true, role: "trader"},
+        component:SupplyList
       },
       {
         path:"/farm_worker/add",

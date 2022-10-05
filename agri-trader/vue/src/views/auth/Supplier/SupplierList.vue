@@ -24,9 +24,12 @@
                 </div>  
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-3">
-                        <router-link to="/supplier/add"> <button class="btn btn-success" style="width:150px; height: 50px;">Add</button> </router-link>
+                        <router-link to="/supplier/add"> <button class="btn btn-success" style="width:120px; height: 50px;">Add</button> </router-link>
                     </div>
-                  </div>      
+                    <div class="btn-group me-3">
+                      <router-link to="/supply/add"> <button class="btn btn-success" style="width:200px; height: 50px;"> Add Supply to Supplier </button> </router-link>
+                    </div> 
+                </div>      
             </div>
   </div>
 </template>
