@@ -17,17 +17,6 @@
                             <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" :value="getPO.purchaseOrder_num" placeholder="PO-123456" disabled>
                         </div>
                     </div>
-                    <!-- <div class="row mt-3 mb-3">
-                        <label class="font-weight-bold" style="font-size:larger">Type of Payment</label>
-                    </div>
-                    <div class="form-row text-left mb-3">
-                        <div class="col-lg-2 ms-3">
-                            <input class="form-check-input" type="checkbox" :checked="orderPayment.paymentType == 'Partial'" value="Partial" ref="partial" @change="setPaymentType($event)"/>Partial / Downpayment
-                        </div>
-                        <div class="col-lg-2 ms-3">
-                            <input class="form-check-input" type="checkbox" :checked="orderPayment.paymentType == 'Full Payment'" value="Full Payment" ref="uponReceiving" @change="setPaymentType($event)"/>Full Payment
-                        </div>
-                    </div> -->
                     <div class="form-row mt-3">
                         <div class="col-md-2 me-3">
                             <label for="payment_totalPrice" class="form-label"> Total Price </label>

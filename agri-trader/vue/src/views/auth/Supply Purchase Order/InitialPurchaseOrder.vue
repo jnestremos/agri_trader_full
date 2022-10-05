@@ -41,7 +41,7 @@
                         <div v-if="data.supplier_id != 'None'" class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4">Choose Supply For</label>
                             <select v-if="getFormPO.produces" class="form-select" @change="setSupplyFor($event)" id="supply_for">
-                                <option selected value="None">Select Supply Type</option> 
+                                <option selected value="None">Select Supply For</option> 
                                 <option v-for="(produce, index) in getFormPO.produces" :key="index" :value="produce.prod_type">{{ produce.prod_type }}</option>                                
                             </select>
                         </div>                        

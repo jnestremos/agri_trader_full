@@ -49,6 +49,7 @@ import StockInHistory from '../views/auth/Stock In Inventory/StockInHistory.vue'
 import StockOutHistory from "../views/auth/Stock Out/StockOutHistory.vue"
 import StockOut from '../views/auth/Stock Out/StockOut.vue'
 import SupplyInventory from '../views/auth/Supply Inventory/SupplyInventory.vue'
+import OtherExpenditures from '../views/auth/Other Expenditures/OtherExpenditures.vue'
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
@@ -323,6 +324,12 @@ const routes = [
         name:"StockOutHistory",
         meta:{needsAuth: true, role: "trader"},
         component:StockOutHistory
+      },
+      {
+        path:"/project/otherExpenditures",
+        name:"OtherExpenditures",
+        meta:{needsAuth: true, role: "trader"},
+        component:OtherExpenditures
       },
     ]
   },
