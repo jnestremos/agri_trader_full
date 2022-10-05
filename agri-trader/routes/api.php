@@ -588,7 +588,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             //    $farmOwners = FarmOwner::all();; 
                $trader = Trader::where('user_id', auth()->id())->first();        
                $owners = DB::table('owner_trader')->where('trader_id', $trader->id)->get();
-               $owners = FarmOwner::all();
+            //    $owners = FarmOwner::all();
            
                foreach($owners as $owner){
                 $farmOwner = [
