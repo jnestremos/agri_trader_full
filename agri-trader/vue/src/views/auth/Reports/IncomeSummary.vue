@@ -25,9 +25,9 @@
         </div>       
         <div class="d-flex p-3" style="width:100%; height:85%">
             <div class="w-50 h-100 me-3" style="background:lightgreen">
-                <IncomeSummaryGraph style="height:100%; width:100%;" v-if="incomeSumm" :chartData="incomeSumm" label="Income" :text="filter_dateFrom + ' to ' + filter_dateTo"/>
+                <IncomeSummaryGraph style="height:100%; width:100%;" v-if="incomeSumm" :chartData="setGraph" label="Income" :text="filter_dateFrom + ' to ' + filter_dateTo"/>
             </div>
-            <div id="table" class="w-50 h-100" :style="[filterTable.length > 10 ? {'overflow-y': 'scroll'} : {}, {'background':'lightgreen'}]">
+            <div id="table" class="w-50 h-100" :style="[filterTable && filterTable.length > 10 ? {'overflow-y': 'scroll'} : {}, {'background':'lightgreen'}]">
                 <table style="width:100%;" v-if="filter_dateFrom && filter_dateTo">
                     <thead>
                         <tr>
@@ -42,15 +42,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(order, index) in incomeSumm" :key="index">
+                        <tr v-for="(order, index) in filterTable" :key="index">
                             <td>{{ order.id }}</td>
                             <td>{{ order.bid_order_id }}</td>
                             <td>{{ getProjectName(order) }}</td>
                             <td>{{ getProduceName(order) }}</td>
                             <td>{{ getDistName(order) }}</td>                            
                             <td>{{ getOrderType(order) }}</td>
-                            <td>{{ order['sum(bid_order_acc_amount)'] }}</td>
-                            <td>{{ order.created_at }}</td>
+                            <td>{{ order['bid_order_acc_amount'] }}</td>
+                            <td>{{ order.created_at.split('T')[0] }}</td>
                         </tr>                                                                     
                     </tbody>
                 </table>
@@ -61,7 +61,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { sub, format, isAfter, isEqual, isBefore } from 'date-fns'
+import { sub, format, isAfter, isBefore } from 'date-fns'
 import IncomeSummaryGraph from '../../../components/IncomeSummaryGraph.vue';
 
 export default {
@@ -71,6 +71,7 @@ export default {
         this.fetchIncomeSummary()
         .then(() => {            
             this.incomeSumm = this.getIncomeSummary.incomeSumm
+            console.log(this.incomeSumm)
             this.bid_order_accounts = this.getIncomeSummary.bid_order_accounts
             var dates = [];            
             this.bid_order_accounts.forEach((a) => {                
@@ -79,10 +80,21 @@ export default {
             dates = dates.sort((a, b) => {
                 return new Date(a) - new Date(b)
             })
+            console.log(format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd'))
             this.filter_dateFrom = format(new Date(dates[0]), 'yyyy-MM-dd')
             this.filter_dateTo = format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd')            
             this.readyApp()
         })        
+    },
+    data(){
+        return {
+            filter_dateTo: null,
+            filter_dateFrom: null,
+            filter_type: 'None',
+            filter_produce: 'None',
+            incomeSumm: null,
+            bid_order_accounts: null
+        }
     },
     methods :{
         ...mapActions(['readyApp', 'fetchIncomeSummary']),
@@ -92,7 +104,7 @@ export default {
                 dates.push(new Date(a.created_at))
             })   
             dates = dates.sort((a, b) => {
-                return new Date(a) - new Date(b)
+                return new Date(a).getTime() - new Date(b).getTime()
             })
             this.filter_dateFrom = format(new Date(dates[0]), 'yyyy-MM-dd')
             this.filter_dateTo = format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd')
@@ -187,61 +199,41 @@ export default {
         setFilterProduce(e){
             this.filter_produce = e.target.value      
         },
-        filterTable(){            
-            var ids = [];
-            var accounts = [];
-            var container = null;
-            var orders = null;            
-            var yearFrom = this.filter_dateFrom.split('-')[0]
-            var monthFrom = this.filter_dateFrom.split('-')[1]
-            var dayFrom = this.filter_dateFrom.split('-')[2]
-            var yearTo = this.filter_dateTo.split('-')[0]
-            var monthTo = this.filter_dateTo.split('-')[1]
-            var dayTo = this.filter_dateTo.split('-')[2]
-            var dateFrom = new Date(yearFrom, parseInt(monthFrom)-1, parseInt(dayFrom), 8,0,0,0)           
-            var dateTo = new Date(yearTo, parseInt(monthTo)-1, parseInt(dayTo), 8,0,0,0)            
-            if(this.filter_type != 'None' && this.filter_produce != 'None'){
-                if(this.filter_type == "Project"){                
-                    this.getIncomeSummary.project_bids.forEach((p) => {
-                        ids.push(p.bid_order_id)
-                    })                                
-                }
-                else if(this.filter_type == "On Hand"){
-                    this.getIncomeSummary.on_hand_bids.forEach((p) => {
-                        ids.push(p.bid_order_id)
-                    })                                
-                }                
-                ids.forEach((id) => {                    
-                    container = this.bid_order_accounts.filter((o) => {
-                        return parseInt(id) === parseInt(o.bid_order_id)
-                    })                    
-                    container.forEach((a) => {
-                        console.log(a)
-                        accounts.push(a)
-                    })
-                })
-                orders = this.getIncomeSummary.bidOrders.filter((o) => {
-                    return parseInt(this.filter_produce) === parseInt(o.produce_trader_id)
-                })
-                var containerr = [];                
-                orders.forEach((order) => {
-                    container = accounts.filter((o) => {
-                        return parseInt(order.id) === parseInt(o.bid_order_id)
-                    })
-                    container.forEach((a) => {
-                        containerr.push(a)
-                    })
-                })
-                accounts = containerr                
-                accounts = accounts.filter((a) => {
-                    return new Date(a.created_at).setHours(8,0,0,0) >= new Date(dateFrom).getTime() 
-                    && new Date(a.created_at).setHours(8,0,0,0) <= new Date(dateTo).getTime()
-                })                 
-            }
-            else if(this.filter_type != 'None' || this.filter_produce != 'None'){
-                if(this.filter_type != 'None'){
-                    if(this.filter_type == "Project"){   
-                        console.log(1)             
+    },
+    computed: {
+        ...mapGetters(['getIncomeSummary']), 
+        getTotal(){
+            var data = this.filterTable
+            var initValue = 0;
+            data.forEach((d) => {
+                initValue += parseFloat(d.bid_order_acc_amount)
+            })
+            return initValue
+        },
+        setGraph(){ 
+            var incomeSumm = this.incomeSumm.filter((i) => {                         
+                return i.created_at >= this.filter_dateFrom
+                && i.created_at <= this.filter_dateTo
+            })
+            return incomeSumm
+        },
+        filterTable(){   
+            if(this.filter_dateFrom && this.filter_dateTo){
+                var ids = [];
+                var accounts = [];
+                var container = null;
+                var orders = null;            
+                var yearFrom = this.filter_dateFrom.split('-')[0]
+                var monthFrom = this.filter_dateFrom.split('-')[1]
+                var dayFrom = this.filter_dateFrom.split('-')[2]
+                var yearTo = this.filter_dateTo.split('-')[0]
+                var monthTo = this.filter_dateTo.split('-')[1]
+                var dayTo = this.filter_dateTo.split('-')[2]
+                var dateFrom = format(new Date(yearFrom, parseInt(monthFrom)-1, parseInt(dayFrom), 8,0,0,0), 'yyyy-MM-dd')           
+                var dateTo = format(new Date(yearTo, parseInt(monthTo)-1, parseInt(dayTo), 8,0,0,0), 'yyyy-MM-dd')  
+                console.log(dateFrom, dateTo)          
+                if(this.filter_type != 'None' && this.filter_produce != 'None'){
+                    if(this.filter_type == "Project"){                
                         this.getIncomeSummary.project_bids.forEach((p) => {
                             ids.push(p.bid_order_id)
                         })                                
@@ -250,127 +242,134 @@ export default {
                         this.getIncomeSummary.on_hand_bids.forEach((p) => {
                             ids.push(p.bid_order_id)
                         })                                
-                    }
+                    }                
                     ids.forEach((id) => {                    
                         container = this.bid_order_accounts.filter((o) => {
                             return parseInt(id) === parseInt(o.bid_order_id)
-                        })
+                        })                    
                         container.forEach((a) => {
+                            console.log(a)
                             accounts.push(a)
                         })
                     })
-                }
-                else{
                     orders = this.getIncomeSummary.bidOrders.filter((o) => {
                         return parseInt(this.filter_produce) === parseInt(o.produce_trader_id)
                     })
+                    var containerr = [];                
                     orders.forEach((order) => {
-                        container = this.bid_order_accounts.filter((o) => {
+                        container = accounts.filter((o) => {
                             return parseInt(order.id) === parseInt(o.bid_order_id)
                         })
+                        container.forEach((a) => {
+                            containerr.push(a)
+                        })
                     })
-                    container.forEach((a) => {
-                        accounts.push(a)
-                    })                  
-                }
-                accounts = accounts.filter((a) => {                    
-                    return new Date(a.created_at).setHours(8,0,0,0) >= new Date(dateFrom).getTime() 
-                    && new Date(a.created_at).setHours(8,0,0,0) <= new Date(dateTo).getTime()
-                })  
-            }           
-            else{
-                if(this.bid_order_accounts){                    
-                    accounts = this.bid_order_accounts.filter((a) => {                          
-                        console.log(new Date(a.created_at).setHours(8,0,0,0) >= new Date(dateFrom).getTime())                                           
+                    accounts = containerr                
+                    accounts = accounts.filter((a) => {
                         return new Date(a.created_at).setHours(8,0,0,0) >= new Date(dateFrom).getTime() 
                         && new Date(a.created_at).setHours(8,0,0,0) <= new Date(dateTo).getTime()
-                    })
-                }               
+                    })                 
+                }
+                else if(this.filter_type != 'None' || this.filter_produce != 'None'){
+                    if(this.filter_type != 'None'){
+                        if(this.filter_type == "Project"){   
+                            console.log(1)             
+                            this.getIncomeSummary.project_bids.forEach((p) => {
+                                ids.push(p.bid_order_id)
+                            })                                
+                        }
+                        else if(this.filter_type == "On Hand"){
+                            this.getIncomeSummary.on_hand_bids.forEach((p) => {
+                                ids.push(p.bid_order_id)
+                            })                                
+                        }
+                        ids.forEach((id) => {                    
+                            container = this.bid_order_accounts.filter((o) => {
+                                return parseInt(id) === parseInt(o.bid_order_id)
+                            })
+                            container.forEach((a) => {
+                                accounts.push(a)
+                            })
+                        })
+                    }
+                    else{
+                        orders = this.getIncomeSummary.bidOrders.filter((o) => {
+                            return parseInt(this.filter_produce) === parseInt(o.produce_trader_id)
+                        })
+                        orders.forEach((order) => {
+                            container = this.bid_order_accounts.filter((o) => {
+                                return parseInt(order.id) === parseInt(o.bid_order_id)
+                            })
+                        })
+                        container.forEach((a) => {
+                            accounts.push(a)
+                        })                  
+                    }
+                    accounts = accounts.filter((a) => {                    
+                        return new Date(a.created_at).setHours(8,0,0,0) >= new Date(dateFrom).getTime() 
+                        && new Date(a.created_at).setHours(8,0,0,0) <= new Date(dateTo).getTime()
+                    })  
+                }           
+                else{
+                    if(this.bid_order_accounts){                    
+                        accounts = this.bid_order_accounts.filter((a) => {       
+                            console.log(format(new Date(a.created_at).setHours(8,0,0,0), 'yyyy-MM-dd') >= format(new Date(dateFrom).getTime(), 'yyyy-MM-dd'))                   
+                            console.log(format(new Date(a.created_at).setHours(8,0,0,0), 'yyyy-MM-dd') <= format(new Date(dateTo).getTime(), 'yyyy-MM-dd'))                                           
+                            return format(new Date(a.created_at).setHours(8,0,0,0), 'yyyy-MM-dd') >= format(new Date(dateFrom).getTime(), 'yyyy-MM-dd') 
+                            && format(new Date(a.created_at).setHours(8,0,0,0), 'yyyy-MM-dd') <= format(new Date(dateTo).getTime(), 'yyyy-MM-dd')
+                        })
+                    }               
+                }
+                console.log(accounts)                 
+                return accounts
+            }         
+            else{
+                return accounts
             }
-            console.log(accounts)                 
-            return accounts            
-        },
-        setGraph(){
-            var yearFrom = this.filter_dateFrom.split('-')[0]
-            console.log(yearFrom)
-            var monthFrom = this.filter_dateFrom.split('-')[1]
-            var dayFrom = this.filter_dateFrom.split('-')[2]
-            var yearTo = this.filter_dateTo.split('-')[0]
-            var monthTo = this.filter_dateTo.split('-')[1]
-            var dayTo = this.filter_dateTo.split('-')[2]
-            var incomeSumm = this.incomeSumm.filter((i) => {
-                var year = i.created_at.split('-')[0]
-                var month = i.created_at.split('-')[1]
-                var day = i.created_at.split('-')[2]
-                var date = new Date(year, parseInt(month)-1, parseInt(day),8,0,0,0)                
-                var dateFrom = new Date(yearFrom, parseInt(monthFrom)-1, parseInt(dayFrom), 8,0,0,0)           
-                var dateTo = new Date(yearTo, parseInt(monthTo)-1, parseInt(dayTo), 8,0,0,0)  
-                return new Date(date).getTime() >= new Date(dateFrom).getTime()
-                && new Date(date).getTime() <= new Date(dateTo).getTime()
-            })
-            this.incomeSumm = incomeSumm
-        },
-
-    },
-    data(){
-        return {
-            filter_dateTo: null,
-            filter_dateFrom: null,
-            filter_type: 'None',
-            filter_produce: 'None',
-            incomeSumm: null,
-            bid_order_accounts: null
-        }
-    },
-    computed: {
-        ...mapGetters(['getIncomeSummary']), 
-        getTotal(){
-            var data = this.filterTable()
-            var initValue = 0;
-            data.forEach((d) => {
-                initValue += parseFloat(d.bid_order_acc_amount)
-            })
-            return initValue
-        }       
+        },       
     },
     watch: {
         'filter_dateFrom'(newVal){
             var year = newVal.split('-')[0]
             var month = newVal.split('-')[1]
             var day = newVal.split('-')[2]
-            var dateSet = new Date(year, parseInt(month), parseInt(day), 8, 0, 0, 0)
+            var dateSet = new Date(year, parseInt(month)-1, parseInt(day), 8, 0, 0, 0)
+            console.log(dateSet)
             year = this.filter_dateTo.split('-')[0]
             month = this.filter_dateTo.split('-')[1]
             day = this.filter_dateTo.split('-')[2]
-            var dateTo = new Date(year, parseInt(month), parseInt(day), 8, 0, 0, 0)
+            var dateTo = new Date(year, parseInt(month)-1, parseInt(day), 8, 0, 0, 0)
+            console.log(dateTo)
             var isDateAfter = isAfter(dateSet, dateTo)
-            var isDateEqual = isEqual(dateSet, dateTo)
-            if(isDateAfter || isDateEqual){
+            // var isDateEqual = isEqual(dateSet, dateTo)
+            if(isDateAfter){
                 this.filter_dateFrom = format(sub(new Date(), {
                     days: 1
                 }), 'yyyy-MM-dd')
                 this.filter_dateTo = format(new Date(), 'yyyy-MM-dd')
             }
-            this.setGraph();                   
+            //this.setGraph();                   
         },
         'filter_dateTo'(newVal){
             var year = newVal.split('-')[0]
             var month = newVal.split('-')[1]
             var day = newVal.split('-')[2]
-            var dateSet = new Date(year, parseInt(month), parseInt(day), 8, 0, 0, 0)
+            var dateSet = new Date(year, parseInt(month)-1, parseInt(day), 8, 0, 0, 0)
+            console.log(dateSet)
             year = this.filter_dateFrom.split('-')[0]
             month = this.filter_dateFrom.split('-')[1]
             day = this.filter_dateFrom.split('-')[2]
-            var dateFrom = new Date(year, parseInt(month), parseInt(day), 8, 0, 0, 0)
+            var dateFrom = new Date(year, parseInt(month)-1, parseInt(day), 8, 0, 0, 0)
+            console.log(dateFrom)
             var isDateBefore = isBefore(dateSet, dateFrom)
-            var isDateEqual = isEqual(dateSet, dateFrom)
-            if(isDateBefore || isDateEqual){
+            // var isDateEqual = isEqual(dateSet, dateFrom)
+            if(isDateBefore){
                 this.filter_dateFrom = format(sub(new Date(), {
                     days: 1
                 }), 'yyyy-MM-dd')
                 this.filter_dateTo = format(new Date(), 'yyyy-MM-dd')
             }     
-            this.setGraph();          
+            //this.setGraph();          
         }
     }
 }

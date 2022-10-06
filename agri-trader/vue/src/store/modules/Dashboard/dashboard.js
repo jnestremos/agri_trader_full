@@ -110,8 +110,11 @@ const mutations = {
             }
             container.push(data)
         })
+        console.log(container)
         incomeSumm = container       
+        console.log(incomeSumm)
         state.income_summary.incomeSumm = incomeSumm
+        console.log(state.income_summary.incomeSumm)
         state.income_summary.bidOrders = data.bidOrders
         state.income_summary.bid_order_accounts = data.bid_order_accounts
         state.income_summary.produce_trader = data.produce_trader
