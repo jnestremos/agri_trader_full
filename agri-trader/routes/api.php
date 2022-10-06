@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\ExpenditureController;
 use App\Http\Controllers\ProjectBidController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmOwnerController;
@@ -321,6 +322,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         
         Route::controller(SupplyInventoryController::class)->prefix('supply/inventory')->group(function (){
             Route::get('/', 'getSupplyInventory');
+        });
+        
+        Route::controller(ExpenditureController::class)->prefix('project/expenditures')->group(function (){
+            Route::get('/{id}', 'getProjectExpenditures');
+            Route::post('/add', 'addProjectExpenditure');
         });
 
         Route::get('/stockIn/history', function (){

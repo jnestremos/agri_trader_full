@@ -55,4 +55,7 @@ class Project extends Model
     public function stock_out(){
         return $this->hasMany(StockOut::class);
     }
+    public function expenditure(){
+        return $this->hasMany(Expenditure::class);
+    }
 }

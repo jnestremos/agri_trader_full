@@ -326,7 +326,7 @@ const routes = [
         component:StockOutHistory
       },
       {
-        path:"/project/otherExpenditures",
+        path:"/project/expenditures/:id",
         name:"OtherExpenditures",
         meta:{needsAuth: true, role: "trader"},
         component:OtherExpenditures
