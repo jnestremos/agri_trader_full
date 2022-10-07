@@ -30,4 +30,7 @@ class FarmOwner extends Model
     {
         return $this->belongsToMany(Trader::class, 'owner_trader', 'farm_owner_id', 'trader_id');
     }
+    public function profit_sharing(){
+        return $this->hasMany(ProfitSharing::class);
+    }
 }

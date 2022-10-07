@@ -50,6 +50,7 @@ import StockOutHistory from "../views/auth/Stock Out/StockOutHistory.vue"
 import StockOut from '../views/auth/Stock Out/StockOut.vue'
 import SupplyInventory from '../views/auth/Supply Inventory/SupplyInventory.vue'
 import OtherExpenditures from '../views/auth/Other Expenditures/OtherExpenditures.vue'
+import InitialProfitSharing from "../views/auth/Profit Sharing/InitialProfitSharing.vue"
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
@@ -330,6 +331,12 @@ const routes = [
         name:"OtherExpenditures",
         meta:{needsAuth: true, role: "trader"},
         component:OtherExpenditures
+      },
+      {
+        path:"/project/profit/sharing/:id",
+        name:"InitialProfitSharing",
+        meta:{needsAuth: true, role: "trader"},
+        component:InitialProfitSharing
       },
     ]
   },

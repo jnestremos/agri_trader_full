@@ -71,7 +71,8 @@ const state = {
     share: null,
     farm_owner: null,
     produce: null,
-    history: null
+    history: null,
+    profit_sharing: null
 
 }
 
@@ -91,6 +92,9 @@ const getters = {
     },
     getProduceOwner(){
         return state.produce
+    },
+    getProfitSharingOwner(){
+        return state.profit_sharing
     },
     getShareOwner(){
         return state.share
@@ -227,6 +231,13 @@ const actions = {
             console.log(res.data)
             commit('setProduceForOwner', res.data)
         })
+    },
+    updateProfitSharingForOwner({ commit }, id){
+        return axiosClient.patch(`/project/profit/sharing/owner/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
     }
 }
 
@@ -239,6 +250,7 @@ const mutations = {
         state.farm_owner = data.farm_owner
         state.produce = data.produce
         state.history = data.history
+        state.profit_sharing = data.profit_sharing
     },
     setAllProjects(state, data){
         if(data.projects.data){
@@ -320,6 +332,9 @@ const mutations = {
         state.produce_info.produce_trader = data.produce_trader
         state.produce_info.contracts = data.contracts
         state.produce_info.projects = data.projects
+    },
+    asd: () => {
+        console.log(1)
     }
 }
 

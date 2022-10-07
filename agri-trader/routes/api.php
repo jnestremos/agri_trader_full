@@ -11,6 +11,7 @@ use App\Http\Controllers\FarmPartnerController;
 use App\Http\Controllers\OnHandBidController;
 use App\Http\Controllers\ProduceController;
 use App\Http\Controllers\ProduceYieldController;
+use App\Http\Controllers\ProfitSharingController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReceivingReportController;
 use App\Http\Controllers\RefundController;
@@ -25,6 +26,7 @@ use App\Models\BidOrder;
 use App\Models\Contract;
 use App\Models\Delivery;
 use App\Models\Distributor;
+use App\Models\Expenditure;
 use App\Models\Farm;
 use App\Models\FarmOwner;
 use App\Models\OnHandBid;
@@ -32,6 +34,7 @@ use App\Models\Produce;
 use App\Models\ProduceInventory;
 use App\Models\ProduceTrader;
 use App\Models\ProduceYield;
+use App\Models\ProfitSharing;
 use App\Models\Project;
 use App\Models\ProjectBid;
 use App\Models\ProjectStatus;
@@ -40,6 +43,7 @@ use App\Models\Sale;
 use App\Models\StockIn;
 use App\Models\StockOut;
 use App\Models\Supplier;
+use App\Models\Supply;
 use App\Models\SupplyInventory;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
@@ -98,7 +102,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'share' => Project::find($id)->contract()->first()->contract_share()->first(),
                 'farm_owner' => Project::find($id)->contract()->first()->farm()->first()->farm_owner()->first(),
                 'produce' => Project::find($id)->contract()->first()->produce()->first(),
-                'history' => DB::table('project_status_history')->where('project_id', $id)->get()                  
+                'history' => DB::table('project_status_history')->where('project_id', $id)->get(),
+                'profit_sharing' => ProfitSharing::where('project_id', $id)->first()               
             ], 200);
         });
 
@@ -277,6 +282,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         });
 
+        Route::prefix('project/profit/sharing/owner')->group(function () {
+            Route::patch('/{id}', [ProfitSharingController::class, 'updateAR']);
+        });
+
     });
 
     Route::group(['middleware' => ['role:trader']], function () {
@@ -400,15 +409,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $supplies = [];                       
             foreach($suppliers as $supplier){                
                 array_push($supplier_ids, $supplier->id);                               
-            }  
-            $suppliers = [];          
-            $inventory = SupplyInventory::whereIn('supplier_id', $supplier_ids)->where('supply_qty', '>', 0)->get();
-            foreach($inventory as $item){
-                if(!in_array($item->supplier()->first(), $suppliers)){
-                    array_push($suppliers, $item->supplier()->first());
-                }
-                array_push($supplies, $item->supply()->first());
             }
+            foreach($suppliers as $supplier){
+                foreach($supplier->supply()->get() as $supply){
+                    array_push($supplies, $supply);
+                }
+            }  
+            // $suppliers = [];          
+            $inventory = SupplyInventory::whereIn('supplier_id', $supplier_ids)->where('supply_qty', '>', 0)->get();
+            // foreach($inventory as $item){
+            //     if(!in_array($item->supplier()->first(), $suppliers)){
+            //         array_push($suppliers, $item->supplier()->first());
+            //     }
+            //     array_push($supplies, $item->supply()->first());
+            // }
             $stockOut = StockOut::where('project_id', $id)->get(); 
             $produces = Produce::groupBy('prod_type')->get();           
 
@@ -422,6 +436,44 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             
         });
         Route::post('/project/stockOut/{id}', [StockOutController::class, 'addStockOut']);
+
+        Route::prefix('project/profit/sharing')->group(function () {
+            Route::get('/{id}', function ($id){
+                $project = Project::find($id);
+                if(!$project){
+                    return response([
+                        'error' => 'Project not found',
+                    ], 400);
+                }
+                $contract = $project->contract()->first();
+                $produce = $contract->produce()->first();
+                $farm_owner = $contract->farm()->first()->farm_owner()->first();
+                $sales = Sale::where('project_id', $id)->get();
+                $stockOut = StockOut::where('project_id', $id)->get();
+                $supplies = [];
+                foreach($stockOut as $stock){
+                    if(!in_array($stock->supply()->first(), $supplies)){
+                        array_push($supplies, $stock->supply()->first());
+                    }
+                }
+                $expenditures = Expenditure::where('project_id', $id)->get();
+                $contract_share = $contract->contract_share()->first();
+                $profit_sharing = $project->profit_sharing()->first();
+                return response([
+                    'project' => $project,
+                    'contract' => $contract,
+                    'sales' => $sales,
+                    'produce' => $produce,
+                    'stockOut' => $stockOut,
+                    'farm_owner' => $farm_owner,
+                    'supplies' => $supplies,
+                    'expenditures' => $expenditures,
+                    'contract_share' => $contract_share,
+                    'profit_sharing' => $profit_sharing,
+                ]);
+            });
+            Route::post('/add', [ProfitSharingController::class, 'createAR']);
+        });
         
 
         Route::get('/dashboard', function(){
@@ -808,7 +860,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 ], 200);   
             });
 
-            Route::get('/{id}', function ($id){                
+            Route::get('/{id}', function ($id){          
+                $stockOut = StockOut::where('project_id', $id)->get();
+                $supply_ids = [];
+                foreach($stockOut as $stock){
+                    if(!in_array($stock->supply_id, $supply_ids)){
+                        array_push($supply_ids, $stock->supply_id);
+                    }
+                }
+                $supplies = Supply::whereIn('id', $supply_ids)->get();
                 return response([
                     'farm' => Project::find($id)->contract()->first()->farm()->first(),
                     'contract' => Project::find($id)->contract()->first(),
@@ -816,7 +876,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'share' => Project::find($id)->contract()->first()->contract_share()->first(),
                     'farm_owner' => Project::find($id)->contract()->first()->farm()->first()->farm_owner()->first(),
                     'produce' => Project::find($id)->contract()->first()->produce()->first(),
-                    'history' => DB::table('project_status_history')->where('project_id', $id)->get()                  
+                    'history' => DB::table('project_status_history')->where('project_id', $id)->get(),
+                    'expenditures' => Expenditure::where('project_id', $id)->get(),
+                    'stockOut' => StockOut::where('project_id', $id)->get(),
+                    'supplies' => $supplies,
+                    'profit_sharing' => ProfitSharing::where('project_id', $id)->first()
                 ], 200);
             });
             

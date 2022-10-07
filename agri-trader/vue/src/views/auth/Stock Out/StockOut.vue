@@ -19,7 +19,7 @@
                   <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                            <select class="form-select" id="supplier_name" @change="setSupplier($event)">
+                            <select class="form-select" :disabled="!(getStockOut.inventory && getStockOut.inventory.length > 0)" id="supplier_name" @change="setSupplier($event)">
                                 <option selected value="None">Select Supplier</option>
                                 <option v-for="(supplier, index) in getStockOut.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option>
                             </select>                    
@@ -87,7 +87,7 @@
                       </div>
                       <div class="btn-group me-3">
                         <b-button variant="secondary" v-b-modal.modal-1 :disabled="!(getStockOut.stockOut && getStockOut.stockOut.length > 0)" class="fw-bold" style="width:200px; height:60px">View All Items Used for Project</b-button>
-                        <b-modal size="xl" scrollable id="modal-1" title="BootstrapVue">
+                        <b-modal size="xl" hide-footer scrollable id="modal-1" :title="`All Supplies used for Project #${$route.params.id}`">
                             <table id="modal-table" style="width:100%">
                                 <thead>
                                     <tr>
@@ -103,9 +103,9 @@
                                 <tbody>
                                     <tr v-for="(item, index) in getStockOut.stockOut" :key="index">
                                         <td>{{ getSupplierName(item) }}</td>
-                                        <td>{{ item.supply_name }}</td>
-                                        <td>{{ item.supply_type }}</td>
-                                        <td>{{ item.supply_for }}</td>
+                                        <td>{{ getSupplyName(item) }}</td>
+                                        <td>{{ getSupplyType(item) }}</td>
+                                        <td>{{ getSupplyFor(item) }}</td>
                                         <td>{{ item.supply_qty }}</td>
                                         <td>{{ item.supply_unit }}</td>
                                         <td>{{ item.created_at.split('T')[0] }}</td>
@@ -232,8 +232,10 @@ export default {
             }
         },
         checkItem(id){
-            var index = this.addedItems_idOrder.indexOf(id)
-            return this.addedItems_check[index]
+            if(this.addedItems_idOrder){
+                var index = this.addedItems_idOrder.indexOf(id)
+                return this.addedItems_check[index]
+            }            
         },
         setSupplier(e){
             this.filter_supplier = e.target.value
@@ -252,6 +254,24 @@ export default {
                 return parseInt(item.supplier_id) === parseInt(s.id)
             })
             return supplierObj[0].supplier_name
+        },
+        getSupplyName(item){
+            var supplyObj = this.getStockOut.supplies.filter((s) => {
+                return parseInt(item.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_name
+        },
+        getSupplyType(item){
+            var supplyObj = this.getStockOut.supplies.filter((s) => {
+                return parseInt(item.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_type
+        },
+        getSupplyFor(item){
+            var supplyObj = this.getStockOut.supplies.filter((s) => {
+                return parseInt(item.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_for
         },
         sendStock(){
             var data = {

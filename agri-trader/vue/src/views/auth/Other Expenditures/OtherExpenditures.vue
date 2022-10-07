@@ -83,7 +83,7 @@
         </form>
       </div>      
       <div :style="[getExpenditures && getExpenditures.length > 9 ? {'overflow-y':'scroll'} : {}, {'width':'65%'}, {'height': '65%'}]" class="pb-5">
-        <h4 align="center" class="mt-3">List of Other Expenditures for Project No.</h4>
+        <h4 align="center" class="mt-3">List of Other Expenditures for Project # {{ $route.params.id }}</h4>
         <table id="OtherExpendituresList" class="table table-striped table-success table-bordered align-middle" style="width:100%;">
               <thead align="center">
                 <tr>                
@@ -100,7 +100,7 @@
                     <td>{{ exp.exp_paymentType }}</td>
                     <td>{{ exp.exp_amount }}</td>
                     <td>{{ exp.exp_remark }}</td>
-                    <td>{{ exp.created_at.split('T')[0] }}</td>
+                    <td>{{ exp.exp_dateFrom + ' ' + exp.exp_dateTo }}</td>
                   </tr>                          
               </tbody>
           </table>

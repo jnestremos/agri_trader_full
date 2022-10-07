@@ -35,4 +35,7 @@ class Farm extends Model
     {
         return $this->hasOne(Contract::class);
     }
+    public function profit_sharing(){
+        return $this->hasMany(ProfitSharing::class);
+    }
 }

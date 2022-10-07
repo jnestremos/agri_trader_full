@@ -154,9 +154,40 @@
             <div class="row w-100 m-0"></div> 
             <div class="row w-100 m-0"></div> 
             <div v-if="getProjectOwner">
-              <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%;" v-if="getProjectOwner.project_status_id == 2">
-                <input type="button" value="Profit Sharing" class="btn btn-primary me-3">                                                                            
-                <input type="button" value="Harvest" class="btn btn-primary">                                                                            
+              <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%;" v-if="getProjectOwner.project_status_id == 2">                
+                <input type="button" value="Harvest" class="btn btn-primary me-3">                                                                            
+                <input type="button" v-b-modal.modal-1 v-if="getProfitSharingOwner" value="View Profit Sharing" class="btn btn-primary">
+                <b-modal size="lg" id="modal-1" :title="`Profit Sharing for Project #${$route.params.id}`">
+                  <div class="w-100 h-100">
+                    <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Payment Method Used:</h5>
+                        <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_paymentMethod }}</h5>
+                    </div>
+                    <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Account Name:</h5>
+                        <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_accName }}</h5>
+                    </div>
+                    <div v-if="getProfitSharingOwner && getProfitSharingOwner.ar_paymentMethod == 'Bank'" class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Bank Name:</h5>
+                        <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_bankName }}</h5>
+                    </div>
+                    <div v-if="getProfitSharingOwner && getProfitSharingOwner.ar_paymentMethod == 'Bank'" class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Account #:</h5>
+                        <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_accNum }}</h5>
+                    </div>
+                    <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Amount:</h5>
+                        <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_ownerShare.toFixed(2) }}</h5>
+                    </div>
+                    <div class="d-flex align-items-baseline" style="width:60%;">
+                        <h5 class="me-3">Date Paid:</h5>
+                        <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_datePaid }}</h5>
+                    </div>
+                  </div>
+                  <template #modal-footer="{ ok }">
+                    <b-button size="md" variant="primary" @click="ok()" id="okButton">Confirm</b-button>
+                  </template>
+                </b-modal>
               </div>
               <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%;" v-else>                                                  
                 <input type="submit" value="Update Project" class="btn btn-primary">                                      
@@ -293,7 +324,7 @@
         },
       },
       methods: {
-          ...mapActions(['readyApp', 'fetchProjectOwner', 'updateProjectOwner']),        
+          ...mapActions(['readyApp', 'fetchProjectOwner', 'updateProjectOwner', 'updateProfitSharingForOwner']),        
           setStatus(e){
             console.log(e.target.value)
             this.data.project_status_id = parseInt(e.target.value)
@@ -353,11 +384,32 @@
           'getProduceOwner',
           'getFarmOwner',
           'getShareOwner',
-          'getHistoryOwner'
+          'getHistoryOwner',
+          'getProfitSharingOwner'
           ]),      
           getRole(){
             return auth.state.user.role
           }
+      },
+      mounted(){
+        this.$root.$on('bv::modal::hide', (bvEvent) => {      
+          if(bvEvent.trigger == 'ok'){        
+            this.updateProfitSharingForOwner(this.$route.params.id)
+            .then(() => {
+              this.$toastr.s('Acknowledgment Report Confirmed!')
+              setTimeout(() => {
+                this.$router.push({ name: 'ProjectsOwner' })
+              }, 5000)
+            })
+            .catch((err) => {
+              console.log(err)
+              var errors = err.response.data.errors
+              for(var error in errors){
+                  this.$toastr.e(errors[error][0])
+              } 
+            })
+          }                 
+        })
       },
       data(){
         return {

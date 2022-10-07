@@ -16,6 +16,10 @@ const state = {
     },
     farm: null,
     history: null,
+    expenditures: null,
+    profit_sharing: null,
+    stockOut: null,
+    supplies: null,
     share: null,
     farm_owner: null,
     produce: null,
@@ -35,6 +39,18 @@ const state = {
 const getters = {
     getProjects(){
         return state.project_data.projects
+    },
+    getExpenditureForProject(){
+        return state.expenditures
+    },
+    getStockOutForProject(){
+        return state.stockOut
+    },
+    getProfitSharingForProject(){
+        return state.profit_sharing
+    },
+    getSuppliesForProject(){
+        return state.supplies
     },
     getProjectData(){
         return state.project_data
@@ -194,6 +210,10 @@ const mutations = {
         state.farm_owner = data.farm_owner
         state.produce = data.produce
         state.history = data.history
+        state.expenditures = data.expenditures
+        state.stockOut = data.stockOut
+        state.supplies = data.supplies
+        state.profit_sharing = data.profit_sharing
     }
 }
 

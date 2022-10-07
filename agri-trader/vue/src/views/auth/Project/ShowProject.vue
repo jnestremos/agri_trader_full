@@ -4,7 +4,7 @@
         <h3>About Project</h3>        
     </div>           
     <form action="" @submit.prevent="sendProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">         
-      <div class="row px-5 w-100 m-0" style="height:30%;">
+      <div class="row px-4 w-100 m-0" style="height:30%;">
         <div class="col-6 p-0 d-flex flex-column justify-content-evenly">
           <div class="d-flex align-items-baseline">
             <p>Project #: {{ $route.params.id }}</p>          
@@ -17,8 +17,11 @@
           </div>
           <div class="d-flex align-items-baseline">            
             <p v-if="getContract">Estimated Sales: {{ getContract.contract_estimatedSales.toFixed(2) }} </p>
-          </div>
+          </div>          
           <div></div>
+          <div v-if="(getStockOutForProject && getStockOutForProject.length > 0) && (getExpenditureForProject && getExpenditureForProject.length > 0)" class="d-flex align-items-baseline">            
+            <p v-if="getContract">Total Expenses: {{ getTotalExpense }} </p>
+          </div>
           <div></div>
         </div>
         <div class="col-6 p-0 d-flex flex-column justify-content-evenly">
@@ -37,7 +40,7 @@
           </div>
         </div>
       </div>
-      <div class="row px-5 w-100 m-0" style="height:70%;">
+      <div class="row px-4 w-100 m-0" style="height:70%;">
         <div class="col-9 p-0 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
             <div class="col-4 p-0 d-flex align-items-baseline">
@@ -104,7 +107,7 @@
           </div> 
           <div class="row w-100 m-0">
             <div class="col-4 p-0">
-              <button type="button" :class="[!edit ? 'btn btn-primary' : 'btn btn-success' ]"  @click="edit = !edit">{{ !edit ? "Edit Staging Dates" : "Save Staging Dates" }}</button>
+              
             </div>            
           </div>         
         </div>  
@@ -148,12 +151,12 @@
           <div class="row w-100 m-0"></div> 
           <div class="row w-100 m-0"></div> 
           <div v-if="getProject">
-            <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%; width:40vw;" v-if="getProject.project_status_id == 2">
-              <input type="button" value="Profit Sharing" class="btn btn-primary">                        
-              <input type="button" value="Harvest" class="btn btn-primary">                        
-              <input type="submit" value="Update Project" class="btn btn-primary">                        
+            <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:3%; right:7%; width:40vw;" v-if="getProject.project_status_id == 2">
+              <input type="button" value="Add Expenditures" class="btn btn-primary" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">                        
+              <input type="button" value="Add Supplies to Project" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
               <input type="button" value="Upload Image" class="btn btn-primary">                        
-              <input type="button" value="Add Supplies to Project" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">                        
+              <input type="button" value="Harvest" class="btn btn-primary" @click="$router.push({ path: `/harvest/${$route.params.id}` })">                        
+              <input type="button" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary">                                                                  
             </div>
             <!-- <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>                                                  
               <input type="submit" value="Update Project" class="btn btn-primary">                                      
@@ -289,7 +292,7 @@ export default {
       },
     },
     methods: {
-        ...mapActions(['readyApp', 'fetchProject', 'updateProject']),
+        ...mapActions(['readyApp', 'fetchProject', 'updateProject', 'initStatusForProfit']),
         setStatus(e){
           console.log(e.target.value)
           this.data.project_status_id = parseInt(e.target.value)
@@ -339,7 +342,11 @@ export default {
               this.$toastr.e(this.errors.toString())
             }           
           })          
-        },        
+        }, 
+        seeProfitSharing(){
+          this.initStatusForProfit(this.data.project_status_id)
+          this.$router.push({ path: `/project/profit/sharing/${this.$route.params.id}` })
+        }        
     },
     computed: {
       ...mapGetters([
@@ -349,8 +356,32 @@ export default {
         'getProduce',
         'getOwner',
         'getShare',
-        'getHistory'
-        ]),      
+        'getHistory',
+        'getExpenditureForProject',
+        'getStockOutForProject',
+        'getSuppliesForProject',
+        'getProfitSharingForProject'
+        ]),
+        getTotalExpense(){
+          var supplyTotalValue = 0
+          var expTotalValue = 0      
+          var supplyObj = null
+          if(this.getExpenditureForProject && this.getStockOutForProject){
+            this.getStockOutForProject.forEach((s) => {
+              supplyObj = this.getSuppliesForProject.filter((ss) => {
+                return parseInt(s.supply_id) === parseInt(ss.id)
+              })
+              supplyTotalValue += parseFloat(supplyObj[0].supply_initialPrice) * parseInt(s.supply_qty)
+            })
+            var expAmounts = [];
+            this.getExpenditureForProject.forEach((e) => {
+              expAmounts.push(e.exp_amount)
+            })              
+            expTotalValue = expAmounts.reduce((a, b) => a + b, 0)                      
+          }         
+          return parseFloat(expTotalValue + supplyTotalValue).toFixed(2)
+        },
+        
     },
     data(){
       return {

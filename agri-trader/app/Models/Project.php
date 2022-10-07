@@ -58,4 +58,7 @@ class Project extends Model
     public function expenditure(){
         return $this->hasMany(Expenditure::class);
     }
+    public function profit_sharing(){
+        return $this->hasOne(ProfitSharing::class);
+    }
 }

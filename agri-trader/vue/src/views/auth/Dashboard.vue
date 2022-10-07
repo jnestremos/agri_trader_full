@@ -10,7 +10,7 @@
         <div class="col-6">
           <h5>Total Sales</h5>
           <div style="height:300px; background-color:greenyellow; border-radius:20px;" class="px-3 pb-3">
-            <TotalSalesGraph style="height:100%; width:100%;" v-if="getTotalSales" :chartData="getTotalSales" label="Total Sales"/>
+            <TotalSalesGraph style="height:100%; width:100%;" v-if="getTotalSales && getTotalSales.length > 0" :chartData="getTotalSales" label="Total Sales"/>
           </div>
         </div>
         <!-- <div class="col-4">
