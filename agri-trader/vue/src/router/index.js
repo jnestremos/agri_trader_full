@@ -52,6 +52,7 @@ import SupplyInventory from '../views/auth/Supply Inventory/SupplyInventory.vue'
 import OtherExpenditures from '../views/auth/Other Expenditures/OtherExpenditures.vue'
 import InitialProfitSharing from "../views/auth/Profit Sharing/InitialProfitSharing.vue"
 import IncomeSummary from '../views/auth/Reports/IncomeSummary.vue'
+import OtherExpendituresReport from '../views/auth/Reports/OtherExpendituresReport.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -337,6 +338,12 @@ const routes = [
         name:"InitialProfitSharing",
         meta:{needsAuth: true, role: "trader"},
         component:InitialProfitSharing
+      },
+      {
+        path:"/reports/otherExpenditures",
+        name:"OtherExpendituresReport",
+        meta:{needsAuth: true, role: "trader"},
+        component:OtherExpendituresReport
       },
     ]
   },
