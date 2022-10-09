@@ -479,6 +479,86 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
 
         Route::post('/refund/all/orders/{id}', [ProfitSharingController::class, 'refundAllOrders']);
+
+        Route::get('/reports/otherExpenditures', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $contracts = Contract::where('trader_id', $user->id)->get();
+            $projects = [];
+            foreach($contracts as $contract){
+                array_push($projects, $contract->project()->first());
+            }       
+            $expenditures = [];
+            foreach($projects as $project){                
+                foreach($project->expenditure()->get() as $expenditure){
+                    array_push($expenditures, $expenditure);
+                }
+            }
+            return response([
+                'expenditures' => $expenditures,
+                'contracts' => $contracts,
+                'projects' => $projects,
+            ]);
+        });
+        Route::get('/reports/supplyExpenditures', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $contracts = Contract::where('trader_id', $user->id)->get();
+            $projects = [];
+            foreach($contracts as $contract){
+                array_push($projects, $contract->project()->first());
+            }       
+            $stockOut = [];
+            $suppliers = [];
+            $supplies = [];
+            foreach($projects as $project){                
+                foreach($project->stock_out()->get() as $stock){
+                    array_push($stockOut, $stock);
+                    if(!in_array($stock->supplier()->first(), $suppliers)){
+                        array_push($suppliers, $stock->supplier()->first());
+                    }
+                    if(!in_array($stock->supply()->first(), $supplies)){
+                        array_push($supplies, $stock->supply()->first());
+                    }
+                }
+            }
+            return response([
+                'stockOut' => $stockOut,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                'contracts' => $contracts,
+                'projects' => $projects,
+            ]);
+        });
+
+        Route::get('/reports/profitSharing', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $contracts = Contract::where('trader_id', $user->id)->get();
+            $projects = [];
+            $farms = [];
+            $farm_owners = [];
+            $produces = [];
+            foreach($contracts as $contract){
+                array_push($projects, $contract->project()->first());
+                if(!in_array($contract->farm()->first(), $farms)){
+                    array_push($farms, $contract->farm()->first());
+                    array_push($farm_owners, $contract->farm()->first()->farm_owner()->first());
+                }
+                if(!in_array($contract->produce()->first(), $farms)){
+                    array_push($produces, $contract->produce()->first());
+                }
+            }       
+            $profit_sharing = [];           
+            foreach($projects as $project){                
+                array_push($profit_sharing, $project->profit_sharing()->first());
+            }
+            return response([
+                'profit_sharing' => $profit_sharing,                
+                'farms' => $farms,                
+                'farm_owners' => $farm_owners,                
+                'produces' => $produces,                
+                'contracts' => $contracts,
+                'projects' => $projects,
+            ]);
+        });
         
 
         Route::get('/dashboard', function(){

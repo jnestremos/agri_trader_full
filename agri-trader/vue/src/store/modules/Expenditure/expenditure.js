@@ -3,7 +3,12 @@ import axiosClient from "../../../axios";
 
 const state = {
     expenditures: null,
-    project_commenceDate: null
+    project_commenceDate: null,
+    expenditure_report: {
+        expenditures: null,
+        contracts: null,
+        projects: null,
+    }
 }
 
 const getters = {
@@ -12,6 +17,9 @@ const getters = {
     },
     getProjectCommenceDate(){
         return state.project_commenceDate
+    },
+    getExpenditureReport(){
+        return state.expenditure_report
     }
 }
 
@@ -29,6 +37,13 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    fetchExpenditureReport({ commit }){
+        return axiosClient.get(`/reports/otherExpenditures`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setExpenditureReport', res.data)
+        })
     }
 }
 
@@ -39,6 +54,11 @@ const mutations = {
     },
     asd: () => {
         console.log(1)
+    },
+    setExpenditureReport: (state, data) => {
+        state.expenditure_report.expenditures = data.expenditures
+        state.expenditure_report.contracts = data.contracts
+        state.expenditure_report.projects = data.projects
     }
 }
 

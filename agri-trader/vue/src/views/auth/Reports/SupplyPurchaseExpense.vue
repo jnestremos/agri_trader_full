@@ -10,9 +10,7 @@
                   <label class="form-label me-4 fw-bold">Project</label>
                   <select class="form-select">
                       <option value="None">Select Project</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
+                      <option v-for="(id, index) in filterProjectIDS" :key="index" :value="id">{{ getProjectName(id) }}</option>                      
                   </select>
               </div>
           </div>
@@ -21,14 +19,26 @@
                   <thead align="center">
                       <tr>
                           <th scope="col">Project No.</th>
-                          <th scope="col">Purchase Order No.</th>
+                          <th scope="col">Project Name</th>
                           <th scope="col">Supplier Name</th>
-                          <th scope="col">Payment Date</th>
-                          <th scope="col">Amount</th>
+                          <th scope="col">Supply Name</th>
+                          <th scope="col">Price</th>
+                          <th scope="col">Qty Used</th>
+                          <th scope="col">Date Used</th>
+                          <th scope="col">Subtotal</th>
                       </tr>
                   </thead>
                   <tbody align="center">
-                                                                                              
+                    <tr v-for="(stock, index) in filterTable" :key="index">
+                        <td>{{ stock.project_id }}</td>
+                        <td>{{ getProjectName(stock) }}</td>
+                        <td>{{ getSupplierName(stock) }}</td>
+                        <td>{{ getSupplyName(stock) }}</td>
+                        <td>{{ getPrice(stock) }}</td>
+                        <td>{{ stock.supply_qty }}</td>
+                        <td>{{ stock.created_at.split('T')[0] }}</td>
+                        <td>{{ getAmount(stock) }}</td>
+                    </tr>                                                                                 
                   </tbody>
               </table>
             </div>
@@ -38,14 +48,94 @@
   </template>
   
   <script>
-  import { mapActions } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
   export default {
       name: "SupplyPurchaseExpenseReport",
       created() {
-          this.readyApp()
+        this.fetchStockOutReport()
+        .then(() => {
+            this.readyApp()
+        })        
+      },
+      data(){
+        return {
+            filter_project: 'None'
+        }
       },
       methods: {
-          ...mapActions(['readyApp'])
+          ...mapActions(['readyApp', 'fetchStockOutReport']),
+          getProjectName(stock){
+            var projectObj = null
+            if(typeof(stock) == 'object'){
+                projectObj = this.getStockOutReport.projects.filter((p) => {
+                    return parseInt(stock.project_id) === parseInt(p.id)
+                })
+            }
+            else{
+                projectObj = this.getStockOutReport.projects.filter((p) => {
+                    return parseInt(stock) === parseInt(p.id)
+                })
+            }
+            var contractObj = this.getStockOutReport.contracts.filter((c) => {
+                return parseInt(projectObj[0].contract_id) === parseInt(c.id)
+            })
+            return contractObj[0].farm_name + ' Project'
+        },
+        setProjectID(e){
+            this.filter_project = e.target.value
+        },
+        getSupplierName(stock){
+            var supplierObj = this.getStockOutReport.suppliers.filter((s) => {
+                return parseInt(stock.supplier_id) === parseInt(s.id)
+            })
+            return supplierObj[0].supplier_name
+        },
+        getSupplyName(stock){
+            var supplyObj = this.getStockOutReport.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_name
+        },
+        getPrice(stock){
+            var supplyObj = this.getStockOutReport.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return parseInt(supplyObj[0].supply_initialPrice).toFixed(2)
+        },
+        getAmount(stock){
+            var supplyObj = this.getStockOutReport.supplies.filter((s) => {
+                return parseInt(stock.supply_id) === parseInt(s.id)
+            })
+            return parseFloat(supplyObj[0].supply_initialPrice * stock.supply_qty).toFixed(2)
+        }
+      },
+      computed: {
+        ...mapGetters(['getStockOutReport']),
+        filterProjectIDS(){
+            var ids = new Set();
+            var arr = []
+            if(this.getStockOutReport.stockOut){
+                this.getStockOutReport.stockOut.forEach((e) => {
+                    ids.add(e.project_id)
+                })
+                ids.forEach((id) => {
+                    arr.push(id)
+                })
+            }
+            return arr
+        },
+        filterTable(){
+            var table = [];
+            if(this.filter_project != 'None'){
+                table = this.getStockOutReport.stockOut.filter((s) => {
+                    return parseInt(this.filter_project) === parseInt(s.project_id)
+                })
+                return table
+            }
+            else{
+                return this.getStockOutReport.stockOut
+            }
+        }
       }
   }
   </script>

@@ -13,6 +13,13 @@ const state = {
         suppliers: null,
         stockOut: null,
         produces: null,
+    },
+    stockOut_report: {
+        stockOut: null,
+        suppliers: null,
+        supplies: null,
+        contracts: null,
+        projects: null,
     }
 }
 
@@ -23,6 +30,9 @@ const getters = {
     getStockOut(){
         return state.stockOut
     },
+    getStockOutReport(){
+        return state.stockOut_report
+    }
 }
 
 const actions = {
@@ -46,6 +56,13 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    fetchStockOutReport({ commit }){
+        return axiosClient.get(`/reports/supplyExpenditures`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setStockOutReport', res.data)
+        })
     }
 }
 
@@ -65,6 +82,13 @@ const mutations = {
     },
     asd: () => {
         console.log(1)
+    },
+    setStockOutReport: (state, data) => {
+        state.stockOut_report.stockOut = data.stockOut
+        state.stockOut_report.supplies = data.supplies
+        state.stockOut_report.suppliers = data.suppliers
+        state.stockOut_report.projects = data.projects
+        state.stockOut_report.contracts = data.contracts
     }
 }
 
