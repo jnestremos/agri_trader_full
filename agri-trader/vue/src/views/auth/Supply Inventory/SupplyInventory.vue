@@ -61,6 +61,9 @@
                 <router-link to="/supplyInventory/stockInHistory"> <b-button variant="info" style="width:200px; height:60px" class="me-3">Stock In History</b-button> </router-link>
                 <router-link to="/supplyInventory/stockOutHistory"> <b-button variant="info" style="width:200px; height:60px">Stock Out History</b-button> </router-link>
             </div>
+            <div class="btn-group me-3">
+                <router-link to="/supply/list"> <button class="btn btn-success" style="width:220px; height: 60px;"> See list of supply profiles </button> </router-link>
+            </div>
         </div>
         </div>
     </div>
