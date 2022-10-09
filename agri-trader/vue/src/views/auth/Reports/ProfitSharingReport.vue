@@ -164,26 +164,28 @@ import { format, sub, add } from 'date-fns';
         ...mapGetters(['getProfitSharingReport']),
         filteredTable(){
             var table = [];
-            table = this.getProfitSharingReport.profit_sharing.filter((p) => {
-                return format(new Date(p.created_at), 'yyyy-MM-dd') >= format(new Date(this.filter_dateFrom), 'yyyy-MM-dd')
-                && format(new Date(p.created_at), 'yyyy-MM-dd') <= format(new Date(this.filter_dateTo), 'yyyy-MM-dd')
-            })
-            if(this.filter_farm != 'None' && this.filter_produce != 'None'){
-                table = table.filter((pp) => {
-                    return parseInt(this.filter_farm) === parseInt(pp.farm_id) 
-                    && parseInt(this.filter_produce) === parseInt(pp.produce_id)
+            if(this.getProfitSharingReport.profit_sharing){
+                table = this.getProfitSharingReport.profit_sharing.filter((p) => {
+                    return format(new Date(p.created_at), 'yyyy-MM-dd') >= format(new Date(this.filter_dateFrom), 'yyyy-MM-dd')
+                    && format(new Date(p.created_at), 'yyyy-MM-dd') <= format(new Date(this.filter_dateTo), 'yyyy-MM-dd')
                 })
-            }
-            else if(this.filter_farm == 'None' && this.filter_produce != 'None'){
-                table = table.filter((pp) => {
-                    return parseInt(this.filter_produce) === parseInt(pp.produce_id)
-                })
-            }
-            else if(this.filter_farm != 'None' && this.filter_produce == 'None'){
-                table = table.filter((pp) => {
-                    return parseInt(this.filter_farm) === parseInt(pp.farm_id)                     
-                })
-            }           
+                if(this.filter_farm != 'None' && this.filter_produce != 'None'){
+                    table = table.filter((pp) => {
+                        return parseInt(this.filter_farm) === parseInt(pp.farm_id) 
+                        && parseInt(this.filter_produce) === parseInt(pp.produce_id)
+                    })
+                }
+                else if(this.filter_farm == 'None' && this.filter_produce != 'None'){
+                    table = table.filter((pp) => {
+                        return parseInt(this.filter_produce) === parseInt(pp.produce_id)
+                    })
+                }
+                else if(this.filter_farm != 'None' && this.filter_produce == 'None'){
+                    table = table.filter((pp) => {
+                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)                     
+                    })
+                }
+            }                       
             return table
         }
       },
