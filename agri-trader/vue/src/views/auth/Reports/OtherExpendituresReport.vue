@@ -24,6 +24,10 @@
                     <option value="Maintenance">Maintenance</option>
                 </select>
             </div>
+            <div class="col-lg-3 me-3">
+                <label class="form-label me-4 fw-bold">Total</label>
+                <input type="number" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
+            </div>
         </div>        
         <div class="container-fluid m-0 p-0" :style="[filterTable && filterTable.length > 6 ? {'overflow-y':'scroll'} : {}, {'width':'100%'}, {'height':'40vh'}]">
             <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
@@ -134,6 +138,17 @@ export default {
             else{
                 return this.getExpenditureReport.expenditures
             }
+        },
+        getTotal(){
+            var amounts = [];
+            if(this.filterTable){
+                this.filterTable.forEach((e) => [
+                    amounts.push(e.exp_amount)
+                ])
+                var total = amounts.reduce((a, b) => a + b, 0)
+            }
+
+            return total ? total.toFixed(2) : null
         }
     }
 }

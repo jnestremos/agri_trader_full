@@ -13,6 +13,10 @@
                       <option v-for="(id, index) in filterProjectIDS" :key="index" :value="id">{{ getProjectName(id) }}</option>                      
                   </select>
               </div>
+              <div class="col-lg-3 me-3">
+                  <label class="form-label me-4 fw-bold">Total</label>
+                  <input type="number" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
+              </div>
           </div>
           <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
@@ -37,7 +41,7 @@
                         <td>{{ getPrice(stock) }}</td>
                         <td>{{ stock.supply_qty }}</td>
                         <td>{{ stock.created_at.split('T')[0] }}</td>
-                        <td>{{ getAmount(stock) }}</td>
+                        <td class="amount">{{ getAmount(stock) }}</td>
                     </tr>                                                                                 
                   </tbody>
               </table>
@@ -59,7 +63,19 @@
       },
       data(){
         return {
-            filter_project: 'None'
+            filter_project: 'None',
+            total_arr: []
+        }
+      },
+      watch:{
+        'filterTable'(newVal){
+            this.total_arr = []
+            newVal.forEach((v) => {
+                var supplyObj = this.getStockOutReport.supplies.filter((s) => {
+                    return parseInt(v.supply_id) === parseInt(s.id)
+                })
+                this.total_arr.push(supplyObj[0].supply_initialPrice * v.supply_qty)
+            })
         }
       },
       methods: {
@@ -135,7 +151,11 @@
             else{
                 return this.getStockOutReport.stockOut
             }
-        }
+        },  
+        getTotal(){
+            return this.total_arr.reduce((a, b) => a + b, 0) 
+            ? parseFloat(this.total_arr.reduce((a, b) => a + b, 0)).toFixed(2) : null
+        }      
       }
   }
   </script>
