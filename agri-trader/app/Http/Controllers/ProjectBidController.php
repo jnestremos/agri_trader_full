@@ -242,14 +242,23 @@ class ProjectBidController extends Controller
                 $dateHarvest->hour = 0;
                 $dateHarvest->minute = 0;
                 $dateHarvest->second = 0;
-                if($dateRefundPlaced->greaterThanOrEqualTo($dateHarvest)){
+                if($dateRefundPlaced->greaterThanOrEqualTo($dateHarvest)){                    
                     $refund->update([
                         'refund_amount' => null
+                    ]);                    
+                }               
+                if($bidOrder->project()->first()->project_status_id == 5){
+                    $bidOrder->refund()->delete();
+                    $bidOrder->update([
+                        'bid_order_status_id' => 4
                     ]);
                 }
-                $bidOrder->update([
-                    'bid_order_status_id' => 7
-                ]);                
+                else{
+                    $bidOrder->update([
+                        'bid_order_status_id' => 7
+                    ]);
+                }
+                
                 return response([
                     'message' => "Refund Denied!"
                 ]);

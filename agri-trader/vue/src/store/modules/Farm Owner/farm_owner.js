@@ -72,7 +72,8 @@ const state = {
     farm_owner: null,
     produce: null,
     history: null,
-    profit_sharing: null
+    profit_sharing: null,
+    produce_yield: null
 
 }
 
@@ -98,6 +99,9 @@ const getters = {
     },
     getShareOwner(){
         return state.share
+    },
+    getProduceYieldOwner(){
+        return state.produce_yield
     },
     getHistoryOwner(){
         return state.history
@@ -238,6 +242,13 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    deleteProfitSharingForOwner({ commit }, id){
+        return axiosClient.delete(`/project/profit/sharing/owner/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
     }
 }
 
@@ -251,6 +262,7 @@ const mutations = {
         state.produce = data.produce
         state.history = data.history
         state.profit_sharing = data.profit_sharing
+        state.produce_yield = data.produce_yield
     },
     setAllProjects(state, data){
         if(data.projects.data){

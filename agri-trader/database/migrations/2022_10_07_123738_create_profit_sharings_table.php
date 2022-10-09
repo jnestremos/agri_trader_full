@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('ar_bankName')->nullable();
             $table->date('ar_datePaid');
             $table->date('ar_approvedOn')->nullable();
-            $table->date('ar_remark')->nullable();
+            $table->string('ar_remark')->nullable();
             $table->timestamps();
         });
     }

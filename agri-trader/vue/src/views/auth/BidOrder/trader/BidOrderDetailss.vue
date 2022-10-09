@@ -14,7 +14,7 @@
         </div>        
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-2">
             <h5 v-if="getOrder.distributor">Dist #: {{ getOrder.distributor_contactNum[0].distributor_contactNum }}</h5>        
-            <h5 v-if="getOrder.project || getOrder.produce_yield">{{ getOrder.produce_yield ? 'Last Date of Harvest:' : 'Expected Date of Harvest:' }} {{ getOrder.project_bid ? getProgressDate : getOrder.produce_yield.produce_yield_dateHarvestTo }}</h5>
+            <h5 v-if="getOrder.project || getOrder.produce_yield">{{ getOrder.produce_yield ? 'Last Date of Harvest:' : 'Expected Date of Harvest:' }} {{ getOrder.produce_yield ? getOrder.produce_yield.produce_yield_dateHarvestTo : getProgressDate }}</h5>
         </div>        
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-2">
             <h5 v-if="getOrder.bidOrder">Order Placed: {{ getOrder.bidOrder.created_at.split('T')[0] }}</h5>        

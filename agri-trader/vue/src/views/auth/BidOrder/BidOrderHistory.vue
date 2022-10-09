@@ -512,7 +512,7 @@ export default {
             return parseInt(order.id) === parseInt(o.bid_order_id)
           })            
           if(projectBidObj[0]){
-            return projectBidObj[0].project_bid_total.split('-')[1]
+            return parseFloat(projectBidObj[0].project_bid_total).toFixed(2)
           } 
           if(onHandBidObj[0]){
             return onHandBidObj[0].on_hand_bid_total.toFixed(2)

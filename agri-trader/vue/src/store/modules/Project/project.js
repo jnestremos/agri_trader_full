@@ -18,6 +18,9 @@ const state = {
     history: null,
     expenditures: null,
     profit_sharing: null,
+    refunds: null,
+    produce_yields: null,
+    produce_inventory: null,
     stockOut: null,
     supplies: null,
     share: null,
@@ -48,6 +51,15 @@ const getters = {
     },
     getProfitSharingForProject(){
         return state.profit_sharing
+    },
+    getRefundForProject(){
+        return state.refunds
+    },
+    getInventoryForProject(){
+        return state.produce_inventory
+    },
+    getYieldForProject(){
+        return state.produce_yields
     },
     getSuppliesForProject(){
         return state.supplies
@@ -162,6 +174,13 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    refundAllOrders({ commit }, data){
+        return axiosClient.post(`/refund/all/orders/${data.id}`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
     }   
 }
 
@@ -214,6 +233,9 @@ const mutations = {
         state.stockOut = data.stockOut
         state.supplies = data.supplies
         state.profit_sharing = data.profit_sharing
+        state.refunds = data.refunds
+        state.produce_inventory = data.produce_inventory
+        state.produce_yields = data.produce_yields
     }
 }
 

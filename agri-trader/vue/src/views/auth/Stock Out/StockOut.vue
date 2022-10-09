@@ -13,7 +13,7 @@
                       </div>
                       <div class="col-lg-3 me-3">
                           <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Project ID:</label>
-                          <input type="text" name="stockIn_Date" id="" class="form-control" placeholder="022654" disabled>
+                          <input type="text" name="stockIn_Date" id="" class="form-control" placeholder="022654" :value="$route.params.id" disabled>
                       </div>
                   </div>
                   <div class="form-row mt-3">
@@ -119,7 +119,7 @@
           </div>
           <!-- width:90%; margin:0 auto; height:100%; overflow-y: scroll; -->
           <div style="width:50%; height:65%" class="pb-5">
-            <h4 align="center" class="mt-3">Supplies Added for Project No.</h4>
+            <h4 align="center" class="mt-3">Supplies Added for Project No. {{ $route.params.id }}</h4>
             <div :style="[getAddedItemsTable && getAddedItemsTable.length > 9 ? {'overflow-y': 'scroll'} : {}, {'width':'90%'}, {'margin':'0 auto'}, {'height': '100%'}]">                
                 <table id="supplySelect" class="table table-striped table-success table-bordered align-middle" style="width:100%;">
                     <thead align="center">

@@ -116,7 +116,7 @@
                     <option v-if="getProjectOwner.project_status_id == 1" value="2" selected>Approved</option>
                     <option v-if="getProjectOwner.project_status_id == 1" value="3">Cancelled</option>                                                                           
                 </select>
-                <h4 class="me-3" v-else>{{ getProjectOwner && getProjectOwner.project_status_id == 2 ? 'Currently Active' : 'Inactive' }}</h4>
+                <h4 class="me-3" v-else>{{ getProjectOwner && getProjectOwner.project_status_id == 2 ? 'Currently Active' : getProjectOwner && getProjectOwner.project_status_id == 1 ? 'Pending' : getProjectOwner && getProjectOwner.project_status_id == 4 ? 'Completed' : 'Cancelled/Failed' }}</h4>
               </div>
               <!-- <div v-else class="col-12 p-0 d-flex align-items-baseline">
                 <label for="project_status_id" class="form-label me-4">Project Status:</label>
@@ -154,10 +154,10 @@
             <div class="row w-100 m-0"></div> 
             <div class="row w-100 m-0"></div> 
             <div v-if="getProjectOwner">
-              <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%;" v-if="getProjectOwner.project_status_id == 2">                
-                <input type="button" value="Harvest" class="btn btn-primary me-3">                                                                            
+              <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%;" v-if="getProjectOwner.project_status_id == 2 || getProjectOwner.project_status_id == 4 || getProjectOwner.project_status_id == 5">                
+                <input type="button" v-if="getProduceYieldOwner && getProduceYieldOwner.length > 0" v-b-modal.modal-2 value="Harvest" class="btn btn-primary me-3">                                                                            
                 <input type="button" v-b-modal.modal-1 v-if="getProfitSharingOwner" value="View Profit Sharing" class="btn btn-primary">
-                <b-modal size="lg" id="modal-1" :title="`Profit Sharing for Project #${$route.params.id}`">
+                <b-modal size="lg" :hide-footer="getProjectOwner && getProjectOwner.project_completionDate != null" id="modal-1" :title="`Profit Sharing for Project #${$route.params.id}`">
                   <div class="w-100 h-100">
                     <div class="d-flex align-items-baseline mb-5" style="width:60%;">
                         <h5 class="me-3">Payment Method Used:</h5>
@@ -184,9 +184,56 @@
                         <h5 v-if="getProfitSharingOwner">{{ getProfitSharingOwner.ar_datePaid }}</h5>
                     </div>
                   </div>
-                  <template #modal-footer="{ ok }">
+                  <template #modal-footer="{ ok, cancel }">
+                    <b-button size="md" variant="secondary" @click="cancel()" id="okButton">Cancel</b-button>
                     <b-button size="md" variant="primary" @click="ok()" id="okButton">Confirm</b-button>
                   </template>
+                </b-modal>
+                <b-modal size="lg" hide-footer id="modal-2" :title="`Harvest Details for Project #${$route.params.id}`">
+                  <div class="w-100 h-100">
+                    <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Expected Date of Harvest:</h5>
+                        <h5 v-if="getProjectOwner">{{ getProjectOwner.project_harvestableEnd }}</h5>
+                    </div>
+                    <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                        <h5 class="me-3">Produce:</h5>
+                        <h5 v-if="getProduceOwner">{{ getProduceOwner.prod_name + ' ' + getProduceOwner.prod_type }}</h5>
+                    </div>
+                    <div class="d-flex align-items-baseline mb-5" style="width:70%;">
+                        <h5 class="me-3">Date Harvested:</h5>
+                        <input type="date" name="" :value="getProduceYieldOwner[0] ? getProduceYieldOwner[0].produce_yield_dateHarvestFrom : ''" disabled style="width:150px" class="form-control me-3" id="">
+                        <input type="date" name="" :value="getProduceYieldOwner[0] ? getProduceYieldOwner[0].produce_yield_dateHarvestTo : ''" disabled style="width:150px" class="form-control" id="">
+                    </div>
+                    <div class="d-flex align-items-baseline mb-5" style="width:70%;">
+                        <h5 class="me-3">{{ getProduceYieldOwner && getProduceYieldOwner.length > 1 ? 'Quantity Harvested:' : 'Total Quantity Harvested' }}</h5>                        
+                    </div>
+                    <div v-if="getProduceYieldOwner && getProduceYieldOwner.length > 1">
+                      <div class="d-flex align-items-baseline mb-5" style="width:70%;">
+                          <h5 class="me-3">A:</h5>      
+                          <input type="number" name="" :value="getProduceYieldOwner[0] ? getProduceYieldOwner[0].produce_yield_qtyHarvested : ''" disabled style="width:150px" class="form-control me-3" id="">  
+                          <h5>kg/s</h5>                  
+                      </div>
+                      <div class="d-flex align-items-baseline mb-5" style="width:70%;">
+                          <h5 class="me-3">B:</h5>      
+                          <input type="number" :value="getProduceYieldOwner[1] ? getProduceYieldOwner[1].produce_yield_qtyHarvested : ''" name="" disabled style="width:150px" class="form-control me-3" id="">   
+                          <h5>kg/s</h5>                 
+                      </div>
+                      <div class="d-flex align-items-baseline mb-5" style="width:70%;">
+                          <h5 class="me-3">C:</h5>      
+                          <input type="number" :value="getProduceYieldOwner[2] ? getProduceYieldOwner[2].produce_yield_qtyHarvested : ''" name="" disabled style="width:150px" class="form-control me-3" id="">    
+                          <h5>kg/s</h5>                
+                      </div>
+                      <div class="d-flex align-items-baseline" style="width:70%;">
+                          <h5 class="me-3">Total: {{ getTotalHarvest }} kg/s</h5>                              
+                      </div>                      
+                    </div>
+                    <div v-else>
+                      <div class="d-flex align-items-baseline mb-5" style="width:70%;">                            
+                          <input type="number" :value="getProduceYieldOwner[0] ? getProduceYieldOwner[0].produce_yield_qtyHarvested : ''" disabled style="width:150px" class="form-control me-3" id="">                  
+                          <h5>kg/s</h5>    
+                      </div>
+                    </div>
+                  </div>
                 </b-modal>
               </div>
               <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%;" v-else>                                                  
@@ -324,7 +371,13 @@
         },
       },
       methods: {
-          ...mapActions(['readyApp', 'fetchProjectOwner', 'updateProjectOwner', 'updateProfitSharingForOwner']),        
+          ...mapActions([
+            'readyApp', 
+            'fetchProjectOwner', 
+            'updateProjectOwner', 
+            'updateProfitSharingForOwner',
+            'deleteProfitSharingForOwner'
+          ]),        
           setStatus(e){
             console.log(e.target.value)
             this.data.project_status_id = parseInt(e.target.value)
@@ -359,7 +412,7 @@
             }         
             this.updateProjectOwner(data)
             .then(() => {
-              this.$router.push({ name : 'AllProjectsOwner' })
+              this.$router.push({ name : 'ProjectsOwner' })
             })
             .catch((err) => {
               console.log(err)
@@ -385,10 +438,27 @@
           'getFarmOwner',
           'getShareOwner',
           'getHistoryOwner',
-          'getProfitSharingOwner'
+          'getProfitSharingOwner',
+          'getProduceYieldOwner'
           ]),      
           getRole(){
             return auth.state.user.role
+          },
+          getTotalHarvest(){
+            if(this.getProduceYieldOwner && this.getProduceYieldOwner.length > 0){
+              if(this.getProduceYieldOwner.length == 1){
+                return this.getProduceYieldOwner[0].produce_yield_qtyHarvested
+              }
+              else if(this.getProduceYieldOwner.length > 1){
+                var qtys = [];
+                this.getProduceYieldOwner.forEach((y) => {
+                  qtys.push(y.produce_yield_qtyHarvested)
+                })
+                var totalValue = qtys.reduce((a, b) => a + b, 0)
+                return totalValue
+              }
+            }
+            return null
           }
       },
       mounted(){
@@ -408,6 +478,24 @@
                   this.$toastr.e(errors[error][0])
               } 
             })
+          }
+          else if(bvEvent.trigger == 'cancel'){
+            if(confirm('Are you sure you want that the payment hasn\'t been received yet?')){
+              this.deleteProfitSharingForOwner(this.$route.params.id)
+              .then(() => {
+                this.$toastr.s('Acknowledgment Report Cancelled!')
+                setTimeout(() => {
+                  this.$router.push({ name: 'ProjectsOwner' })
+                }, 5000)
+              })
+              .catch((err) => {
+                console.log(err)
+                var errors = err.response.data.errors
+                for(var error in errors){
+                    this.$toastr.e(errors[error][0])
+                } 
+              })
+            }
           }                 
         })
       },

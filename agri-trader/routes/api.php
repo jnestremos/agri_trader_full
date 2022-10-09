@@ -39,6 +39,7 @@ use App\Models\Project;
 use App\Models\ProjectBid;
 use App\Models\ProjectStatus;
 use App\Models\ReceivingReport;
+use App\Models\Refund;
 use App\Models\Sale;
 use App\Models\StockIn;
 use App\Models\StockOut;
@@ -103,7 +104,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'farm_owner' => Project::find($id)->contract()->first()->farm()->first()->farm_owner()->first(),
                 'produce' => Project::find($id)->contract()->first()->produce()->first(),
                 'history' => DB::table('project_status_history')->where('project_id', $id)->get(),
-                'profit_sharing' => ProfitSharing::where('project_id', $id)->first()               
+                'profit_sharing' => ProfitSharing::where('project_id', $id)->first(),
+                'produce_yield' => ProduceYield::where('project_id', $id)->get()              
             ], 200);
         });
 
@@ -284,6 +286,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::prefix('project/profit/sharing/owner')->group(function () {
             Route::patch('/{id}', [ProfitSharingController::class, 'updateAR']);
+            Route::delete('/{id}', [ProfitSharingController::class, 'deleteAR']);
         });
 
     });
@@ -474,6 +477,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             });
             Route::post('/add', [ProfitSharingController::class, 'createAR']);
         });
+
+        Route::post('/refund/all/orders/{id}', [ProfitSharingController::class, 'refundAllOrders']);
         
 
         Route::get('/dashboard', function(){
@@ -869,6 +874,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     }
                 }
                 $supplies = Supply::whereIn('id', $supply_ids)->get();
+                $produce_yields = ProduceYield::where('project_id', $id)->get();
+                $produce_inventory = [];
+                foreach($produce_yields as $yield){
+                    array_push($produce_inventory, $yield->produce_inventory()->first());
+                }
                 return response([
                     'farm' => Project::find($id)->contract()->first()->farm()->first(),
                     'contract' => Project::find($id)->contract()->first(),
@@ -880,7 +890,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'expenditures' => Expenditure::where('project_id', $id)->get(),
                     'stockOut' => StockOut::where('project_id', $id)->get(),
                     'supplies' => $supplies,
-                    'profit_sharing' => ProfitSharing::where('project_id', $id)->first()
+                    'profit_sharing' => ProfitSharing::where('project_id', $id)->first(),
+                    'refunds' => Refund::where('project_id', $id)->get(),
+                    'produce_yields' => $produce_yields,
+                    'produce_inventory' => $produce_inventory,
                 ], 200);
             });
             
@@ -1185,7 +1198,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/add', 'addMessage');
             });
         });
-
+ 
         Route::prefix('bid/project/{id}')->group(function () {
             Route::controller(ProjectBidController::class)->group(function () {
                 Route::put('/approve', 'approveProjectBid');

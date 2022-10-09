@@ -113,14 +113,15 @@
         </div>  
         <div class="col-3 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
-            <div v-if="getProject && getProject.project_status_id == 2" class="col-12 p-0 d-flex align-items-baseline">
+            <div v-if="getProject && getProject.project_status_id != 1" class="col-12 p-0 d-flex align-items-baseline">
               <label for="project_status_id" class="form-label me-4">Project Status:</label>
-              <select name="project_status_id" class="form-select" style="width:250px" id="" @change="setStatus($event)" v-if="getProject">               
+              <select name="project_status_id" class="form-select" style="width:250px" id="" @change="setStatus($event)" v-if="getProject && !(getProfitSharingForProject)">               
                   <!-- <option v-if="getProject.project_status_id == 1" value="2" selected>Approved</option>
                   <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>                                 -->
                   <option v-if="getProject.project_status_id == 2" value="4" selected>Terminated Successfully</option>
                   <option v-if="getProject.project_status_id == 2" value="5">Terminated w/ Complications</option>                                
               </select>
+              <label v-else for="">{{ getProject.project_status_id == 4 ? 'Terminated Successfully' : 'Terminated w/ Complications' }}</label>
             </div>
           </div>
           <div class="row w-100 m-0" v-if="getHistory">
@@ -150,14 +151,47 @@
           <div class="row w-100 m-0"></div> 
           <div class="row w-100 m-0"></div> 
           <div class="row w-100 m-0"></div> 
-          <div v-if="getProject">
-            <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:3%; right:7%; width:40vw;" v-if="getProject.project_status_id == 2">
-              <input type="button" value="Add Expenditures" class="btn btn-primary" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">                        
-              <input type="button" value="Add Supplies to Project" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
-              <input type="button" value="Upload Image" class="btn btn-primary">                        
-              <input type="button" value="Harvest" class="btn btn-primary" @click="$router.push({ path: `/harvest/${$route.params.id}` })">                        
-              <input type="button" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary">                                                                  
+          <div v-if="getProject && getProject.project_status_id != 1">
+            <!-- position:absolute; bottom:3%; right:7%; width:40vw; -->
+            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'18vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'10vw'} : {'width':'40vw'}, {'position':'absolute'}, {'bottom':'3%'}, {'right':'7%'}]">
+              <input type="button" value="Add Expenditures" v-if="!getProfitSharingForProject" class="btn btn-primary" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">                        
+              <input type="button" value="Add Supplies to Project" v-if="!getProfitSharingForProject" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
+              <input type="button" value="Upload Image" v-if="!getProfitSharingForProject" class="btn btn-primary">                        
+              <input type="button" value="Harvest" v-if="getProject.project_status_id != 5" class="btn btn-primary" @click="$router.push({ path: `/harvest/${$route.params.id}` })">                        
+              <input type="button" v-b-modal.modal-1 value="Refund All Orders" v-if="getProject.project_status_id == 5 && getProject.project_completionDate != null && getRefundForProject && getRefundForProject.length == 0" class="btn btn-primary me-3">
+              <input type="button" :disabled="(data.project_status_id == 4 && getInventoryForProject && !isInventoryEmpty) || (data.project_status_id == 5 && getYieldForProject && getYieldForProject.length > 0)" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary">                                                                  
             </div>
+            <b-modal size="lg" id="modal-1" :title="`Refund Bid Orders for Project #${$route.params.id}`">
+              <div class="w-100 h-100">
+                <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                  <label style="width:25%" for="" class="form-label me-3">Payment Method:</label>
+                  <select name="" class="form-select" style="width:150px" @change="setPaymentMethod($event)" id="">
+                    <option value="Cash">Cash</option>
+                    <option value="Bank">Bank</option>
+                  </select>
+                </div>
+                <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                  <label style="width:25%" for="" class="form-label me-3">Account Name:</label>
+                  <input type="text" name="" v-model="data.bid_order_acc_accName" class="form-control" id="" style="width:150px;">
+                </div>
+                <div v-if="data.bid_order_acc_paymentMethod == 'Bank'" class="d-flex align-items-baseline mb-5" style="width:60%;">
+                  <label style="width:25%" for="" class="form-label me-3">Bank Name:</label>
+                  <input type="text" name="" v-model="data.bid_order_acc_bankName" class="form-control" id="" style="width:150px;">
+                </div>
+                <div v-if="data.bid_order_acc_paymentMethod == 'Bank'" class="d-flex align-items-baseline mb-5" style="width:60%;">
+                  <label style="width:25%" for="" class="form-label me-3">Account #:</label>
+                  <input type="text" name="" v-model="data.bid_order_acc_accNum" class="form-control" id="" style="width:150px;">
+                </div>
+                <div class="d-flex align-items-baseline mb-5" style="width:60%;">
+                  <label style="width:25%" for="" class="form-label me-3">Date Paid:</label>
+                  <input type="date" name="" v-model="data.bid_order_acc_datePaid" class="form-control" id="" style="width:150px;">
+                </div>
+                <div class="d-flex align-items-baseline" style="width:60%;">
+                  <label style="width:25%" for="" class="form-label me-3">Remarks:</label>
+                  <input type="text" name="" class="form-control" v-model="data.bid_order_acc_remarks" id="" style="width:150px;">
+                </div>
+              </div>
+            </b-modal>
             <!-- <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>                                                  
               <input type="submit" value="Update Project" class="btn btn-primary">                                      
             </div>  -->
@@ -169,6 +203,7 @@
 </template>
 
 <script>
+import { format } from 'date-fns'
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: "ShowProject",
@@ -212,6 +247,12 @@ export default {
         })      
     },
     watch: {
+      'data.bid_order_acc_paymentMethod'(newVal){
+        if(newVal == 'Cash'){
+          this.data.bid_order_acc_accNum = null
+          this.data.bid_order_acc_bankName = null
+        }
+      },
       edit(newVal){        
         var project_floweringStart = document.getElementById('project_floweringStart')
         var project_floweringEnd = document.getElementById('project_floweringEnd') 
@@ -291,11 +332,27 @@ export default {
         }
       },
     },
+    mounted(){
+      this.$root.$on('bv::modal::hide', (bvEvent) => {
+        if(bvEvent.trigger == 'ok'){
+          this.refundAllOrders(this.data)
+          .then(() => {
+            this.$toastr.s('Refund for All Orders Sent Successfully!')
+            setTimeout(() => {
+              location.reload()
+            }, 5000)
+          })
+        }
+      })
+    },
     methods: {
-        ...mapActions(['readyApp', 'fetchProject', 'updateProject', 'initStatusForProfit']),
+        ...mapActions(['readyApp', 'fetchProject', 'updateProject', 'initStatusForProfit', 'refundAllOrders']),
         setStatus(e){
           console.log(e.target.value)
           this.data.project_status_id = parseInt(e.target.value)
+        },
+        setPaymentMethod(e){
+          this.data.bid_order_acc_paymentMethod = e.target.value
         },
         getDate(history){
           var dateTime = history.created_at.split(' ')
@@ -360,7 +417,10 @@ export default {
         'getExpenditureForProject',
         'getStockOutForProject',
         'getSuppliesForProject',
-        'getProfitSharingForProject'
+        'getProfitSharingForProject',
+        'getRefundForProject',
+        'getInventoryForProject',
+        'getYieldForProject'
         ]),
         getTotalExpense(){
           var supplyTotalValue = 0
@@ -381,6 +441,19 @@ export default {
           }         
           return parseFloat(expTotalValue + supplyTotalValue).toFixed(2)
         },
+        isInventoryEmpty(){
+          var qtys = []
+          this.getInventoryForProject.forEach((i) => {
+            qtys.push(i.produce_inventory_qtyOnHand)
+          })
+          var total = qtys.reduce((a, b) => a + b, 0);
+          if(total == 0){
+            return true
+          }
+          else{
+            return false
+          }
+        }
         
     },
     data(){
@@ -401,6 +474,15 @@ export default {
           project_devFruitEnd: null,
           project_harvestableStart: null,
           project_harvestableEnd: null,
+          id: this.$route.params.id,
+          bid_order_acc_paymentMethod: 'Cash',
+          bid_order_acc_type: null,
+          // bid_order_acc_amount: null,
+          bid_order_acc_bankName: null,
+          bid_order_acc_accNum: null,
+          bid_order_acc_accName: null,
+          bid_order_acc_remarks: null,
+          bid_order_acc_datePaid: format(new Date(), 'yyyy-MM-dd'),
         }        
       }
     }
