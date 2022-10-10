@@ -84,7 +84,7 @@
                                                 controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333; width:100%; height:100%;">                                                
                                                     <b-carousel-slide v-for="(image, index) in getImages(o)" :key="index" style="height:30vh;">
                                                         <template #img>
-                                                            <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" :src="getPODashboard.purchaseOrder_accs ? require(`../../../../../public/storage/proof_of_payments/${image}`) : ''">
+                                                            <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" :src="getPODashboard.purchaseOrder_accs && image ? require(`../../../../../public/storage/proof_of_payments/${image}`) : ''">
                                                         </template>                                                        
                                                     </b-carousel-slide>                                                             
                                                 </b-carousel>                                                
