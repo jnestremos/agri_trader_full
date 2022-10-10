@@ -10,7 +10,7 @@
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getFarms.length > 0">            
             <div class="row mb-5" v-for="(farm, index) in filtered" :key="index">                     
-                <div class="col-4" style="height:30vh" v-for="(f, i) in farm" :key="i">                
+                <div class="col-4 mt-3" style="height:30vh" v-for="(f, i) in farm" :key="i">                
                     <div class="d-flex farm" style="height:100%; border-radius:50px; position: relative;" @click="showFarm(f.id)">
                         <div class="" style="position: absolute; top:5%; left:5%; 
                         width:85%;">

@@ -11,6 +11,9 @@
                         <tr>
                           <th scope="col">Name</th>
                           <th scope="col">Address</th>
+                          <th scope="col">Contact Person</th>
+                          <th scope="col">Contact Number</th>
+                          <th scope="col">Supplies linked to Supplier</th>
                         </tr>
                       </thead>
                       <tbody align="center">
