@@ -22,20 +22,20 @@
                             <label for="payment_totalPrice" class="form-label"> Total Price </label>
                             <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_totalBalance" placeholder="7,500.00" disabled>
                         </div>
-                        <div class="col-md-2">
+                        <!-- <div class="col-md-2">
                             <label for="payment_totalPrice" class="form-label"> Payment Method </label>
-                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_bankName ? getPO.purchaseOrder_bankName + ` (${getPO.purchaseOrder_paymentMethod})` : getPO.purchaseOrder_paymentMethod" placeholder="7,500.00" disabled>
-                        </div>
+                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_bankName ? getPO.purchaseOrder_bankName + ` (${getPO.purchaseOrder_paymentMethod})` : getPO.purchaseOrder_paymentMethod" disabled>
+                        </div> -->
                     </div>
                     <div class="form-row mt-3">
                         <div class="col-lg-2 me-3">
                             <label for="payment_downpaymentAmount" class="form-label"> Paid Balance </label>
                             <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_dpAmount" disabled>
                         </div>
-                        <div class="col-lg-2">
+                        <!-- <div class="col-lg-2">
                             <label for="payment_downpaymentAmount" class="form-label"> Account Name </label>
                             <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_accName" disabled>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="form-row mt-3">
                         <div class="col-lg-2 me-3">

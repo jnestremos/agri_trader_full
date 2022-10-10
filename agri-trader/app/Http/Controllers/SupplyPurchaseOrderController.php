@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Produce;
 use App\Models\Supplier;
+use App\Models\Supply;
 use App\Models\SupplyOrderPayment;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
@@ -55,7 +56,7 @@ class SupplyPurchaseOrderController extends Controller
 
     public function addPO(Request $request){
         $purchaseOrder = $request->validate([
-            'supplier_id' => 'required',
+            // 'supplier_id' => 'required',
             'supply_id' => 'required|array',
             'purchaseOrder_num' => 'required',
             'purchaseOrder_status' => 'required',
@@ -63,14 +64,15 @@ class SupplyPurchaseOrderController extends Controller
             'purchaseOrder_unit' => 'required|array',
             'purchaseOrder_subTotal' => 'required|array',
             'purchaseOrder_totalBalance' => 'required|numeric',
-            'purchaseOrder_paymentMethod' => 'required',
-            'purchaseOrder_bankName' => [Rule::requiredIf(fn () => $request->purchaseOrder_paymentMethod == 'Bank' || $request->purchaseOrder_paymentMethod == 'Others')],
-            'purchaseOrder_accNum' => [Rule::requiredIf(fn () => $request->purchaseOrder_paymentMethod == 'Bank' || $request->purchaseOrder_paymentMethod == 'Others')],
-            'purchaseOrder_accName' => 'nullable',
+            // 'purchaseOrder_paymentMethod' => 'required',
+            // 'purchaseOrder_bankName' => [Rule::requiredIf(fn () => $request->purchaseOrder_paymentMethod == 'Bank' || $request->purchaseOrder_paymentMethod == 'Others')],
+            // 'purchaseOrder_accNum' => [Rule::requiredIf(fn () => $request->purchaseOrder_paymentMethod == 'Bank' || $request->purchaseOrder_paymentMethod == 'Others')],
+            // 'purchaseOrder_accName' => 'nullable',
             'purchaseOrder_dpAmount' => 'required|numeric|gt:0',
             'purchaseOrder_percentage' => 'required|numeric',
             'purchaseOrder_balance' => 'required|numeric',
             'purchaseOrder_paymentType' => 'required',
+            'purchaseOrder_images' => 'required',
         ]);
 
         if(!$purchaseOrder){
@@ -78,14 +80,29 @@ class SupplyPurchaseOrderController extends Controller
                 'error' => "Error adding Purchase Order!"
             ], 400);
         }
-        
+        $fileNames = [];
+        if($request->hasFile('purchaseOrder_images')){
+            $images = $request->file('purchaseOrder_images');
+            foreach($images as $image){            
+                $fileNameWithExt = $image->getClientOriginalName();
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                $extension = $image->getClientOriginalExtension();
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+                $image->storeAs('public/proof_of_payments', $fileNameToStore);
+                array_push($fileNames, $fileNameToStore);
+            }
+        }      
+      
+       
+   
 
         $trader = User::find(auth()->id())->trader()->first();
         $supplyPO = null;
         for($i = 0; $i < count($request->supply_id); $i++){
+            $supplier = Supply::find($request->supply_id[$i])->supplier()->first();
             $supplyPO = SupplyPurchaseOrder::create([
                 'trader_id' => $trader->id,
-                'supplier_id' => $request->supplier_id,
+                'supplier_id' => $supplier->id,
                 'supply_id' => $request->supply_id[$i],
                 'purchaseOrder_num' => $request->purchaseOrder_num,
                 'purchaseOrder_status' => $request->purchaseOrder_status,
@@ -94,18 +111,19 @@ class SupplyPurchaseOrderController extends Controller
                 'purchaseOrder_subTotal' => $request->purchaseOrder_subTotal[$i],
             ]);
         }
-        $supplier = Supplier::find($request->supplier_id)->supplier_contact_person()->first();
+        // $supplier = Supplier::find($request->supplier_id)->supplier_contact_person()->first();
         SupplyOrderPayment::create([
             'purchaseOrder_num' => $supplyPO->purchaseOrder_num,            
-            'purchaseOrder_paymentMethod' => $request->purchaseOrder_paymentMethod,                                                       
+            // 'purchaseOrder_paymentMethod' => $request->purchaseOrder_paymentMethod,                                                       
             'purchaseOrder_paymentType' => $request->purchaseOrder_paymentType,                                                       
-            'purchaseOrder_bankName' => $request->purchaseOrder_bankName,    
-            'purchaseOrder_accNum' => $request->purchaseOrder_accNum,   
-            'purchaseOrder_accName' => $request->purchaseOrder_accName ?? $supplier->contact_firstName . ' ' . $supplier->contact_lastName,                  
+            // 'purchaseOrder_bankName' => $request->purchaseOrder_bankName,    
+            // 'purchaseOrder_accNum' => $request->purchaseOrder_accNum,   
+            // 'purchaseOrder_accName' => $request->purchaseOrder_accName ?? $supplier->contact_firstName . ' ' . $supplier->contact_lastName,                  
             'purchaseOrder_dpAmount' => $request->purchaseOrder_dpAmount,                  
             'purchaseOrder_percentage' => $request->purchaseOrder_percentage,                  
             'purchaseOrder_balance' => $request->purchaseOrder_balance, 
             'purchaseOrder_totalBalance' => $request->purchaseOrder_totalBalance, 
+            'purchaseOrder_images' => $fileNames, 
         ]);
     
 

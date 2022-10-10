@@ -328,6 +328,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/add', 'addSupplyReturn');
         });
         Route::controller(SupplyOrderRefundController::class)->prefix('supplyRefund')->group(function (){
+            Route::get('/', 'getSupplyRefunds');
             Route::post('/add', 'addSupplyRefund');
             Route::patch('/{id}', 'confirmSupplyRefund');
         });
@@ -557,6 +558,79 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produces' => $produces,                
                 'contracts' => $contracts,
                 'projects' => $projects,
+            ]);
+        });
+
+        Route::get('/reports/projects', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $contracts = Contract::where('trader_id', $user->id)->get();
+            $projects = [];
+            $produces = [];
+            $farms = [];
+            $farm_owners = [];
+            $contract_shares = [];
+            foreach($contracts as $contract){
+                if(!in_array($contract->produce()->first(), $produces)){
+                    array_push($produces, $contract->produce()->first());
+                }
+                if(!in_array($contract->farm()->first(), $farms)){
+                    array_push($farms, $contract->farm()->first());
+                }
+                if(!in_array($contract->farm()->first()->farm_owner()->first(), $farm_owners)){
+                    array_push($farm_owners, $contract->farm()->first()->farm_owner()->first());
+                }
+                array_push($projects, $contract->project()->first());
+                array_push($contract_shares, $contract->contract_share()->first());
+            }
+            
+            return response([
+                'contracts' => $contracts,
+                'projects' => $projects,
+                'produces' => $produces,
+                'farms' => $farms,
+                'farm_owners' => $farm_owners,
+                'contract_shares' => $contract_shares,
+            ]);
+        });
+
+        Route::get('/reports/bid/orders', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $orders = BidOrder::where('trader_id', $user->id)->get();
+            $accs = [];
+            $project_bids = [];
+            $on_hand_bids = [];
+            $distributors = [];
+            $produce_traders = [];
+            $produces = [];
+            foreach($orders as $order){
+                if($order->project_bid()->first()){
+                    array_push($project_bids, $order->project_bid()->first());
+                }
+                else if($order->on_hand_bid()->first()){
+                    array_push($on_hand_bids, $order->on_hand_bid()->first());
+                }
+                if(!in_array($order->distributor()->first(), $distributors)){
+                    array_push($distributors, $order->distributor()->first());
+                }
+                if(!in_array($order->produce_trader()->first(), $produce_traders)){
+                    array_push($produce_traders, $order->produce_trader()->first());
+                }
+                if(!in_array($order->produce_trader()->first()->produce()->first(), $produces)){
+                    array_push($produces, $order->produce_trader()->first()->produce()->first());
+                }
+                foreach($order->bid_order_account()->get() as $acc){
+                    array_push($accs, $acc);
+                }
+            }
+
+            return response([
+                'orders' => $orders,
+                'accs' => $accs,
+                'project_bids' => $project_bids,
+                'on_hand_bids' => $on_hand_bids,
+                'distributors' => $distributors,
+                'produce_traders' => $produce_traders,
+                'produces' => $produces,
             ]);
         });
         

@@ -136,19 +136,19 @@ export default {
     methods: {
         ...mapActions(['readyApp', 'fetchPOforUpdateRR', 'issueReturn', 'issueRefund']),
         getSupplyName(order){
-            var supplyObj = this.getPOForRR.supply.filter((s) => {
+            var supplyObj = this.getPOForRR.supplies.filter((s) => {
                 return parseInt(order.supply_id) === parseInt(s.id)
             })
             return supplyObj[0].supply_name
         },
         getSupplyType(order){
-            var supplyObj = this.getPOForRR.supply.filter((s) => {
+            var supplyObj = this.getPOForRR.supplies.filter((s) => {
                 return parseInt(order.supply_id) === parseInt(s.id)
             })
             return supplyObj[0].supply_type
         },
         getSupplyFor(order){
-            var supplyObj = this.getPOForRR.supply.filter((s) => {
+            var supplyObj = this.getPOForRR.supplies.filter((s) => {
                 return parseInt(order.supply_id) === parseInt(s.id)
             })
             return supplyObj[0].supply_for

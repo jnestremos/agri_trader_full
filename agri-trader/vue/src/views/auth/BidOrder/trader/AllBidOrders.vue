@@ -2,7 +2,11 @@
   <div class="allBidOrders">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Bid Orders</h3>
-        <button @click="filterBidOrders()" class="btn btn-secondary">Filter By Buyer</button>
+        <div class="d-flex">
+            <router-link to="/bid/orders/report"><button class="btn btn-primary me-3">View All Orders</button></router-link>
+            <button @click="filterBidOrders()" class="btn btn-secondary">Filter By Buyer</button>
+        </div>
+        
     </div>
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getOrderData.orders.length > 0">            
@@ -96,7 +100,7 @@ export default {
             console.log(projBidObj)
             console.log(onHandBidObj)
             if(projBidObj[0]){
-                return projBidObj[0].project_bid_minQty + " - " + projBidObj[0].project_bid_maxQty
+                return projBidObj[0].project_bid_maxQty
             }
             else if(onHandBidObj[0]){
                 return onHandBidObj[0].on_hand_bid_qty

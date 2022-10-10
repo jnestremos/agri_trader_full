@@ -20,7 +20,7 @@
                             <input type="text" name="orderSummary_purchaseOrderStatus" id="" disabled class="form-control" placeholder="Pending">
                         </div>
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-sm-3">
                             <p class="font-weight-bold" style="font-size:110%">Supplier Name: Pacifica Agrivet</p>
                         </div>
@@ -30,11 +30,12 @@
                         <div class="col-sm-3">
                             <p class="font-weight-bold" style="font-size:110%">Contact Number: 09123456789</p>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="mb-2" style="width:100% height:90%; clear:left;">
                         <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                             <thead align="center">
                                 <tr>
+                                    <th scope="col">Supplier Name</th>
                                     <th scope="col">Supply ID</th>
                                     <th scope="col">Supply Name</th>
                                     <th scope="col">Supply Type</th>
@@ -47,6 +48,7 @@
                             </thead>
                             <tbody align="center" v-if="supplies">
                                 <tr v-for="(supply, index) in getSummaryTable()" :key="index">
+                                    <td>{{ getSupplierName(supply) }}</td>                                    
                                     <td>{{ supply.id }}</td>                                    
                                     <td>{{ supply.supply_name }}</td>                                    
                                     <td>{{ supply.supply_type }}</td>                                    
@@ -71,7 +73,7 @@
                     </div>
                     <div class="btn-toolbar pt-4" role="toolbar">
                         <div class="btn-group me-3">
-                            <b-button variant="success" style="width:200px; height:60px" @click="triggerModal()">Select Payment Option</b-button>                            
+                            <!-- <b-button variant="success" style="width:200px; height:60px" @click="triggerModal()">Select Payment Option</b-button>                             -->
                             <template>
                                 <b-modal id="paymentModal" title="Payment Options" size="lg">
                                     <div class="form-row text-center">
@@ -118,7 +120,7 @@
                             </template>
                         </div>
                         <div class="btn-group me-3">
-                            <b-button variant="success" style="width:200px; height:60px" @click="orderPayment()" :disabled="validateFields">Proceed to Payment</b-button>
+                            <b-button variant="success" style="width:200px; height:60px" @click="orderPayment()">Proceed to Payment</b-button>
                         </div>
                         <div class="btn-group me-3">
                             <router-link to="/supplyOrder/add"><b-button variant="secondary" style="width:200px; height:60px">Back to Supplier List</b-button></router-link>
@@ -145,7 +147,7 @@ export default {
                 this.getPO.purchaseOrder_subTotal.forEach((s) => {
                     this.data.purchaseOrder_totalBalance = parseFloat(this.data.purchaseOrder_totalBalance) + parseFloat(s)
                 })
-                this.data.supplier_id = this.getPO.supplier_id,
+                // this.data.supplier_id = this.getPO.supplier_id,
                 this.data.supply_id = this.getPO.supply_id, 
                 this.data.purchaseOrder_num = this.getPO.purchaseOrder_num, 
                 this.data.purchaseOrder_status = this.getPO.purchaseOrder_status, 
@@ -189,7 +191,7 @@ export default {
                 paymentOtherWallet: '',
             },
             data: {
-                supplier_id: null,
+                // supplier_id: null,
                 supply_id: null, 
                 purchaseOrder_num: null, 
                 purchaseOrder_status: null, 
@@ -245,6 +247,7 @@ export default {
                     return parseInt(ss.id) === parseInt(this.data.supply_id)
                 })
                 item = {
+                    supplier_id: supplyObj[0].supplier_id,
                     id: this.data.supply_id,
                     supply_name: supplyObj[0].supply_name,
                     supply_type: supplyObj[0].supply_type,
@@ -263,6 +266,7 @@ export default {
                         return parseInt(ss.id) === parseInt(s)
                     })
                     item = {
+                        supplier_id: supplyObj[0].supplier_id,
                         id: s,
                         supply_name: supplyObj[0].supply_name,
                         supply_type: supplyObj[0].supply_type,
@@ -278,7 +282,12 @@ export default {
             }                     
             return items
         },
-        
+        getSupplierName(supply){
+            var supplierObj = this.getFormPO.suppliers.filter((s) => {
+                return parseInt(supply.supplier_id) === parseInt(s.id)
+            })
+            return supplierObj[0].supplier_name
+        },        
     },
     computed: {
         ...mapGetters(['getName', 'getFormPO', 'getPO']),

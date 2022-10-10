@@ -55,7 +55,14 @@ const state = {
         returns: null,       
         suppliers: null,        
         supplies: null,        
-    }    
+    },
+    supply_refunds: {
+        purchaseOrder_refunds: null,
+        supplies: null,
+        suppliers: null,
+        refunds_filtered: null,
+    }
+    
 }   
 
 const getters = {
@@ -70,6 +77,9 @@ const getters = {
     },
     getReturnDashboard(){
         return state.returns_dashboard
+    },
+    getSupplyRefunds(){
+        return state.supply_refunds
     }
 }
 
@@ -82,7 +92,13 @@ const actions = {
         })
     },
     addPO({ commit }, data){
-        return axiosClient.post(`/supplyOrder/add`, data)
+        console.log(data)
+        return axiosClient.post(`/supplyOrder/add`, data, {
+            headers: {
+                'Content-type' : 'multipart/form-data'
+            }
+        })
+        
         .then((res) => {
             console.log(res.data)
             commit('asd')
@@ -137,6 +153,20 @@ const actions = {
             })
         }
     },
+    fetchSupplyRefunds({ commit }){
+        return axiosClient.get('/supplyRefund')
+        .then((res) => {
+            console.log(res.data)
+            commit('setSupplyRefund', res.data)
+        })
+    },
+    updateSupplyRefund({ commit }, id){
+        return axiosClient.patch(`/supplyRefund/${id}`)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    }
 }
 
 const mutations = {
@@ -211,6 +241,12 @@ const mutations = {
     },
     asd: () => {
         console.log(1)
+    },
+    setSupplyRefund: (state , data) => {
+        state.supply_refunds.purchaseOrder_refunds = data.purchaseOrder_refunds
+        state.supply_refunds.supplies = data.supplies
+        state.supply_refunds.suppliers = data.suppliers
+        state.supply_refunds.refunds_filtered = data.refunds_filtered
     }
 }
 

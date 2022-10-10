@@ -32,6 +32,7 @@
                     <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                         <thead align="center">
                             <tr>                                
+                                <th scope="col">Supplier Name</th>
                                 <th scope="col">Supply Name</th>
                                 <th scope="col">Supply Type</th>
                                 <th scope="col">Supply For</th>                                    
@@ -44,6 +45,7 @@
                         </thead>
                         <tbody align="center">
                             <tr v-for="(record, index) in getPOForRR.orders" :key="index">                            
+                                <td>{{ getSupplierName(record) }}</td>
                                 <td>{{ getSupplyName(record) }}</td>
                                 <td>{{ getSupplyType(record) }}</td>
                                 <td>{{ getSupplyFor(record) }}</td>
@@ -149,20 +151,26 @@ export default {
     },
     methods: {
         ...mapActions(['readyApp', 'fetchPOForRR', 'sendRR']),
+        getSupplierName(order){
+            var supplierObj = this.getPOForRR.suppliers.filter((s) => {
+                return parseInt(order.supplier_id) === parseInt(s.id)
+            })
+            return supplierObj[0].supplier_name
+        },
         getSupplyName(order){
-            var supplyObj = this.getPOForRR.supply.filter((s) => {
+            var supplyObj = this.getPOForRR.supplies.filter((s) => {
                 return parseInt(order.supply_id) === parseInt(s.id)
             })
             return supplyObj[0].supply_name
         },
         getSupplyType(order){
-            var supplyObj = this.getPOForRR.supply.filter((s) => {
+            var supplyObj = this.getPOForRR.supplies.filter((s) => {
                 return parseInt(order.supply_id) === parseInt(s.id)
             })
             return supplyObj[0].supply_type
         },
         getSupplyFor(order){
-            var supplyObj = this.getPOForRR.supply.filter((s) => {
+            var supplyObj = this.getPOForRR.supplies.filter((s) => {
                 return parseInt(order.supply_id) === parseInt(s.id)
             })
             return supplyObj[0].supply_for

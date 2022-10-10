@@ -105,6 +105,8 @@ class ReceivingReportController extends Controller
             ], 400);
         }
         else{
+            $suppliers = [];
+            $supplies = [];
             $orders = SupplyPurchaseOrder::where('purchaseOrder_num', $id)->get();
             foreach($orders as $order){
                 if($order->purchaseOrder_status != 'Delivered'){
@@ -112,18 +114,24 @@ class ReceivingReportController extends Controller
                         'error' => 'Error accessing Initial Stock in'
                     ], 400);
                 }
+                if(!in_array($order->supplier()->first(), $suppliers)){
+                    array_push($suppliers, $order->supplier()->first());
+                }
+                if(!in_array($order->supply()->first(), $supplies)){
+                    array_push($supplies, $order->supply()->first());
+                }
             }
-            $supplier = $orders[0]->supplier()->first();
-            $supplier_contact = $supplier->supplier_contact()->first();
-            $supplier_contact_person = $supplier->supplier_contact_person()->first();
-            $supply = $supplier->supply()->get();        
+            // $supplier = $orders[0]->supplier()->first();
+            // $supplier_contact = $supplier->supplier_contact()->first();
+            // $supplier_contact_person = $supplier->supplier_contact_person()->first();
+            // $supply = $supplier->supply()->get();        
     
             return response([
                 'orders' => $orders,
-                'supplier' => $supplier,
-                'supply' => $supply,
-                'supplier_contact' => $supplier_contact,
-                'supplier_contact_person' => $supplier_contact_person,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                // 'supplier_contact' => $supplier_contact,
+                // 'supplier_contact_person' => $supplier_contact_person,
             ]);            
         }        
     }
@@ -155,19 +163,25 @@ class ReceivingReportController extends Controller
                 ], 400);
             }
         }
-        $supply = [];
+        $suppliers = [];
+        $supplies = [];
         foreach($orders as $order){
-            array_push($supply, $order->supply()->first());
+            if(!in_array($order->supply()->first()->supplier()->first(), $suppliers)){
+                array_push($suppliers, $order->supply()->first()->supplier()->first());
+            }
+            if(!in_array($order->supply()->first(), $supplies)){
+                array_push($supplies, $order->supply()->first());
+            }            
         }
-        $supplier = $supply[0]->supplier()->first();
-        $supplier_contact = $supplier->supplier_contact()->first();
-        $supplier_contact_person = $supplier->supplier_contact_person()->first();
+        // $supplier = $supply[0]->supplier()->first();
+        // $supplier_contact = $supplier->supplier_contact()->first();
+        // $supplier_contact_person = $supplier->supplier_contact_person()->first();
         return response([
             'orders' => $orders,
-            'supplier' => $supplier,
-            'supply' => $supply,
-            'supplier_contact' => $supplier_contact,
-            'supplier_contact_person' => $supplier_contact_person,
+            'suppliers' => $suppliers,
+            'supplies' => $supplies,
+            // 'supplier_contact' => $supplier_contact,
+            // 'supplier_contact_person' => $supplier_contact_person,
         ]);            
 
     }

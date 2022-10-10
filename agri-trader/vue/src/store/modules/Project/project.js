@@ -36,12 +36,23 @@ const state = {
     owner_list: null,
     produce_list: null,
     share_list: null,
-    date_list: null
+    date_list: null,
+    project_report: {
+        projects: null,
+        contracts: null,
+        produces: null,
+        farms: null,
+        contract_shares: null,
+        farm_owners: null,
+    }
 }
 
 const getters = {
     getProjects(){
         return state.project_data.projects
+    },
+    getProjectReport(){
+        return state.project_report
     },
     getExpenditureForProject(){
         return state.expenditures
@@ -181,6 +192,13 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    fetchProjectReport({ commit }){
+        return axiosClient.get(`/reports/projects`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProjectReport', res.data)
+        })
     }   
 }
 
@@ -236,6 +254,14 @@ const mutations = {
         state.refunds = data.refunds
         state.produce_inventory = data.produce_inventory
         state.produce_yields = data.produce_yields
+    },
+    setProjectReport: (state, data) => {
+        state.project_report.contracts = data.contracts
+        state.project_report.projects = data.projects
+        state.project_report.farms = data.farms
+        state.project_report.produces = data.produces
+        state.project_report.contract_shares = data.contract_shares
+        state.project_report.farm_owners = data.farm_owners
     }
 }
 

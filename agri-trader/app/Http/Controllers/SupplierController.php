@@ -17,7 +17,7 @@ class SupplierController extends Controller
             'supplier_name' => 'required',
             'supplier_phoneNumber' => 'required',
             'supplier_telNumber' => 'nullable',
-            'supplier_email' => 'required|email',
+            'supplier_email' => 'required|email|unique:supplier_contacts,supplier_email',
             'contact_firstName' => 'required',
             'contact_middleName' => 'required',
             'contact_lastName' => 'required',

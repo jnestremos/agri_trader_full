@@ -3,6 +3,7 @@
         <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
             <h3>Supply Purchase Order | Status</h3>
             <div class="d-flex">
+                <router-link to="/supplyOrder/refunds"><button class="btn btn-success text-right me-3">See Refunds</button></router-link>
                 <router-link to="/supplyOrder/add"><button class="btn btn-success text-right me-3">Add Purchase Order</button></router-link>
                 <router-link to="/supplyOrder/returnsDashboard"><button class="btn btn-success text-right">See Purchase Returns</button></router-link>                
             </div>            
@@ -28,6 +29,7 @@
                                             <table style="width:100%; background:lightgray">
                                                 <thead>
                                                     <tr>
+                                                        <th>Supplier Name</th>
                                                         <th>Supply ID</th>
                                                         <th>Supply Name</th>
                                                         <th>Supply Qty</th>
@@ -37,6 +39,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr v-for="(order, index) in getOrders(o)" :key="index">
+                                                        <td>{{ getSupplierName(order) }}</td>
                                                         <td>{{ order.supply_id }}</td>
                                                         <td>{{ getSupplyName(order) }}</td>
                                                         <td>{{ order.purchaseOrder_qty }}</td>
@@ -47,10 +50,10 @@
                                             </table>
                                         </div>
                                         <div class="h-100 p-4" style="width:40%;">
-                                            <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
+                                            <!-- <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
                                                 <h5>Supplier Name: {{ getSupplierName(o) }}</h5>                                                
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
+                                            </div> -->
+                                            <!-- <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
                                                 <h5>Payment Method: {{ getPaymentMethod(o) }}</h5>                                                
                                             </div>
                                             <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
@@ -58,7 +61,7 @@
                                             </div>
                                             <div v-if="getAccNum(o)" class="d-flex justify-content-between align-items-baseline w-100 mb-5">
                                                 <h5>Account Number: {{ getAccNum(o) }}</h5>                                                
-                                            </div>
+                                            </div> -->
                                             <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
                                                 <h5>Total Balance: {{ getTotalBalance(o) }}</h5>                                                
                                             </div>
@@ -75,6 +78,16 @@
                                                     <option :selected="o.purchaseOrder_status == 'For Delivery'" value="For Delivery">For Delivery</option>
                                                 </select>
                                                 <input v-else type="text" name="" disabled id="" class="form-control" :value="o.purchaseOrder_status" style="width:300px">
+                                            </div>
+                                            <div class="w-100 mt-5">
+                                                <b-carousel class="mb-2" id="carousel-1" :interval="0"
+                                                controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333; width:100%; height:100%;">                                                
+                                                    <b-carousel-slide v-for="(image, index) in getImages(o)" :key="index" style="height:30vh;">
+                                                        <template #img>
+                                                            <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" :src="getPODashboard.purchaseOrder_accs ? require(`../../../../../public/storage/proof_of_payments/${image}`) : ''">
+                                                        </template>                                                        
+                                                    </b-carousel-slide>                                                             
+                                                </b-carousel>                                                
                                             </div>
                                         </div>  
                                     </div>
@@ -218,6 +231,12 @@ export default {
                 return order.purchaseOrder_num === o.purchaseOrder_num
             })
             return orderObj
+        },
+        getImages(order){
+            var accObj = this.getPODashboard.purchaseOrder_accs.filter((o) => {
+                return order.purchaseOrder_num === o.purchaseOrder_num
+            })
+            return accObj[0].purchaseOrder_images
         },
         getSupplyName(order){
             var supplyObj = this.getPODashboard.supplies.filter((s) => {

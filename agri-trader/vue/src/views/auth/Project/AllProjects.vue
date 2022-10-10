@@ -3,9 +3,8 @@
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Projects</h3>
         <div class="d-flex justify-content-between align-items-center" style="width:200px;">
-            <router-link v-if="getFarmsForProject" :to="getFarmsForProject.length > 0 ? '/project/add' : ''" :style="[getFarmsForProject.length > 0 ? {'cursor' : 'pointer'} : {'cursor' : 'default'}]"><button :class="[getFarmsForProject.length > 0 ? 'btn btn-success' : 'btn btn-secondary']" style="width:60px" :disabled="getFarmsForProject.length == 0">Add</button></router-link>
-            <button>Edit</button>
-            <button>Search</button>
+            <router-link v-if="getFarmsForProject" :to="getFarmsForProject.length > 0 ? '/project/add' : ''" :style="[getFarmsForProject.length > 0 ? {'cursor' : 'pointer'} : {'cursor' : 'default'}]"><button :class="[getFarmsForProject.length > 0 ? 'btn btn-success me-3' : 'btn btn-secondary me-3']" style="width:60px" :disabled="getFarmsForProject.length == 0">Add</button></router-link>
+            <router-link to="/projects/report"><button class="btn btn-primary" style="width:150px;">View All Projects</button></router-link>            
         </div>
     </div>     
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
@@ -13,8 +12,7 @@
             <div class="row mb-5" v-for="(project, index) in filtered" :key="index">                                   
                 <div class="col-4" style="height:30vh" v-for="(p, i) in project" :key="i">                
                     <div class="d-flex project" style="height:100%; border-radius:50px; position: relative;" @click="showProject(p.id)">                    
-                        <div class="" style="position: absolute; top:5%; left:5%; 
-                        width:85%;">
+                        <div class="" style="position: absolute; top:5%; left:5%; width:85%;">
                             <div class="d-flex mb-4">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
                                 <h4 class="mb-4">{{ getName(p) }} - {{ getCommenceDate(p)}} &nbsp; {{100 - getShareAmount(p) + "% / " + getShareAmount(p) + '%' }}</h4>

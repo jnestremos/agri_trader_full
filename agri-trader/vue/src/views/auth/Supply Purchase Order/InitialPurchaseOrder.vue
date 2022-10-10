@@ -28,7 +28,7 @@
                                 <option v-for="(supplier, index) in getFormPO.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option>                                                                
                             </select>
                         </div>
-                        <div v-if="data.supplier_id != 'None'" class="col-lg-2 mb-2 me-3">
+                        <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4" >Choose Supply Type</label>
                             <select class="form-select" @change="setSupplyType($event)" id="supply_type">
                                 <option selected value="None">Select Supply Type</option>
@@ -38,7 +38,7 @@
                                 <option value="Herbicide">Herbicide</option>
                             </select>
                         </div>
-                        <div v-if="data.supplier_id != 'None'" class="col-lg-2 mb-2 me-3">
+                        <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4">Choose Supply For</label>
                             <select v-if="getFormPO.produces" class="form-select" @change="setSupplyFor($event)" id="supply_for">
                                 <option selected value="None">Select Supply For</option> 
@@ -64,7 +64,7 @@
                                     </thead>
                                     <tbody align="center">
                                          <tr v-for="(supply, index) in filteredSupplies" :key="index">
-                                            <td><input type="checkbox" name="" id="" :value="supply.id" :disabled="data.supplier_id == 'None'" :checked="checkID(supply.id)" @change="setSupplyId($event)"></td>
+                                            <td><input type="checkbox" name="" id="" :value="supply.id" :checked="checkID(supply)" @change="setSupplyId($event)">{{index}}</td>
                                             <td>{{ getSupplierName(supply) }}</td>
                                             <td>{{ supply.supply_name }}</td>
                                             <td>{{ supply.supply_type }}</td>
@@ -82,7 +82,8 @@
                                 <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                                     <thead align="center">
                                         <tr>
-                                            <th scope="col">Supply ID</th>
+                                            <th scope="col">Supplier Name</th>
+                                            <th scope="col">Supply Name</th>
                                             <th scope="col">Supply Type</th>
                                             <th scope="col">Supply For</th>
                                             <th scope="col">Description</th>
@@ -94,7 +95,8 @@
                                     </thead>
                                     <tbody align="center">
                                          <tr v-for="(supply, index) in getCart" :key="index">                                            
-                                            <td>{{ supply.id }}</td>
+                                            <td>{{ getSupplierName(supply) }}</td>
+                                            <td>{{ supply.supply_name }}</td>
                                             <td>{{ supply.supply_type }}</td>
                                             <td>{{ supply.supply_for }}</td>
                                             <td>{{ supply.supply_description }}</td>
@@ -132,6 +134,11 @@ export default {
         this.formForAddPO()
         .then(() => {
             this.data.purchaseOrder_num = 'PO-'+this.getFormPO.uuid
+            var checks = []
+            this.getFormPO.supplies.forEach(() => {
+                checks.push(false)
+            })
+            this.checks = checks
             this.readyApp()
         })
         .catch((err) => {
@@ -141,8 +148,7 @@ export default {
     },
     data() {
         return {
-            data: {
-                supplier_id: 'None',
+            data: {                
                 supply_id: [], 
                 purchaseOrder_num: null, 
                 purchaseOrder_status: 'Pending', 
@@ -150,45 +156,47 @@ export default {
                 purchaseOrder_unit: [],
                 purchaseOrder_subTotal: [],   
             },
+            filter_supplier: 'None',
             filter_type: 'None',
             filter_for: 'None',
             totalBalance: 0,
+            checks: null,
             dateToday: format(new Date(), 'yyyy-MM-dd'),
         }        
     },
-    watch: {
-        'data.supplier_id'(newVal, oldVal){
-            console.log(newVal)
-            console.log(oldVal)
-            if(oldVal != 'None'){
-                if(confirm('Changing your selected supplier will result in clearing out your cart!\n Would you like to proceed!')){
-                    this.filter_type = 'None'
-                    this.filter_for = 'None'
-                    var supply_type = document.getElementById('supply_type')
-                    var supply_for = document.getElementById('supply_for')
-                    supply_type.value = 'None'
-                    supply_for.value = 'None' 
-                    this.data.supply_id = [];
-                    this.data.purchaseOrder_qty= [], 
-                    this.data.purchaseOrder_unit= [],
-                    this.data.purchaseOrder_subTotal= [],   
-                    this.totalBalance = 0
-                    this.data.supplier_id = newVal
-                }
-                else{
-                    console.log(1)
-                    console.log(oldVal)
-                    var supplier = document.getElementById('supplier')
-                    supplier.value = oldVal
-                    this.data.supplier_id = oldVal
-                }     
-        }                                    
-        },
-    },
+    // watch: {
+    //     'data.supplier_id'(newVal, oldVal){
+    //         console.log(newVal)
+    //         console.log(oldVal)
+    //         if(oldVal != 'None'){
+    //             if(confirm('Changing your selected supplier will result in clearing out your cart!\n Would you like to proceed!')){
+    //                 this.filter_type = 'None'
+    //                 this.filter_for = 'None'
+    //                 var supply_type = document.getElementById('supply_type')
+    //                 var supply_for = document.getElementById('supply_for')
+    //                 supply_type.value = 'None'
+    //                 supply_for.value = 'None' 
+    //                 this.data.supply_id = [];
+    //                 this.data.purchaseOrder_qty= [], 
+    //                 this.data.purchaseOrder_unit= [],
+    //                 this.data.purchaseOrder_subTotal= [],   
+    //                 this.totalBalance = 0
+    //                 this.data.supplier_id = newVal
+    //             }
+    //             else{
+    //                 console.log(1)
+    //                 console.log(oldVal)
+    //                 var supplier = document.getElementById('supplier')
+    //                 supplier.value = oldVal
+    //                 this.data.supplier_id = oldVal
+    //             }     
+    //         }                                    
+    //     },
+    // },
     methods: {
         ...mapActions(['readyApp', 'formForAddPO', 'initPO']), 
         setSupplier(e){
-            this.data.supplier_id = e.target.value
+            this.filter_supplier = e.target.value
         },
         setSupplyType(e){
             this.filter_type = e.target.value
@@ -200,6 +208,7 @@ export default {
             var qty;
             var supplyObj;
             var index = this.data.supply_id.findIndex((i) => parseInt(i) === parseInt(e.target.value))
+            var indexx = this.getFormPO.supplies.findIndex((i) => parseInt(i.id) === parseInt(e.target.value))
             console.log(index)            
             if(index != -1){           
                 var subValue = parseFloat(this.data.purchaseOrder_subTotal[index])
@@ -208,6 +217,7 @@ export default {
                 this.data.purchaseOrder_qty.splice(index, 1)                
                 this.data.purchaseOrder_unit.splice(index, 1)                
                 this.data.purchaseOrder_subTotal.splice(index, 1)   
+                this.checks[indexx] = false
             }
             else{                            
                 qty = parseInt(prompt('Please set your desired quantity'))
@@ -221,20 +231,17 @@ export default {
                     this.data.purchaseOrder_subTotal.push(supplyObj[0].supply_initialPrice * qty)
                     this.data.purchaseOrder_unit.push(supplyObj[0].supply_unit)
                     this.totalBalance += parseFloat(supplyObj[0].supply_initialPrice) * parseFloat(qty)
+                    this.checks[indexx] = true
                 }
                 else{
                     e.target.checked = false
                 }
             }
         },
-        checkID(id){  
-            var index = this.data.supply_id.findIndex((i) => parseInt(id) === parseInt(i))            
-            if(index != -1){
-                return true
-            }
-            else{
-                return false
-            }
+        checkID(supply){  
+            var index = this.getFormPO.supplies.findIndex((i) => parseInt(i.id) === parseInt(supply.id))                     
+            return this.checks && this.checks[index] ? this.checks[index] : false
+        
         },
         getSupplierName(supply){
             var supplierObj = this.getFormPO.suppliers.filter((s) => {
@@ -251,25 +258,25 @@ export default {
         ...mapGetters(['getFormPO']),
         filteredSupplies(){
             var supplies = [];            
-            if(this.data.supplier_id != 'None'){
+            if(this.filter_supplier != 'None'){
                 supplies = this.getFormPO.supplies.filter((s) => {
-                    return parseInt(this.data.supplier_id) === parseInt(s.supplier_id)
+                    return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
                 })
-                if(this.filter_type != 'None' && this.filter_for != 'None'){
-                    supplies = supplies.filter((s) => {
-                        return this.filter_type === s.supply_type && this.filter_for === s.supply_for
-                    })                    
-                }
-                else if(this.filter_type != 'None'){
-                    supplies = supplies.filter((s) => {
-                        return this.filter_type === s.supply_type
-                    })
-                }
-                else if(this.filter_for != 'None'){
-                    supplies = supplies.filter((s) => {
-                        return this.filter_for === s.supply_for
-                    })
-                }               
+                // if(this.filter_type != 'None' && this.filter_for != 'None'){
+                //     supplies = supplies.filter((s) => {
+                //         return this.filter_type === s.supply_type && this.filter_for === s.supply_for
+                //     })                    
+                // }
+                // else if(this.filter_type != 'None'){
+                //     supplies = supplies.filter((s) => {
+                //         return this.filter_type === s.supply_type
+                //     })
+                // }
+                // else if(this.filter_for != 'None'){
+                //     supplies = supplies.filter((s) => {
+                //         return this.filter_for === s.supply_for
+                //     })
+                // }               
                 return supplies
             }
             else{
@@ -290,11 +297,13 @@ export default {
         getCart(){
             var cart = [];                       
             this.data.supply_id.forEach((id, i) => {
-                var supplyObj = this.filteredSupplies.filter((s) => {
+                var supplyObj = this.getFormPO.supplies.filter((s) => {
                     return parseInt(id) === parseInt(s.id)
                 })
                 var item = {
+                    supplier_id: supplyObj[0].supplier_id,
                     id: id,
+                    supply_name: supplyObj[0].supply_name,
                     supply_type: supplyObj[0].supply_type,
                     supply_for: supplyObj[0].supply_for,
                     supply_description: supplyObj[0].supply_description,
@@ -307,15 +316,14 @@ export default {
             })
             return cart
         },
-        validateData(){
-           var supplier_id = this.data.supplier_id
+        validateData(){           
            var supply_id = this.data.supply_id
            var purchaseOrder_num = this.data.purchaseOrder_num
            var purchaseOrder_status = this.data.purchaseOrder_status
            var purchaseOrder_qty = this.data.purchaseOrder_qty
            var purchaseOrder_unit = this.data.purchaseOrder_unit
            var purchaseOrder_subTotal = this.data.purchaseOrder_subTotal
-           if(supplier_id != 'None' && supply_id.length > 0 && purchaseOrder_num && purchaseOrder_status
+           if(supply_id.length > 0 && purchaseOrder_num && purchaseOrder_status
             && purchaseOrder_qty.length > 0 && purchaseOrder_unit.length > 0 
             && purchaseOrder_subTotal.length > 0){
                 return false
