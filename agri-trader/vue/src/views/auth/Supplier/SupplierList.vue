@@ -13,13 +13,16 @@
                           <th scope="col">Address</th>
                           <th scope="col">Contact Person</th>
                           <th scope="col">Contact Number</th>
-                          <th scope="col">Supplies linked to Supplier</th>
+                          <th scope="col">Number of Supplies</th>
                         </tr>
                       </thead>
                       <tbody align="center">
                         <tr class="supplier" v-for="(supplier, index) in getSuppliers" :key="index" @click="goToEditPage(supplier.id)">
                           <th>{{ supplier.supplier_name }}</th>
                           <th>{{ getAddress(supplier) }}</th>
+                          <th>{{ getContactPerson(supplier) }}</th>
+                          <th>{{ getContactNumber(supplier) }}</th>
+                          <th>{{ getNumSupplies(supplier) }}</th>
                         </tr>
                       </tbody>
                     </table>
@@ -57,11 +60,40 @@ export default {
         return parseInt(supplier.id) === parseInt(a.supplier_id)
       })
       return `${addressObj[0].address_street}, ${addressObj[0].address_town}, ${addressObj[0].address_province}`
-    }
+    },
+    getContactPerson(supplier){
+      var personObj = this.getSupplierContactPeople.filter((p) => {
+        return parseInt(supplier.id) === parseInt(p.supplier_id)
+      })
+      return personObj[0].contact_firstName + ' ' + personObj[0].contact_lastName
+    },
+    getContactNumber(supplier){
+      var contactObj = this.getSupplierContacts.filter((c) => {
+        return parseInt(supplier.id) === parseInt(c.supplier_id)
+      })
+      if(contactObj[0].supplier_telNumber){
+        return contactObj[0].supplier_phoneNumber + ' / ' + contactObj[0].supplier_telNumber
+      }
+      else{
+        return contactObj[0].supplier_phoneNumber
+      }
+    },
+    getNumSupplies(supplier){
+      var supplies = this.getSupplies.filter((s) => {
+        return parseInt(supplier.id) === parseInt(s.supplier_id)
+      })
+      return supplies.length
+    },
     
   },
   computed:{
-    ...mapGetters(['getSuppliers', 'getSupplierAddresses'])
+    ...mapGetters([
+      'getSuppliers', 
+      'getSupplierAddresses',
+      'getSupplierContacts',
+      'getSupplierContactPeople',
+      'getSupplies',
+    ])
   }
 }
 </script>

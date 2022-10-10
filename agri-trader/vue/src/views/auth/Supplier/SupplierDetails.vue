@@ -82,6 +82,26 @@
                         <input type="email" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_email">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="col-lg-4 mb-3">
+                        <label for="Phone Number" class="form-label me-4" style="font-size: smaller;">Bank Name</label>
+                        <input type="text" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_bankName">
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">E-Wallet Used</label>
+                        <input type="text" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_otherName">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-lg-4 mb-3">
+                        <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Account Name</label>
+                        <input type="text" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_accName">
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Account Number</label>
+                        <input type="text" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_accNum">
+                    </div>
+                </div>                 
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-3">
                         <button class="btn btn-success" style="width:100px" @click="editSupplier($event)">Edit</button>
@@ -101,6 +121,10 @@ export default {
       this.fetchSupplier(this.$route.params.id)
       .then(() => {
         this.supplier.supplier_name = this.getSupplier.supplier.supplier_name
+        this.supplier.supplier_bankName = this.getSupplier.supplier.supplier_bankName
+        this.supplier.supplier_accName = this.getSupplier.supplier.supplier_accName
+        this.supplier.supplier_accNum = this.getSupplier.supplier.supplier_accNum
+        this.supplier.supplier_otherName = this.getSupplier.supplier.supplier_otherName
         this.supplier.contact_firstName = this.getSupplier.supplier_contact_person.contact_firstName
         this.supplier.contact_middleName = this.getSupplier.supplier_contact_person.contact_middleName
         this.supplier.contact_lastName = this.getSupplier.supplier_contact_person.contact_lastName
@@ -125,6 +149,10 @@ export default {
             supplier: {
                 id: this.$route.params.id,
                 supplier_name: '',
+                supplier_bankName: '',
+                supplier_accName: '',
+                supplier_accNum: '',
+                supplier_otherName: '',
                 contact_firstName: '',
                 contact_middleName: '',
                 contact_lastName: '',

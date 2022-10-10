@@ -18,6 +18,10 @@ class SupplierController extends Controller
             'supplier_phoneNumber' => 'required',
             'supplier_telNumber' => 'nullable',
             'supplier_email' => 'required|email|unique:supplier_contacts,supplier_email',
+            'supplier_bankName' => 'required',
+            'supplier_accName' => 'required',
+            'supplier_accNum' => 'required',
+            'supplier_otherName' => 'nullable',
             'contact_firstName' => 'required',
             'contact_middleName' => 'required',
             'contact_lastName' => 'required',
@@ -48,7 +52,11 @@ class SupplierController extends Controller
 
         $supplier = Supplier::create([
             'trader_id' => User::find(auth()->id())->trader()->first()->id,
-            'supplier_name' => $request->supplier_name
+            'supplier_name' => $request->supplier_name,
+            'supplier_bankName' => $request->supplier_bankName,
+            'supplier_accName' => $request->supplier_accName,
+            'supplier_accNum' => $request->supplier_accNum,
+            'supplier_otherName' => $request->supplier_otherName,
         ]);
 
         SupplierAddress::create([
@@ -82,11 +90,22 @@ class SupplierController extends Controller
     public function fetchSuppliers () {       
         $suppliers = Supplier::where('trader_id', Trader::where('user_id', auth()->id())->first()->id)->get();
         $supplier_addresses = [];
+        $supplier_contacts = [];
+        $supplier_contact_people = [];
+        $supplies = [];
         foreach($suppliers as $supplier){
             array_push($supplier_addresses, $supplier->supplier_address()->first());
+            array_push($supplier_contacts, $supplier->supplier_contact()->first());
+            array_push($supplier_contact_people, $supplier->supplier_contact_person()->first());
+            foreach($supplier->supply()->get() as $supply){
+                array_push($supplies, $supply);
+            }
         }
         return response([
             'suppliers' => $suppliers,
+            'supplies' => $supplies,
+            'supplier_contacts' => $supplier_contacts,
+            'supplier_contact_people' => $supplier_contact_people,
             'supplier_addresses' => $supplier_addresses
         ]);
     }

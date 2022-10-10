@@ -81,49 +81,30 @@
                         <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Email Address</label>
                         <input type="email" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_email">
                     </div>
+                </div> 
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <label for="contact_information" class="form-label me-4" style="font-size: large;">Payment Details</label>
                 </div>
-                <div class="row mt-2">
-                            <label for="contact_number" class="form-label me-4" style="font-size: large;">Default Payment Channel</label>
+                <div class="form-row">
+                    <div class="col-lg-4 mb-3">
+                        <label for="Phone Number" class="form-label me-4" style="font-size: smaller;">Bank Name</label>
+                        <input type="text" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_bankName">
                     </div>
-                    <div class="form-row mb-3 me-3">
-                        <div class="col-md-2">
-                            <input class="form-check" type="checkbox" ref="bank" value="Bank" :checked="supplier.paymentMethod_bank = 'Card'" @change="setpaymentMethod($event)"/>Card/Wire Transfer
-                        </div>
-                        <div class="col-md-2">
-                            <input class="form-check" type="checkbox" ref="others" value="Others" :checked="supplier.paymentMethod_cash = 'Others'" @change="setpaymentMethod($event)"/>Others
-                        </div>
+                    <div class="col-lg-4 mb-3">
+                        <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">E-Wallet Used</label>
+                        <input type="text" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_otherName">
                     </div>
-                    <div class="form-row" v-if="supplier.paymentMethod == 'Bank'">
-                        <div class="col-lg-2 mb-1">
-                            <label class="form-label me-4 mt-3" >Banking Institution</label>
-                            <select class="form-select" @change="setBank($event)">
-                                <option selected value="None">Select Bank</option>
-                                <option value="BDO">BDO Unibank</option>
-                                <option value="BPI">BPI</option>
-                                <option value="LBP">LandBank</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-4 mb-2">
-                            <label  class="form-label me-4 mt-3" >Account Name</label>
-                            <input type="text"  id="" class="form-control" v-model="supplier.accName">
-                        </div>
-                        <div class="col-lg-2 mb-2">
-                            <label for="supplier_accNum" class="form-label me-4 mt-3" >Account Number</label>
-                            <input type="text" name="supplier_accNum" id="" class="form-control" v-model="supplier.accNum">
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-lg-4 mb-3">
+                        <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Account Name</label>
+                        <input type="text" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_accName">
                     </div>
-                    <div class="form-row" v-if="supplier.paymentMethod == 'Others'">
-                            <label for="supplyOrder_SupplyType" class="form-label me-4 mt-3" >Choose Payment Option</label>
-                            <select class="form-select" @change="setWallet($event)">
-                                <option selected value="None">Select Payment Type</option>
-                                <option value="GCash">GCash</option>
-                                <option value="PayMaya/MAYA">PayMaya/MAYA</option>
-                            </select>
-                        <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Name</label>
-                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="supplier.other_accName">
-                        <label for="orderSummary_transactedBy" class="form-label me-4 mt-3" >Account Number</label>
-                        <input type="text" name="orderSummary_transactedBy" id="" class="form-control" v-model="supplier.other_accNum">
+                    <div class="col-lg-4 mb-3">
+                        <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Account Number</label>
+                        <input type="text" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_accNum">
                     </div>
+                </div> 
 
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-3">
@@ -158,14 +139,11 @@ export default{
                 address_province: '',
                 supplier_phoneNumber: '',
                 supplier_telNumber: '',
-                supplier_email: '',
-                paymentMethod: null,
-                paymentMethod_bankName: '',
-                paymentMethod_accNum: '',
-                paymentMethod_accName: '',
-                other_accName: '',
-                other_accNum: '',
-                other_wallet: '',
+                supplier_email: '',   
+                supplier_bankName: '',
+                supplier_accNum: '',
+                supplier_accName: '',
+                supplier_otherName: '',              
             }
         }
     },
