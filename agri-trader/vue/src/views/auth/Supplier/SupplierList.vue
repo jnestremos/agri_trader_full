@@ -8,11 +8,8 @@
                   <div class="form-row">
                     <div class="col-lg-3 mb-3 mt-2">
                       <label class="fw-bold" style="font-size: large;">Search Supplier</label>
-                      <input type="text" class="form-control">
-                    </div>
-                    <div class="col-lg-3 mb-3 mt-auto">
-                      <button class="btn btn-success" style="width:100px">Search</button> 
-                    </div>
+                      <input type="text" class="form-control" v-model="filter_supplier">
+                    </div>                    
                   </div>
                   <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
                     <table id="supplierList" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm">
@@ -26,7 +23,7 @@
                         </tr>
                       </thead>
                       <tbody align="center">
-                        <tr class="supplier" v-for="(supplier, index) in getSuppliers" :key="index" @click="goToEditPage(supplier.id)">
+                        <tr class="supplier" v-for="(supplier, index) in filteredTable" :key="index" @click="goToEditPage(supplier.id)">
                           <th>{{ supplier.supplier_name }}</th>
                           <th>{{ getAddress(supplier) }}</th>
                           <th>{{ getContactPerson(supplier) }}</th>
@@ -59,6 +56,11 @@ export default {
       this.readyApp()
     })  
   },  
+  data(){
+    return {
+      filter_supplier: ''
+    }
+  },
   methods: {
     ...mapActions(['readyApp', 'fetchSuppliers']),
     goToEditPage(id){      
@@ -95,6 +97,11 @@ export default {
     },
     
   },
+  watch: {
+    filter_supplier(newVal){
+      console.log(newVal)
+    }
+  },
   computed:{
     ...mapGetters([
       'getSuppliers', 
@@ -102,7 +109,20 @@ export default {
       'getSupplierContacts',
       'getSupplierContactPeople',
       'getSupplies',
-    ])
+    ]),
+    filteredTable(){
+      var table = []
+      if(this.filter_supplier.trim() != ''){   
+        const reg = new RegExp(`^${this.filter_supplier.trim()}`, 'gm')  
+        table = this.getSuppliers.filter((s) => {          
+          return reg.test(s.supplier_name.toLowerCase())
+        })
+      }
+      else{
+        return this.getSuppliers
+      }
+      return table
+    }
   }
 }
 </script>
