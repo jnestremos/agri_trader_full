@@ -95,7 +95,16 @@ const state = {
     produces: null,
     project_bids: null,
     on_hand_bids: null,
-    lastOrderDate: null
+    lastOrderDate: null,
+    order_report: {
+        project_bids: null,
+        on_hand_bids: null,
+        distributors: null,
+        produce_traders: null,
+        produces: null,
+        orders: null,
+        accs: null,
+    }
 }
 
 const getters = {
@@ -137,6 +146,9 @@ const getters = {
     },
     getOrderList(){
         return state.order_list
+    },
+    getBidOrderReport(){
+        return state.order_report
     }
 }
 
@@ -357,6 +369,13 @@ const actions = {
             console.log(res.data)
             commit('asd')
         })
+    },
+    fetchBidOrderReport({ commit }){
+        return axiosClient.get(`reports/bid/orders`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setBidOrderReport', res.data)
+        })
     } 
 }
 
@@ -500,6 +519,15 @@ const mutations = {
         state.on_hand_data.produce = data.produce
         state.on_hand_data.produce_inventories = data.produce_inventories
         state.on_hand_data.chart_data = data.chart_data
+    },
+    setBidOrderReport: (state, data) => {         
+        state.order_report.project_bids = data.project_bids
+        state.order_report.orders = data.orders
+        state.order_report.on_hand_bids = data.on_hand_bids
+        state.order_report.distributors = data.distributors
+        state.order_report.produce_traders = data.produce_traders
+        state.order_report.produces = data.produces
+        state.order_report.accs = data.accs
     } 
 }
 

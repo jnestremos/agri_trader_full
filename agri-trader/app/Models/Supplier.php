@@ -11,7 +11,11 @@ class Supplier extends Model
 
     protected $fillable = [
         'trader_id',
-        'supplier_name'
+        'supplier_name',
+        'supplier_bankName',
+        'supplier_accName',
+        'supplier_accNum',
+        'supplier_otherName',
     ];
 
     public function supplier_contact(){

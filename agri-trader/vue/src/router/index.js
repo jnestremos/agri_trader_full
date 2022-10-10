@@ -11,6 +11,7 @@ import AllProduces from '../views/auth/Produce/AllProduces.vue'
 import AddProduce from '../views/auth/Produce/AddProduce.vue'
 import ShowProduce from '../views/auth/Produce/ShowProduce.vue'
 import AllProjects from '../views/auth/Project/AllProjects.vue'
+import ProjectReport from '../views/auth/Project/ProjectReport.vue'
 import ShowProject from '../views/auth/Project/ShowProject.vue'
 import AddProject from '../views/auth/Project/AddProject.vue'
 import Catalog from '../views/auth/Catalog/Catalog.vue'
@@ -25,6 +26,7 @@ import DistributorListOfBids from '../views/auth/BidOrder/trader/DistributorList
 // import BidOrderDetails from '../views/auth/BidOrder/trader/BidOrderDetails.vue'
 import BidOrderDetailss from '../views/auth/BidOrder/trader/BidOrderDetailss.vue'
 import ChangeBidOrder from '../views/auth/BidOrder/trader/ChangeBidOrder.vue'
+import BidOrderReport from '../views/auth/BidOrder/trader/BidOrderReport.vue'
 import TraderMessaging from '../views/auth/Messaging/trader/TraderMessaging.vue'
 import DistMessaging from '../views/auth/Messaging/DistMessaging.vue'
 import ProduceInventory from '../views/auth/ProduceInventory/ProduceInventory.vue'
@@ -41,7 +43,8 @@ import PurchaseOrderPayment from '../views/auth/Supply Purchase Order/POPayment.
 import PurchaseOrderDashboard from '../views/auth/Supply Purchase Order/PurchaseOrderDashboard.vue'
 import PurchaseReturnDashboard from '../views/auth/Supply Purchase Order/PurchaseReturnDashboard.vue'
 import PaymentDashboard from '../views/auth/Supply Purchase Order/PaymentDashboard.vue'
-import PurchaseOrderStatus from '../views/auth/Supply Purchase Order/PurchaseOrderStatus.vue'
+// import PurchaseOrderStatus from '../views/auth/Supply Purchase Order/PurchaseOrderStatus.vue'
+import PurchaseOrderRefunds from "../views/auth/Supply Purchase Order/PurchaseRefundReport.vue"
 import InitialStockIn from '../views/auth/Stock In Inventory/InitialStockIn.vue'
 // import ForReturns from '../views/auth/Stock In Inventory/ForReturns.vue'
 import SavedReceiveReport from '../views/auth/Stock In Inventory/SavedReceiveReport.vue'
@@ -133,6 +136,12 @@ const routes = [
         component: AllProjects
       },
       {
+        path: '/projects/report',
+        name: 'ProjectReport', 
+        meta: {needsAuth : true, role:'trader'},
+        component: ProjectReport
+      },
+      {
         path: '/projects/:id',
         name: 'ShowProject', 
         meta: {needsAuth : true, role:'trader'},
@@ -155,6 +164,12 @@ const routes = [
         name: 'AllBidOrdersFiltered', 
         meta: {needsAuth: true, role:'trader'},
         component: AllBidOrdersFiltered
+      },
+      {
+        path: '/bid/orders/report',
+        name: 'BidOrderReport', 
+        meta: {needsAuth: true, role:'trader'},
+        component: BidOrderReport
       },
       {
         path: '/bid/orders/:id',
@@ -288,11 +303,17 @@ const routes = [
         meta:{needsAuth: true, role: "trader"},
         component:PaymentDashboard
       },
+      // {
+      //   path:"/supplyOrder/:id",
+      //   name:"PurchaseOrderStatus",
+      //   meta:{needsAuth: true, role: "trader"},
+      //   component:PurchaseOrderStatus
+      // },
       {
-        path:"/supplyOrder/:id",
-        name:"PurchaseOrderStatus",
+        path:"/supplyOrder/refunds",
+        name:"PurchaseOrderRefunds",
         meta:{needsAuth: true, role: "trader"},
-        component:PurchaseOrderStatus
+        component:PurchaseOrderRefunds
       },
       {
         path:"/stockIn/:id",

@@ -44,10 +44,16 @@
                                 <input type="number" name="payment_totalPrice" id="" class="form-control" :disabled="!(data.purchaseOrder_paymentType == 'Partial')" v-model="data.purchaseOrder_percentage" step=".1">
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row mb-3">
                             <div class="col-lg-2">
                                 <label for="payment_downpaymentAmount" class="form-label"> Balance </label>
                                 <input type="text" name="payment_totalPrice" id="" class="form-control" v-model="data.purchaseOrder_balance" disabled>
+                            </div>                            
+                        </div>
+                        <div class="form-row">
+                            <div class="col-lg-2">
+                                <label for="farm_imageUrl" class="form-label me-4" style="width:100%;">Select Images for Proof of Payment:</label>
+                                <input type="file" name="farm_imageUrl" id="" multiple class="form-control" @change="setImageUrl($event)">                    
                             </div>
                         </div>
                         <div class="btn-toolbar pt-4" role="toolbar">
@@ -65,6 +71,7 @@
 </template>
 
 <script>
+var formData = new FormData()
 import { mapActions, mapGetters } from 'vuex'
 import { format } from 'date-fns'
 export default {
@@ -74,7 +81,7 @@ export default {
             this.$router.push({ name: 'InitialPurchaseOrder' })
         }
         else{
-            this.data.supplier_id = this.getPO.supplier_id,
+            // this.data.supplier_id = this.getPO.supplier_id,
             this.data.supply_id = this.getPO.supply_id, 
             this.data.purchaseOrder_num = this.getPO.purchaseOrder_num, 
             this.data.purchaseOrder_status = this.getPO.purchaseOrder_status, 
@@ -100,7 +107,7 @@ export default {
                 balance: '',
             },
             data: {
-                supplier_id: null,
+                // supplier_id: null,
                 supply_id: null, 
                 purchaseOrder_num: null, 
                 purchaseOrder_status: null, 
@@ -116,6 +123,7 @@ export default {
                 purchaseOrder_percentage: null,
                 purchaseOrder_balance: null,
                 purchaseOrder_paymentType: null,
+                purchaseOrder_images: []
             },
             dateToday: format(new Date(), 'yyyy-MM-dd'),
         }
@@ -166,9 +174,52 @@ export default {
             else{
                 this.data.purchaseOrder_paymentType = null;
             }
-        },    
-        sendPayment(){
-            this.addPO(this.data)
+        }, 
+        setImageUrl(e){            
+            const files = e.target.files 
+            console.log(files)    
+            this.data.purchaseOrder_images = []
+            for(var i = 0; i < files.length; i++){
+                let file = files.item(i)
+                this.data.purchaseOrder_images.push(file)
+                formData.append('purchaseOrder_images[]', file, file.name)
+            }                               
+                                                                       
+            // if(files){                                      
+            //     
+            //     coverBg.style.backgroundColor = ''
+            //     this.previewUrl = URL.createObjectURL(file)                      
+            // }
+            // else{ 
+            //     this.farm_imageUrl = null  
+            //     coverBg.style.backgroundColor = 'grey'              
+            //     this.previewUrl = null
+            // }            
+        },   
+        sendPayment(){                        
+            this.data.supply_id.forEach((s) => {
+                formData.append('supply_id[]', s)
+            })
+            // this.data.purchaseOrder_images.forEach((s) => {
+            //     formData.append('purchaseOrder_images[]', s)
+            // })
+            this.data.purchaseOrder_qty.forEach((s) => {
+                formData.append('purchaseOrder_qty[]', s)
+            })
+            this.data.purchaseOrder_unit.forEach((s) => {
+                formData.append('purchaseOrder_unit[]', s)
+            })
+            this.data.purchaseOrder_subTotal.forEach((s) => {
+                formData.append('purchaseOrder_subTotal[]', s)
+            })
+            formData.append('purchaseOrder_num', this.data.purchaseOrder_num)
+            formData.append('purchaseOrder_status', this.data.purchaseOrder_status)                    
+            formData.append('purchaseOrder_totalBalance', this.data.purchaseOrder_totalBalance)
+            formData.append('purchaseOrder_dpAmount', this.data.purchaseOrder_dpAmount)
+            formData.append('purchaseOrder_percentage', this.data.purchaseOrder_percentage)
+            formData.append('purchaseOrder_balance', this.data.purchaseOrder_balance)
+            formData.append('purchaseOrder_paymentType', this.data.purchaseOrder_paymentType)
+            this.addPO(formData)
             .then(() => {
                 this.$toastr.s('Purchase Order Sent Successfully!')
                 setTimeout(() => {

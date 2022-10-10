@@ -16,15 +16,16 @@ return new class extends Migration
         Schema::create('supply_order_payments', function (Blueprint $table) {
             $table->id();
             $table->string('purchaseOrder_num');            
-            $table->string('purchaseOrder_paymentMethod');                                                       
+            // $table->string('purchaseOrder_paymentMethod');                                                       
             $table->string('purchaseOrder_paymentType');                                                       
-            $table->string('purchaseOrder_bankName')->nullable();    
-            $table->string('purchaseOrder_accNum')->nullable();   
-            $table->string('purchaseOrder_accName');                  
+            // $table->string('purchaseOrder_bankName')->nullable();    
+            // $table->string('purchaseOrder_accNum')->nullable();   
+            // $table->string('purchaseOrder_accName');                  
             $table->double('purchaseOrder_dpAmount');                  
             $table->double('purchaseOrder_percentage');                  
             $table->double('purchaseOrder_balance');                  
-            $table->double('purchaseOrder_totalBalance');                  
+            $table->double('purchaseOrder_totalBalance');  
+            $table->json('purchaseOrder_images');
             $table->timestamps();
         });
     }
