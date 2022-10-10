@@ -1,9 +1,9 @@
 <template>
   <div class="allFarms">    
-    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
+    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Farms and Owners</h3>
-        <div class="d-flex justify-content-between align-items-center" style="width:15%;">
-            <button class="btn btn-success" style="width:60px;" @click="toAddFarm()">Add</button>
+        <div class="d-flex" style="width:15%;">
+            <button class="btn btn-success me-3" style="width:60px;" @click="toAddFarm()">Add</button>
             <button class="btn btn-success">See All Farm Owners</button>            
         </div>
     </div>
