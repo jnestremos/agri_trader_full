@@ -5,6 +5,15 @@
         </div>
             <div class="container-fluid" style="height:90%;">
                 <div style="width:90%; height:85%;" class="pb-5">
+                  <div class="form-row">
+                    <div class="col-lg-3 mb-3 mt-2">
+                      <label class="fw-bold" style="font-size: large;">Search Supplier</label>
+                      <input type="text" class="form-control">
+                    </div>
+                    <div class="col-lg-3 mb-3 mt-auto">
+                      <button class="btn btn-success" style="width:100px">Search</button> 
+                    </div>
+                  </div>
                   <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
                     <table id="supplierList" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm">
                       <thead align="center">
