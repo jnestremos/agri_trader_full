@@ -2,9 +2,10 @@
   <div class="allFarms">    
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Farms and Owners</h3>
-        <div class="d-flex" style="width:15%;">
-            <button class="btn btn-success me-3" style="width:60px;" @click="toAddFarm()">Add</button>
-            <button class="btn btn-success">See All Farm Owners</button>            
+        <div class="d-flex align-items-center" style="width:23%;">
+            <button class="btn btn-success me-3" @click="toAddFarm()">Add</button>
+            <router-link to="/farms/report"><button class="btn btn-success me-3">View All Farms</button></router-link>
+            <router-link to="/farms/owners/report"><button class="btn btn-success">See All Farm Owners</button></router-link>          
         </div>
     </div>
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">

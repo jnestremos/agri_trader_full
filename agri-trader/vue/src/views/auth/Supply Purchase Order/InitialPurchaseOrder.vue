@@ -64,7 +64,7 @@
                                     </thead>
                                     <tbody align="center">
                                          <tr v-for="(supply, index) in filteredSupplies" :key="index">
-                                            <td><input type="checkbox" name="" id="" :value="supply.id" :checked="checkID(supply)" @change="setSupplyId($event)">{{index}}</td>
+                                            <td><input type="checkbox" name="" id="" :value="supply.id" :checked="checkID(supply)" @change="setSupplyId($event)"></td>
                                             <td>{{ getSupplierName(supply) }}</td>
                                             <td>{{ supply.supply_name }}</td>
                                             <td>{{ supply.supply_type }}</td>

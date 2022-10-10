@@ -36,6 +36,18 @@ const state = {
             farm_zipcode: null,
         },
         farm_partners: null
+    },
+    farm_report: {
+        farms: null,
+        farm_owners: null,
+        farm_produces: null,
+        projects: null
+    },
+    owner_report: {
+        farms: null,
+        farm_owners: null,
+        farm_owner_addresses: null,
+        farm_owner_contact_numbers: null,
     }
 };
 
@@ -55,6 +67,12 @@ const getters = {
     },
     getFarmProduces(){
         return state.farm_produces
+    },
+    getFarmReport(){
+        return state.farm_report
+    },
+    getFarmOwnerReport(){
+        return state.owner_report
     }
 };
 
@@ -137,7 +155,21 @@ const actions = {
             console.log(res.data)
             commit('setFarmProduces', res.data)
         })
-    }    
+    },
+    fetchFarmReport({ commit }){
+        return axiosClient.get(`/reports/farms`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setFarmReport', res.data)
+        })
+    },
+    fetchFarmOwnerReport({ commit }){
+        return axiosClient.get(`/reports/farms/owners`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setFarmOwnerReport', res.data)
+        })
+    }
 };
 
 
@@ -193,7 +225,19 @@ const mutations = {
     },    
     setFarmProduces(state, data){
         state.farm_produces = data.produces
-    }   
+    },    
+    setFarmReport: (state, data) => {
+        state.farm_report.farms = data.farms
+        state.farm_report.farm_owners = data.farm_owners
+        state.farm_report.farm_produces = data.farm_produces
+        state.farm_report.projects = data.projects
+    },
+    setFarmOwnerReport: (state, data) => {
+        state.owner_report.farms = data.farms
+        state.owner_report.farm_owners = data.farm_owners
+        state.owner_report.farm_owner_addresses = data.farm_owner_addresses
+        state.owner_report.farm_owner_contact_numbers = data.farm_owner_contact_numbers
+    }
 };
 
 

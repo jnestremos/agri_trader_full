@@ -5,66 +5,86 @@
             </div>
             <!-- <pre> {{ orderPayment }}</pre> -->
             <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
-                <div style="width:85%; height:85%;" class="pb-5">
-                    <form class="d-flex flex-column justify-content-between" @submit.prevent="">
-                        <div class="form-row mb-2">
-                            <div class="col-lg-2 me-2 mt-3">
-                                <label for="supplyOrder_date" class="form-label me-4 font-weight-bold" style="font-size: large;">Date</label>
-                                <input type="date" name="supplyOrder_Date" id="" class="form-control" v-model="dateToday" disabled>
+                <div style="width:100%; height:85%;" class="d-flex pb-5">
+                    <div class="h-100" style="width:60%;">
+                        <form class="d-flex flex-column justify-content-between" @submit.prevent="">
+                            <div class="form-row mb-2">
+                                <div class="col-lg-2 me-2 mt-3">
+                                    <label for="supplyOrder_date" class="form-label me-4 font-weight-bold" style="font-size: large;">Date</label>
+                                    <input type="date" name="supplyOrder_Date" id="" class="form-control" v-model="dateToday" disabled>
+                                </div>
+                                <div class="col-lg-3 me-4 mt-3">
+                                    <label for="supplyOrder_purchaseOrderNum" class="form-label me-4 font-weight-bold" style="font-size: large;" >Purchase Order No.:</label>
+                                    <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" placeholder="PO-123456" disabled v-model="data.purchaseOrder_num">
+                                </div>
                             </div>
-                            <div class="col-lg-3 me-4 mt-3">
-                                <label for="supplyOrder_purchaseOrderNum" class="form-label me-4 font-weight-bold" style="font-size: large;" >Purchase Order No.:</label>
-                                <input type="text" name="supplyOrder_purchaseOrderNum" id="" class="form-control" placeholder="PO-123456" disabled v-model="data.purchaseOrder_num">
+                            <div class="row mt-3 mb-3">
+                                <label class="font-weight-bold" style="font-size:larger">Type of Payment</label>
                             </div>
-                        </div>
-                        <div class="row mt-3 mb-3">
-                            <label class="font-weight-bold" style="font-size:larger">Type of Payment</label>
-                        </div>
-                        <div class="form-row text-left mb-3">
-                            <div class="col-lg-2 ms-3">
-                                <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentType == 'Partial'" value="Partial" ref="partial" @change="setPaymentType($event)"/>Partial / Downpayment
+                            <div class="form-row text-left mb-3">
+                                <div class="col-lg-2 ms-3">
+                                    <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentType == 'Partial'" value="Partial" ref="partial" @change="setPaymentType($event)"/>Partial / Downpayment
+                                </div>
+                                <div class="col-lg-2 ms-3">
+                                    <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentType == 'Full'" value="Full" ref="full" @change="setPaymentType($event)"/>Full Payment
+                                </div>
                             </div>
-                            <div class="col-lg-2 ms-3">
-                                <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentType == 'Full'" value="Full" ref="full" @change="setPaymentType($event)"/>Full Payment
+                            <div class="form-row mt-3">
+                                <div class="col-md-2">
+                                    <label for="payment_totalPrice" class="form-label"> Total Price </label>
+                                    <input type="text" name="payment_totalPrice" id="" class="form-control" placeholder="7,500.00" disabled v-model="data.purchaseOrder_totalBalance">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-row mt-3">
-                            <div class="col-md-2">
-                                <label for="payment_totalPrice" class="form-label"> Total Price </label>
-                                <input type="text" name="payment_totalPrice" id="" class="form-control" placeholder="7,500.00" disabled v-model="data.purchaseOrder_totalBalance">
+                            <div class="form-row mt-3">
+                                <div class="col-lg-2">
+                                    <label for="payment_downpaymentAmount" class="form-label"> Downpayment Amount </label>
+                                    <input type="number" name="payment_totalPrice" id="" class="form-control" :disabled="!(data.purchaseOrder_paymentType == 'Partial')" v-model="data.purchaseOrder_dpAmount">
+                                </div>
+                                <div class="col-sm-2 mb-2">
+                                    <label for="payment_totalPrice" class="form-label"> Percentage </label>
+                                    <input type="number" name="payment_totalPrice" id="" class="form-control" :disabled="!(data.purchaseOrder_paymentType == 'Partial')" v-model="data.purchaseOrder_percentage" step=".1">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-row mt-3">
-                            <div class="col-lg-2">
-                                <label for="payment_downpaymentAmount" class="form-label"> Downpayment Amount </label>
-                                <input type="number" name="payment_totalPrice" id="" class="form-control" :disabled="!(data.purchaseOrder_paymentType == 'Partial')" v-model="data.purchaseOrder_dpAmount">
+                            <div class="form-row mb-3">
+                                <div class="col-lg-2">
+                                    <label for="payment_downpaymentAmount" class="form-label"> Balance </label>
+                                    <input type="text" name="payment_totalPrice" id="" class="form-control" v-model="data.purchaseOrder_balance" disabled>
+                                </div>                            
                             </div>
-                            <div class="col-sm-2 mb-2">
-                                <label for="payment_totalPrice" class="form-label"> Percentage </label>
-                                <input type="number" name="payment_totalPrice" id="" class="form-control" :disabled="!(data.purchaseOrder_paymentType == 'Partial')" v-model="data.purchaseOrder_percentage" step=".1">
+                            <div class="form-row">
+                                <div class="col-lg-2">
+                                    <label for="farm_imageUrl" class="form-label me-4" style="width:100%;">Select Images for Proof of Payment:</label>
+                                    <input type="file" name="farm_imageUrl" id="" multiple class="form-control" @change="setImageUrl($event)">                    
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-row mb-3">
-                            <div class="col-lg-2">
-                                <label for="payment_downpaymentAmount" class="form-label"> Balance </label>
-                                <input type="text" name="payment_totalPrice" id="" class="form-control" v-model="data.purchaseOrder_balance" disabled>
-                            </div>                            
-                        </div>
-                        <div class="form-row">
-                            <div class="col-lg-2">
-                                <label for="farm_imageUrl" class="form-label me-4" style="width:100%;">Select Images for Proof of Payment:</label>
-                                <input type="file" name="farm_imageUrl" id="" multiple class="form-control" @change="setImageUrl($event)">                    
+                            <div class="btn-toolbar pt-4" role="toolbar">
+                                <div class="btn-group me-3 mt-3">
+                                    <button class="btn btn-secondary" style="width:200px; height: 60px;" @click="backToPO()">Return to PO Summary</button>
+                                </div>
+                                <div class="btn-group me-3 mt-3">
+                                    <button class="btn btn-success" :disabled="validateData" @click="sendPayment()" style="width:200px; height: 60px;">Confirm Payment</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="btn-toolbar pt-4" role="toolbar">
-                            <div class="btn-group me-3 mt-3">
-                                <button class="btn btn-secondary" style="width:200px; height: 60px;" @click="backToPO()">Return to PO Summary</button>
-                            </div>
-                            <div class="btn-group me-3 mt-3">
-                                <button class="btn btn-success" :disabled="validateData" @click="sendPayment()" style="width:200px; height: 60px;">Confirm Payment</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                    <div class="pt-3" style="width:40%;">
+                        <table style="width:100%;">
+                            <thead>
+                                <th>Supplier Name</th>
+                                <th>Bank Name</th>
+                                <th>Account Name</th>
+                                <th>Account Number</th>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(details, index) in getPaymentDetails" :key="index">
+                                    <td>{{ details.supplier_name }}</td>
+                                    <td>{{ details.supplier_bankName }}</td>
+                                    <td>{{ details.supplier_accName }}</td>
+                                    <td>{{ details.supplier_accNum }}</td>
+                                </tr>
+                            </tbody>
+                        </table>                    
+                    </div>
                 </div>
             </div> 
         </div>
@@ -241,7 +261,7 @@ export default {
         ...mapActions(['readyApp', 'initPO', 'addPO'])
     },
     computed:{
-        ...mapGetters(['getPO']),
+        ...mapGetters(['getPO', 'getFormPO']),
         validateData(){
             if((this.data.purchaseOrder_paymentType && this.data.purchaseOrder_totalBalance
             && this.data.purchaseOrder_dpAmount && this.data.purchaseOrder_percentage
@@ -253,11 +273,34 @@ export default {
             else{
                 return true
             }
+        },
+        getPaymentDetails(){
+            var table = []
+            if(this.getPO.supply_id && this.getFormPO.suppliers && this.getFormPO.supplies){
+                this.getPO.supply_id.forEach((s) => {
+                    var supplyObj = this.getFormPO.supplies.filter((ss) => {
+                        return parseInt(ss.id) === parseInt(s)
+                    })
+                    var supplierObj = this.getFormPO.suppliers.filter((ss) => {
+                        return parseInt(supplyObj[0].supplier_id) === parseInt(ss.id)
+                    })
+                    table.push(supplierObj[0])
+                })
+            }
+            return table
         }
     }
 }
 </script>
 
-<style>
-
+<style scoped>
+table, th, td{
+    border: 2px solid black;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+th, td{
+    padding: 10px;
+    text-align: center;
+}
 </style>

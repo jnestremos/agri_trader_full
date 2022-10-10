@@ -4,6 +4,8 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Dashboard from '../views/auth/Dashboard.vue'
 import AllFarms from '../views/auth/Farm/AllFarms.vue'
+import FarmReport from '../views/auth/Farm/FarmReport.vue'
+import FarmOwnerReport from '../views/auth/Farm/FarmOwnerReport.vue'
 import AddFarm from '../views/auth/Farm/AddFarm.vue'
 import AddFarmOwner from '../views/auth/Farm/AddFarmOwner.vue'
 import ShowFarm from '../views/auth/Farm/ShowFarm.vue'
@@ -94,10 +96,22 @@ const routes = [
         component: AllFarms
       },
       {
+        path: '/farms/report', 
+        name: 'FarmReport',  
+        meta: {needsAuth : true, role:'trader'},    
+        component: FarmReport
+      },
+      {
         path: '/farms/add', 
         name: 'AddFarm',  
         meta: {needsAuth : true, role:'trader'},    
         component: AddFarm
+      },
+      {
+        path: '/farms/owners/report', 
+        name: 'FarmOwnerReport',  
+        meta: {needsAuth : true, role:'trader'},    
+        component: FarmOwnerReport
       },
       {
         path: '/farms/owners/add', 

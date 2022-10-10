@@ -633,7 +633,57 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produces' => $produces,
             ]);
         });
+
+        Route::get('/reports/farms', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $farms = Farm::where('trader_id', $user->id)->get();
+            $farm_owners = [];
+            $farm_produces = [];
+            $projects = [];
+            foreach($farms as $farm){
+                if(!in_array($farm->farm_owner()->first(), $farm_owners)){
+                    array_push($farm_owners, $farm->farm_owner()->first());
+                }
+                foreach(DB::table('farm_produce')->where('farm_id', $farm->id)->get() as $farm_produce){
+                    array_push($farm_produces, $farm_produce);
+                }                
+                foreach($farm->contract()->get() as $contract){
+                    array_push($projects, $contract->project()->where('project_completionDate', null)->first());
+                }                
+            }
+
+            return response([
+                'farms' => $farms,
+                'farm_owners' => $farm_owners,
+                'farm_produces' => $farm_produces,
+                'projects' => $projects,
+            ]);
+            
+        });
         
+        Route::get('/reports/farms/owners', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $farm_owners = [];
+            $farm_owner_addresses = [];
+            $farm_owner_contact_numbers = [];
+            foreach(DB::table('owner_trader')->where('trader_id', $user->id)->get() as $owner){
+                array_push($farm_owners, FarmOwner::find($owner->farm_owner_id));
+                array_push($farm_owner_addresses, FarmOwner::find($owner->farm_owner_id)->farm_owner_address()->first());
+                array_push($farm_owner_contact_numbers, FarmOwner::find($owner->farm_owner_id)->farm_owner_contactNum()->first());
+            }
+            $farms = [];
+            foreach($farm_owners as $owner){
+                foreach($owner->farm()->get() as $farm){
+                    array_push($farms, $farm);
+                }
+            }
+            return response([
+                'farms' => $farms,
+                'farm_owners' => $farm_owners,
+                'farm_owner_addresses' => $farm_owner_addresses,
+                'farm_owner_contact_numbers' => $farm_owner_contact_numbers,
+            ]);
+        });
 
         Route::get('/dashboard', function(){
 
