@@ -61,7 +61,7 @@
                     </table>
                 </div>
                 <div class="form-row mt-2 mb-2">
-                    <div class="col-sm-2">
+                    <div class="col-sm-4">
                         <label for="orderSummary_quantityReceived" class="form-label me-4" >Total Amount</label>
                         <input v-if="data.purchaseOrder_subTotal && data.purchaseOrder_subTotal.length > 0" type="text" name="orderSummary_totalAmount" id="" class="form-control" style="width: 40%" disabled :value="data.purchaseOrder_subTotal.reduce((partialSum, a) => partialSum + a, 0)">
                     </div>                                       
