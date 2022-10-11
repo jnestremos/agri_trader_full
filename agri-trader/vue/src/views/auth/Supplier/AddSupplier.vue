@@ -64,7 +64,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100">
-                    <label for="contact_information" class="form-label me-4" style="font-size: large;">Contact Information</label>
+                    <label for="contact_information" class="form-label me-4 fw-bold" style="font-size: large;">Contact Information</label>
                 </div>
                 <div class="form-row">
                     <div class="col-lg-3 mb-3">
