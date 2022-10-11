@@ -48,7 +48,8 @@ const state = {
         farm_owners: null,
         farm_owner_addresses: null,
         farm_owner_contact_numbers: null,
-    }
+    },
+    produces_all: null
 };
 
 
@@ -73,6 +74,9 @@ const getters = {
     },
     getFarmOwnerReport(){
         return state.owner_report
+    },
+    getAllProducess(){
+        return state.produces_all
     }
 };
 
@@ -193,6 +197,7 @@ const mutations = {
             state.farm_data.farms = data.farms
         }        
         state.farm_produces = data.farm_produces          
+        state.produces_all = data.produces_all          
         
     },
     setOwners: (state, data) => {
@@ -225,6 +230,7 @@ const mutations = {
     },    
     setFarmProduces(state, data){
         state.farm_produces = data.produces
+        state.produces_all = data.produces_all
     },    
     setFarmReport: (state, data) => {
         state.farm_report.farms = data.farms

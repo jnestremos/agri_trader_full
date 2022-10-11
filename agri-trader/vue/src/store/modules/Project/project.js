@@ -44,6 +44,10 @@ const state = {
         farms: null,
         contract_shares: null,
         farm_owners: null,
+    },
+    project_images: {
+        images: null,        
+        project: null        
     }
 }
 
@@ -126,6 +130,9 @@ const getters = {
     getHistory(){
         return state.history
     },
+    getProjectImages(){
+        return state.project_images
+    }
 }
 
 const actions = {
@@ -199,10 +206,32 @@ const actions = {
             console.log(res.data)
             commit('setProjectReport', res.data)
         })
+    },
+    fetchProjectImages({ commit }, id){
+        return axiosClient.get(`project/${id}/images`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProjectImages', res.data)
+        })
+    },
+    addProjectImage({ commit }, data){
+        return axiosClient.post(`/project/add/pictures`, data, {
+            headers: {
+                'Content-type' : 'multipart/form-data'
+            }
+        })
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
     }   
 }
 
 const mutations = {
+    setProjectImages: (state, data) => {
+        state.project_images.images = data.images
+        state.project_images.project = data.project
+    },
     setAllProjects(state, data){
         if(data.projects.data){
             state.project_data.projects = data.projects.data
@@ -254,6 +283,7 @@ const mutations = {
         state.refunds = data.refunds
         state.produce_inventory = data.produce_inventory
         state.produce_yields = data.produce_yields
+        state.project_images.images = data.images
     },
     setProjectReport: (state, data) => {
         state.project_report.contracts = data.contracts

@@ -38,7 +38,8 @@ const state = {
         per_page: null,
         prev_page_url: null,
         total: null,
-        links: null        
+        links: null,
+        produces_all: null   
     },
     on_hand_data: {
         selectedProduce: null,
@@ -49,7 +50,8 @@ const state = {
         trader_contactNum: null,  
         produce: null,
         produce_inventories: null,
-        chart_data: null
+        chart_data: null,
+        images: null
     },
     order:{
         produce: null,
@@ -443,6 +445,7 @@ const mutations = {
         else{
             state.order_data.orders = data.orders
         }
+        state.order_data.produces_all = data.produces_all
         var distArr = []        
         for(var i = 0; i < state.order_data.orders.length; i++){
             var distObj = data.distributors.filter((d) => {
@@ -519,6 +522,7 @@ const mutations = {
         state.on_hand_data.produce = data.produce
         state.on_hand_data.produce_inventories = data.produce_inventories
         state.on_hand_data.chart_data = data.chart_data
+        state.on_hand_data.images = data.images
     },
     setBidOrderReport: (state, data) => {         
         state.order_report.project_bids = data.project_bids

@@ -69,7 +69,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getOwners', 'getFarms', 'getFarmData']),
+        ...mapGetters(['getOwners', 'getFarms', 'getFarmData', 'getAllProducess']),
         getPages(){
             var pages = []
             for(var i = 1; i <= this.getFarmData.last_page; i++){
@@ -121,19 +121,81 @@ export default {
                 })
                 if(produces.length > 0){                    
                     var value = ''
+                    var prodObj = null
                     if(produces.length <= 3){                                                
                         for(var i = 0; i < produces.length; i++){
-                            if(i == produces.length - 1){
-                                value += produces[i].prod_name
+                            prodObj = this.getAllProducess.filter((p) => {
+                                return parseInt(p.id) === parseInt(produces[i].produce_id)
+                            })
+                            var arr = produces[i].prod_name.split('(Class')
+                            var prod_name = null
+                            if(arr.indexOf('(Class') != -1){
+                                arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
+                                prod_name = arr.join(' ')
                             }
                             else{
-                                value += produces[i].prod_name + ','
+                                prod_name = produces[i].prod_name + ' ' + prodObj[0].prod_type
+                            }
+                            if(i == produces.length - 1){
+                                value += prod_name
+                            }
+                            else{
+                                value += prod_name + ','
                             }
                         }
                         return value
                     }
                     else{
-                        return produces[0].prod_name + ',' + produces[1].prod_name + ',' + produces[2].prod_name + '...'
+                        prodObj = this.getAllProducess.filter((p) => {
+                            return parseInt(p.id) === parseInt(produces[0].produce_id)
+                        })
+                        var firstProd = prodObj[0]
+
+                        prodObj = this.getAllProducess.filter((p) => {
+                            return parseInt(p.id) === parseInt(produces[1].produce_id)
+                        })
+                        var secondProd = prodObj[0]
+
+                        prodObj = this.getAllProducess.filter((p) => {
+                            return parseInt(p.id) === parseInt(produces[2].produce_id)
+                        })
+                        var thirdProd = prodObj[0]
+
+                        var arrr = null
+                        var names = [];
+                        for(var ii = 0; ii < 3; ii++){
+                            if(ii == 0){
+                                arrr = produces[0].prod_name.split('(Class')
+                                if(arrr.indexOf('(Class') != -1){
+                                    arrr.splice(arrr.indexOf('(Class'), 0, firstProd.prod_type)
+                                    names.push(arrr.join(' '))
+                                }
+                                else{
+                                    names.push(produces[0].prod_name + ' ' + firstProd.prod_type)
+                                }
+                            }
+                            else if(ii == 1){
+                                arrr = produces[1].prod_name.split('(Class')
+                                if(arrr.indexOf('(Class') != -1){
+                                    arrr.splice(arrr.indexOf('(Class'), 0, secondProd.prod_type)
+                                    names.push(arrr.join(' '))
+                                }
+                                else{
+                                    names.push(produces[1].prod_name + ' ' + secondProd.prod_type)
+                                }
+                            }
+                            else if(ii == 2){
+                                arrr = produces[2].prod_name.split('(Class')
+                                if(arrr.indexOf('(Class') != -1){
+                                    arrr.splice(arrr.indexOf('(Class'), 0, thirdProd.prod_type)
+                                    names.push(arrr.join(' '))
+                                }
+                                else{
+                                    names.push(produces[2].prod_name + ' ' + thirdProd.prod_type)
+                                }
+                            }                           
+                        }
+                        return names[0] + ',' + names[1] + ',' + names[2] + '...'
                     }
                 }
                 else{

@@ -113,16 +113,17 @@
         </div>  
         <div class="col-3 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
-            <div v-if="getProject && getProject.project_status_id != 1" class="col-12 p-0 d-flex align-items-baseline">
+            <!-- <div v-if="getProject && getProject.project_status_id != 1" class="col-12 p-0 d-flex align-items-baseline">
               <label for="project_status_id" class="form-label me-4">Project Status:</label>
               <select name="project_status_id" class="form-select" style="width:250px" id="" @change="setStatus($event)" v-if="getProject && !(getProfitSharingForProject)">               
-                  <!-- <option v-if="getProject.project_status_id == 1" value="2" selected>Approved</option>
-                  <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>                                 -->
+                  <option v-if="getProject.project_status_id == 1" value="2" selected>Approved</option>
+                  <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>                                
                   <option v-if="getProject.project_status_id == 2" value="4" selected>Terminated Successfully</option>
                   <option v-if="getProject.project_status_id == 2" value="5">Terminated w/ Complications</option>                                
               </select>
+              <label v-else-if="getInventoryForProject && getInventoryForProject.length > 0" for="">Terminated Successfully</label>
               <label v-else for="">{{ getProject.project_status_id == 4 ? 'Terminated Successfully' : 'Terminated w/ Complications' }}</label>
-            </div>
+            </div> -->
           </div>
           <div class="row w-100 m-0" v-if="getHistory">
             <div class="col-12 p-0">
@@ -153,13 +154,13 @@
           <div class="row w-100 m-0"></div> 
           <div v-if="getProject && getProject.project_status_id != 1">
             <!-- position:absolute; bottom:3%; right:7%; width:40vw; -->
-            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'18vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'10vw'} : {'width':'40vw'}, {'position':'absolute'}, {'bottom':'3%'}, {'right':'7%'}]">
+            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'25vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'10vw'} : {'width':'40vw'}, {'position':'absolute'}, {'bottom':'3%'}, {'right':'7%'}]">
               <input type="button" value="Add Expenditures" v-if="!getProfitSharingForProject" class="btn btn-primary" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">                        
-              <input type="button" value="Add Supplies to Project" v-if="!getProfitSharingForProject" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
-              <input type="button" value="Upload Image" v-if="!getProfitSharingForProject" class="btn btn-primary">                        
+              <input type="button" value="Add Supplies to Project" :disabled="stage == 'No Stage'" v-if="!getProfitSharingForProject" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
+              <router-link :to="`/projects/${$route.params.id}/images`"><input type="button" value="See Images" class="btn btn-primary"></router-link>
               <input type="button" value="Harvest" v-if="getProject.project_status_id != 5" class="btn btn-primary" @click="$router.push({ path: `/harvest/${$route.params.id}` })">                        
               <input type="button" v-b-modal.modal-1 value="Refund All Orders" v-if="getProject.project_status_id == 5 && getProject.project_completionDate != null && getRefundForProject && getRefundForProject.length == 0" class="btn btn-primary me-3">
-              <input type="button" :disabled="(data.project_status_id == 4 && getInventoryForProject && !isInventoryEmpty) || (data.project_status_id == 5 && getYieldForProject && getYieldForProject.length > 0)" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary">                                                                  
+              <input type="button" v-if="(getProject.project_status_id == 2 && getInventoryForProject && (getInventoryForProject.length == 0 || isInventoryEmpty)) || getProject.project_status_id == 4 || getProject.project_status_id == 5" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary">                                                
             </div>
             <b-modal size="lg" id="modal-1" :title="`Refund Bid Orders for Project #${$route.params.id}`">
               <div class="w-100 h-100">
@@ -236,13 +237,97 @@ export default {
             else if(d.name == 'project_harvestableEnd'){
               this.data.project_harvestableEnd = this.getProject.project_harvestableEnd
             }
-          })  
+          }) 
+
           if(this.getProject.project_status_id == 1){
             this.data.project_status_id = 2
           } 
           else{
             this.data.project_status_id = 4
-          }              
+          } 
+
+          var stage = null
+          var dateToday = format(new Date(), 'yyyy-MM-dd')
+
+          var floweringCheck = this.data.project_floweringStart <= dateToday
+          && this.data.project_floweringEnd >= dateToday
+
+          var buddingCheck = this.data.project_fruitBuddingStart <= dateToday
+          && this.data.project_fruitBuddingEnd >= dateToday
+
+          var devFruitCheck = this.data.project_devFruitStart <= dateToday
+          && this.data.project_devFruitEnd >= dateToday
+
+          var harvestableCheck = this.data.project_harvestableStart <= dateToday
+          && this.data.project_harvestableEnd >= dateToday
+          
+          if(floweringCheck){
+            stage = 'Flowering'
+          } 
+          else if(buddingCheck){
+            stage = 'Fruit Budding'
+          } 
+          else if(devFruitCheck){
+            stage = 'Developing Fruit'
+          } 
+          else if(harvestableCheck){
+            stage = 'Harvestable'
+          }  
+          else{
+            stage = 'No Stage'
+          }
+
+          var qtys = [];          
+          if(this.getInventoryForProject && this.getInventoryForProject.length > 0){
+            this.getInventoryForProject.forEach((i) => {
+              qtys.push(i.produce_inventory_qtyOnHand)
+            })
+            var total = qtys.reduce((a, b) => a + b, 0)
+            if(total == 0){
+              this.data.project_status_id = 4
+              this.seeProfitSharing(this.$route.params.id)
+            }
+          }
+
+          if(this.getStockOutForProject){
+            if(this.getStockOutForProject.length > 0){
+              var check = true
+              this.getStockOutForProject.forEach((s) => {
+                if(s.stockOut.stage != stage){
+                  check = false
+                }
+                else {
+                  check = true                  
+                }
+              })
+              if(!check){
+                alert(`Please add supplies for the ${stage} stage`)
+                this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
+              }
+            }
+            else{
+              if(stage != 'No Stage'){
+                alert(`Please add supplies for the ${stage} stage`)
+                this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
+              }              
+            }
+          }
+          else if(this.getProjectImages.images){
+            if(this.getProjectImages.images.length == 0){
+              alert(`Please add progress images for ${stage} stage`)
+              this.$router.push({ path: `/projects/${this.$route.params.id}/images` })
+            }
+            else if(this.getProjectImages.images.length > 0){
+              var images = this.getProjectImages.images.filter((a) => {
+                return a.project_image_stage === this.stage
+              })
+              if(images.length == 0){
+                alert(`Please add progress images for ${stage} stage`)
+                this.$router.push({ path: `/projects/${this.$route.params.id}/images` })
+              }
+            }
+          }
+          this.stage = stage
           this.readyApp()    
         })      
     },
@@ -401,6 +486,12 @@ export default {
           })          
         }, 
         seeProfitSharing(){
+          if(this.getInventoryForProject && this.getInventoryForProject.length == 0){
+            this.data.project_status_id = 5
+          }
+          else if(this.getInventoryForProject && this.getInventoryForProject.length > 0 && this.isInventoryEmpty){
+            this.data.project_status_id = 4
+          }
           this.initStatusForProfit(this.data.project_status_id)
           this.$router.push({ path: `/project/profit/sharing/${this.$route.params.id}` })
         }        
@@ -420,7 +511,8 @@ export default {
         'getProfitSharingForProject',
         'getRefundForProject',
         'getInventoryForProject',
-        'getYieldForProject'
+        'getYieldForProject',
+        'getProjectImages'
         ]),
         getTotalExpense(){
           var supplyTotalValue = 0
@@ -443,16 +535,19 @@ export default {
         },
         isInventoryEmpty(){
           var qtys = []
-          this.getInventoryForProject.forEach((i) => {
-            qtys.push(i.produce_inventory_qtyOnHand)
-          })
-          var total = qtys.reduce((a, b) => a + b, 0);
-          if(total == 0){
-            return true
+          if(this.getInventoryForProject){
+            this.getInventoryForProject.forEach((i) => {
+              qtys.push(i.produce_inventory_qtyOnHand)
+            })
+            var total = qtys.reduce((a, b) => a + b, 0);          
+            if(total == 0){
+              return true
+            }
+            else{
+              return false
+            }
           }
-          else{
-            return false
-          }
+          return null
         }
         
     },
@@ -464,6 +559,7 @@ export default {
         stage2: false,
         stage3: false,
         stage4: false,
+        stage: null,
         data: {
           project_status_id: null,
           project_floweringStart: null,

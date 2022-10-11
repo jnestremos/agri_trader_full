@@ -86,7 +86,7 @@ export default {
                 return shareObj[0].contractShare_amount
             }
             else if(shareObj[0].contractShare_type == 'Percentage'){
-                return 100 - shareObj[0].contractShare_amount + '%  /' + shareObj[0].contractShare_amount + '%'
+                return 100 - shareObj[0].contractShare_amount + '% / ' + shareObj[0].contractShare_amount + '%'
             }
         },
         getProduce(p){

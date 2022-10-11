@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('supply_id')->constrained('supplies')->onDelete('cascade')->onUpdate('cascade');
             $table->double('supply_qty');
             $table->string('supply_unit');
+            $table->string('stockOut_stage');
             $table->string('stockOut_remark');
             $table->timestamps();
         });

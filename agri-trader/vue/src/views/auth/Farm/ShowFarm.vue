@@ -92,7 +92,7 @@
                 <div class="row">
                   <div class="col-6 mb-5" v-for="(produce, index) in getFarmProduces" :key="index" style="height:10vh;">
                     <div class="produce d-flex justify-content-center align-items-center" v-b-tooltip.hover :title="produce.on_hand_qty + ' kgs'" style="height:100%; border-radius: 20px; cursor:default">                                                            
-                      <p class="mt-2" style="font-weight:bold; text-align: center; font-size:0.8rem">{{  produce.prod_name }}</p>                                                                                                                                                                                               
+                      <p class="mt-2" style="font-weight:bold; text-align: center; font-size:0.8rem">{{  getProduceName(produce) }}</p>                                                                                                                                                                                               
                     </div>                      
                   </div>                  
                 </div>
@@ -167,7 +167,7 @@ export default {
       },      
     },
     computed:{
-      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces', 'getFarmProduces', 'getProduceTraderr'])
+      ...mapGetters(['getFarmDetails', 'getProduceData', 'getFilteredProduces', 'getFarmProduces', 'getProduceTraderr', 'getAllProducess'])
     },
     methods:{
       ...mapActions(['readyApp', 'fetchFarm', 'fetchAllProduces', 'produceSelection', 'addProduceToFarm', 'fetchFarmProduces']), 
@@ -209,6 +209,19 @@ export default {
           return parseInt(produce.id) === parseInt(p.produce_id)
         })
         return prodTraderObj[0].produce_numOfGrades
+      },
+      getProduceName(produce){
+        var prodObj = this.getAllProducess.filter((p) => {
+          return parseInt(produce.produce_id) === parseInt(p.id)
+        })
+        var arr = produce.prod_name.split('(Class')
+        if(arr.indexOf('(Class') != -1){
+          arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
+          arr.join(' ')
+        }
+        else{
+          return produce.prod_name + ' ' + prodObj[0].prod_type
+        }
       }
     }
 }

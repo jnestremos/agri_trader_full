@@ -123,7 +123,7 @@ class ProjectBidController extends Controller
                     ], 400);
                 }
                 ProjectBid::where('bid_order_id', $id)->update([
-                    'project_bid_total' => $request->project_bid_total
+                    'project_bid_total' => explode(' - ', $request->project_bid_total)[1]
                 ]);
                 if ($bidOrder->bid_order_status_id == 2) {
                     return response([

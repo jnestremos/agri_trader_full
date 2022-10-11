@@ -178,7 +178,7 @@
             </div>
         </div>
         <div v-if="bid_order_status_id == 1 || bid_order_status_id == 2" class="d-flex align-items-baseline justify-content-between w-100 mt-3">
-            <h5 v-if="getOrder.project_bid || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_total)">Initial Total Balance: {{ getOrder.project_bid ? getOrder.project_bid.project_bid_total.split('-')[1] : getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) }}</h5>                    
+            <h5 v-if="getOrder.project_bid || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_total)">Initial Total Balance: {{ getOrder.project_bid ? getOrder.project_bid.project_bid_total : getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) }}</h5>                    
         </div>
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-3">
             <h5 v-if="getOrder.project_bid || (getOrder.on_hand_bid && getOrder.on_hand_bid.on_hand_bid_total)">Updated Total Balance: {{ getOrder.bidOrder && getOrder.bidOrder.order_finalTotal ? getOrder.bidOrder.order_finalTotal.toFixed(2) : getTotal }}</h5>                    
@@ -188,8 +188,10 @@
                     <h5 class="me-3">Amount to be Refunded:</h5>
                     <input type="number" class="form-control" style="width:150px" v-model="data.bid_order_acc_amount" :max="getOrder.bidOrder.order_dpAmount" onkeydown="return false" step=".5" min="0">
                 </div>                
-            </div>
-            
+            </div>            
+        </div>
+        <div v-if="bid_order_status_id == 4" class="d-flex align-items-baseline justify-content-between w-100 mt-3">
+            <h5 v-if="getOrder.bid_order_acc && getOrder.bid_order_acc.length > 0 && (getOrder.project_bid || getOrder.on_hand_bid)">Remaining Balance: {{ getInitialRemaining }}</h5>
         </div>
         <div v-if="bid_order_status_id == 7 && getOrder.refund" class="d-flex align-items-baseline justify-content-between w-100 mt-3">
             <h5>Refund Requested: {{ getOrder.refund.created_at.split('T')[0] }}</h5>            
@@ -508,6 +510,17 @@ export default {
     },
     computed: {
         ...mapGetters(['getOrder', 'getDeliveryForm']),
+        getInitialRemaining(){
+            if(this.getOrder.project_bid){
+                return parseFloat(this.getOrder.project_bid.project_bid_total) 
+                - parseFloat(this.getOrder.bid_order_acc[0].bid_order_acc_amount)
+            }
+            else if(this.getOrder.on_hand_bid){
+                return parseFloat(this.getOrder.project_bid.on_hand_bid_total) 
+                - parseFloat(this.getOrder.bid_order_acc[0].bid_order_acc_amount)
+            }
+            return null
+        },
         getProgressDate(){
             if(!this.getOrder.project.project_harvestableEnd){
                 var harvestDate = add(new Date(this.getOrder.project.project_commenceDate), {

@@ -16,6 +16,7 @@ import AllProjects from '../views/auth/Project/AllProjects.vue'
 import ProjectReport from '../views/auth/Project/ProjectReport.vue'
 import ShowProject from '../views/auth/Project/ShowProject.vue'
 import AddProject from '../views/auth/Project/AddProject.vue'
+import ProgressImages from '../views/auth/Project/ProgressImages.vue'
 import Catalog from '../views/auth/Catalog/Catalog.vue'
 import BidOrderProgress from '../views/auth/BidOrder/BidOrderProgress.vue'
 import ShowBidOrder from '../views/auth/BidOrder/ShowBidOrder.vue'
@@ -160,6 +161,12 @@ const routes = [
         name: 'ShowProject', 
         meta: {needsAuth : true, role:'trader'},
         component: ShowProject
+      },
+      {
+        path: '/projects/:id/images',
+        name: 'ProgressImages', 
+        meta: {needsAuth : true, role:'trader'},
+        component: ProgressImages
       },
       {
         path: '/project/add',

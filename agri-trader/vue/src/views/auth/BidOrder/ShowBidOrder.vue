@@ -23,7 +23,7 @@
         <h3 v-if="getOnHandData.farm_produce">{{ getProduceName }}</h3>      
         <!-- <p>{{ getProgressData.prod_class }}</p> -->
       </div>      
-      <p>Transaction # 123-345-546</p>
+      <!-- <p>Transaction # 123-345-546</p> -->
       <div class="d-flex align-items-baseline justify-content-between" style="width:80%;">
         <div class="d-flex align-items-baseline" style="width:25%">
           <h5 class="me-2">Trader Name: </h5>
@@ -78,9 +78,9 @@
           <b-carousel id="carousel-1" :interval="4000"
           controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333; width:100%; height:100%;">
           
-            <b-carousel-slide style="height:45vh; width:100%">
+            <b-carousel-slide v-for="(image, index) in getOnHandData.images" :key="index" style="height:45vh; width:100%">
               <template #img>
-                <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" src="https://picsum.photos/1024/480/?image=55" alt="image slot">
+                <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" :src="getOnHandData.images && getOnHandData.images.length > 0 && image && image.project_image_path ? require(`../../../../../public/storage/project/progress_images/${image.project_image_path}`) : ''" alt="image slot">
               </template>
             </b-carousel-slide>        
           </b-carousel>         
@@ -429,8 +429,8 @@ export default {
           })
 
           if(prodTraderObj.length > 0){
-            var arr = prodTraderObj[0].prod_name.split(' ')            
-            if(arr.indexOf('(Class')){
+            var arr = prodTraderObj[0].prod_name.split('(Class')            
+            if(arr.indexOf('(Class') != -1){
               arr.splice(arr.indexOf('(Class'), 0, this.getProgressData.prod_type)             
               return arr.join(' ')
             }
@@ -448,13 +448,13 @@ export default {
           console.log(this.data.produce_trader_id)
           
           if(farmProduceObj.length > 0){            
-            var arrr = farmProduceObj[0].prod_name.split(' ')
-            if(arrr.indexOf('(Class')){
+            var arrr = farmProduceObj[0].prod_name.split('(Class')
+            if(arrr.indexOf('(Class') != -1){
               arrr.splice(arrr.indexOf('(Class'), 0, this.getOnHandData.produce.prod_type)
               return arrr.join(' ')
             }
             else{
-              return farmProduceObj[0].prod_name
+              return farmProduceObj[0].prod_name + ' ' + this.getOnHandData.produce.prod_type
             }            
           }
           return null                          

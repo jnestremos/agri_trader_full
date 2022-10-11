@@ -88,7 +88,7 @@ export default {
             var prodObj = this.getProduceData.types.filter((pp) => {
                 return parseInt(pp.id) === parseInt(p.produce_id)
             })
-            if(arr.indexOf('(Class')){
+            if(arr.indexOf('(Class') != -1){
               arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)             
               return arr.join(' ')
             }

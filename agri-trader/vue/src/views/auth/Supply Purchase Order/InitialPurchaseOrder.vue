@@ -29,8 +29,12 @@
                             </select>
                         </div>
                         <div class="col-lg-2 mb-2 me-3">
+                            <label for="supplyOrder_Supplier" class="form-label me-4">Supply Name</label>
+                            <input type="text" name="" class="form-control" id="" v-model="filter_supply">
+                        </div>
+                        <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4" >Choose Supply Type</label>
-                            <select class="form-select" @change="setSupplyType($event)" id="supply_type">
+                            <select class="form-select" @change="setSupplyType($event)" :disabled="filter_supplier == 'None' || filter_supply != ''" id="supply_type">
                                 <option selected value="None">Select Supply Type</option>
                                 <option value="Fertilizer">Fertilizer</option>                                
                                 <option value="Insecticide">Insecticide</option>                                
@@ -40,7 +44,7 @@
                         </div>
                         <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_SupplyType" class="form-label me-4">Choose Supply For</label>
-                            <select v-if="getFormPO.produces" class="form-select" @change="setSupplyFor($event)" id="supply_for">
+                            <select v-if="getFormPO.produces" class="form-select" :disabled="filter_supplier == 'None' || filter_supply != ''" @change="setSupplyFor($event)" id="supply_for">
                                 <option selected value="None">Select Supply For</option> 
                                 <option v-for="(produce, index) in getFormPO.produces" :key="index" :value="produce.prod_type">{{ produce.prod_type }}</option>                                
                             </select>
@@ -157,6 +161,7 @@ export default {
                 purchaseOrder_subTotal: [],   
             },
             filter_supplier: 'None',
+            filter_supply: '',
             filter_type: 'None',
             filter_for: 'None',
             totalBalance: 0,
@@ -164,35 +169,28 @@ export default {
             dateToday: format(new Date(), 'yyyy-MM-dd'),
         }        
     },
-    // watch: {
-    //     'data.supplier_id'(newVal, oldVal){
-    //         console.log(newVal)
-    //         console.log(oldVal)
-    //         if(oldVal != 'None'){
-    //             if(confirm('Changing your selected supplier will result in clearing out your cart!\n Would you like to proceed!')){
-    //                 this.filter_type = 'None'
-    //                 this.filter_for = 'None'
-    //                 var supply_type = document.getElementById('supply_type')
-    //                 var supply_for = document.getElementById('supply_for')
-    //                 supply_type.value = 'None'
-    //                 supply_for.value = 'None' 
-    //                 this.data.supply_id = [];
-    //                 this.data.purchaseOrder_qty= [], 
-    //                 this.data.purchaseOrder_unit= [],
-    //                 this.data.purchaseOrder_subTotal= [],   
-    //                 this.totalBalance = 0
-    //                 this.data.supplier_id = newVal
-    //             }
-    //             else{
-    //                 console.log(1)
-    //                 console.log(oldVal)
-    //                 var supplier = document.getElementById('supplier')
-    //                 supplier.value = oldVal
-    //                 this.data.supplier_id = oldVal
-    //             }     
-    //         }                                    
-    //     },
-    // },
+    watch: {
+        'filter_supplier'(newVal){
+            if(newVal == 'None'){
+                this.filter_type = 'None'
+                this.filter_for = 'None'
+                var supply_type = document.getElementById('supply_type')
+                var supply_for = document.getElementById('supply_for')
+                supply_type.value = 'None'
+                supply_for.value = 'None' 
+            }                         
+        },
+        'filter_supply'(newVal){
+            if(newVal.trim() != ''){
+                this.filter_type = 'None'
+                this.filter_for = 'None'
+                var supply_type = document.getElementById('supply_type')
+                var supply_for = document.getElementById('supply_for')
+                supply_type.value = 'None'
+                supply_for.value = 'None'
+            }
+        }
+    },
     methods: {
         ...mapActions(['readyApp', 'formForAddPO', 'initPO']), 
         setSupplier(e){
@@ -257,31 +255,46 @@ export default {
     computed: {   
         ...mapGetters(['getFormPO']),
         filteredSupplies(){
-            var supplies = [];            
-            if(this.filter_supplier != 'None'){
+            var supplies = [];      
+            const reg = new RegExp(`^${this.filter_supply.trim().toLowerCase()}`)      
+            if(this.filter_supplier != 'None' && this.filter_supply.trim() == ''){
                 supplies = this.getFormPO.supplies.filter((s) => {
                     return parseInt(this.filter_supplier) === parseInt(s.supplier_id)
                 })
-                // if(this.filter_type != 'None' && this.filter_for != 'None'){
-                //     supplies = supplies.filter((s) => {
-                //         return this.filter_type === s.supply_type && this.filter_for === s.supply_for
-                //     })                    
-                // }
-                // else if(this.filter_type != 'None'){
-                //     supplies = supplies.filter((s) => {
-                //         return this.filter_type === s.supply_type
-                //     })
-                // }
-                // else if(this.filter_for != 'None'){
-                //     supplies = supplies.filter((s) => {
-                //         return this.filter_for === s.supply_for
-                //     })
-                // }               
-                return supplies
+                if(this.filter_type != 'None' && this.filter_for != 'None'){
+                    supplies = supplies.filter((s) => {
+                        return this.filter_type === s.supply_type && this.filter_for === s.supply_for
+                    })                    
+                }
+                else if(this.filter_type != 'None'){
+                    supplies = supplies.filter((s) => {
+                        return this.filter_type === s.supply_type
+                    })
+                }
+                else if(this.filter_for != 'None'){
+                    supplies = supplies.filter((s) => {
+                        return this.filter_for === s.supply_for
+                    })
+                }   
+                supplies = supplies.sort((a ,b) => a.supply_initialPrice - b.supply_initialPrice, 0)                         
+            }
+            else if(this.filter_supplier == 'None' && this.filter_supply.trim() != ''){
+                supplies = this.getFormPO.supplies.filter((s) => {
+                    return reg.test(s.supply_name.toLowerCase())
+                })
+                supplies = supplies.sort((a ,b) => a.supply_initialPrice - b.supply_initialPrice, 0)               
+            }
+            else if(this.filter_supplier != 'None' && this.filter_supply.trim() != ''){
+                supplies = this.getFormPO.supplies.filter((s) => {
+                    return reg.test(s.supply_name.toLowerCase()) 
+                    && parseInt(this.filter_supplier) === parseInt(s.supplier_id)
+                })
+                // supplies = supplies.sort((a ,b) => a.supply_initialPrice - b.supply_initialPrice, 0)               
             }
             else{
-                return this.getFormPO.supplies
+                supplies = this.getFormPO.supplies             
             }
+            return supplies
         },
         getTypes(){
             var types = [];

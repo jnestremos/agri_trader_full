@@ -799,7 +799,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
            
                 return response([  
                     'farm_produces' => $farm_produces,                                                          
-                    'farms' => $farms->get()
+                    'farms' => $farms->get(),
+                    'produces_all' => Produce::get()
                 ], 200);
                               
             });
@@ -915,7 +916,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('/produces/{farm_id}', function ($farm_id){            
             return response([
-                'produces' => DB::table('farm_produce')->where('farm_id', $farm_id)->get()
+                'produces' => DB::table('farm_produce')->where('farm_id', $farm_id)->get(),
+                'produces_all' => Produce::get()
             ], 200);
         });
         
@@ -1017,8 +1019,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::prefix('project')->group(function () {
             Route::controller(ProjectController::class)->group(function () {
                 Route::post('/add', 'add');
-                Route::post('/add/pictures/{id}', 'addPictures');
+                Route::post('/add/pictures', 'addPictures');                
             });
+            Route::get('/{id}/images', function ($id){
+                $project = Project::find($id);
+                return response([
+                    'project' => $project,
+                    'images' => $project->project_image()->get()
+                ]);
+            });
+
             Route::put('/refund/approve/{id}', [RefundController::class, 'approveRefund']);            
         });
 
@@ -1097,6 +1107,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'profit_sharing' => ProfitSharing::where('project_id', $id)->first(),
                     'refunds' => Refund::where('project_id', $id)->get(),
                     'produce_yields' => $produce_yields,
+                    'images' => Project::find($id)->project_image()->get(),
                     'produce_inventory' => $produce_inventory,
                 ], 200);
             });
@@ -1132,6 +1143,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                         'produces' => ProduceTrader::whereIn('id', $idsss)->get(),
                         'project_bids' => $project_bids,
                         'on_hand_bids' => $on_hand_bids,
+                        'produces_all' => Produce::get()
                     ]);
                 }
                 else{
@@ -1143,6 +1155,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                         'produces' => ProduceTrader::whereIn('id', $idsss)->get(),
                         'project_bids' => $project_bids,
                         'on_hand_bids' => $on_hand_bids,
+                        'produces_all' => Produce::get()
                     ]);
                 }                
             });
@@ -1726,6 +1739,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'farm_produce' => $farm_produce,
                     'contract' => $contract,
                     'trader' => $trader,
+                    'images' => $contract->project()->first()->project_image()->get(),
                     'produce_yields' => $produce_yields,
                     'trader_contactNum' => $trader_contactNum,
                     'produce' => $produce,

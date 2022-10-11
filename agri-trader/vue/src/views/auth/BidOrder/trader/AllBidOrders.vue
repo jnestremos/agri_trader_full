@@ -13,11 +13,10 @@
             <div class="row mb-5" v-for="(order, index) in filtered" :key="index">                     
                 <div class="col-4" style="height:35vh" v-for="(o, i) in order" :key="i">                
                     <div class="d-flex order" style="height:100%; border-radius:50px; position: relative;" @click="showOrder(o.id)">                
-                        <div class="" style="position: absolute; top:5%; left:5%; 
-                        width:85%;">
+                        <div class="" style="position: absolute; top:5%; left:5%; width:85%;">
                             <div class="d-flex">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
-                                <h3 class="mb-4">{{ getFarmName(o) }}</h3>
+                                <h3 class="mb-4">{{ 'Order #' + o.id + ` (${getDistName(o)})` }}</h3>
                             </div>                                                                                
                             <h5 class="d-flex align-items-baseline">Produce: <p class="ms-3">{{ getProduceName(o) }}</p></h5>
                             <h5 class="d-flex align-items-baseline">Trader's Price: <p class="ms-3">{{ getOrigPrice(o).toFixed(2) }}</p></h5>
@@ -64,6 +63,12 @@ export default {
     },
     methods: {
         ...mapActions(['readyApp', 'fetchAllOrders', 'fetchOrder']),
+        getDistName(order){
+            var distObj = this.getOrderDistributors.filter((d) => {
+                return parseInt(order.distributor_id) === parseInt(d.id)
+            })
+            return distObj[0].distributor_firstName + ' ' + distObj[0].distributor_lastName
+        },
         getFarmName(order){
             var projObj = this.getOrderProjects.filter((p) => {
                 return parseInt(p.id) === parseInt(order.project_id)
@@ -79,7 +84,17 @@ export default {
             var prodObj = this.getOrderProduces.filter((p) => {
                 return parseInt(p.id) === parseInt(order.produce_trader_id)
             })
-            return prodObj[0].prod_name
+            var produceObj = this.getOrderData.produces_all.filter((p) => {
+                return parseInt(prodObj[0].produce_id) === parseInt(p.id)
+            })
+            var arr = prodObj[0].prod_name.split('(Class')
+            if(arr.indexOf('(Class') != -1){
+                arr.splice(arr.indexOf('(Class'), 0, produceObj[0].prod_type)
+                return arr.join(' ')
+            }
+            else{
+                return prodObj[0].prod_name + ' ' + produceObj[0].prod_type
+            }             
         },
         getOrigPrice(order){
             var projObj = this.getOrderProjects.filter((p) => {

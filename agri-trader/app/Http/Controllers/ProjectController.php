@@ -306,32 +306,42 @@ class ProjectController extends Controller
         
     }
     
-    public function addPictures(Request $request, $id){
+    public function addPictures(Request $request){
+        $pic = $request->validate([
+            'project_id' => 'required',
+            'stage' => 'required|string',
+            'images' => 'required',              
+        ]);
 
-        if(Project::find($id)){
-            $pic = $request->validate([
-                'stage' => 'required|string',
-                //'image' => 'required|mimes:jpg,jpeg,png|max:5048|image',
-                'image' => 'required|string'
-            ]);
-    
-            if(!$pic){
-                return response([
-                    'error' => 'Invalid image!'
-                ], 400);
-            }
+        if(!$pic){
+            return response([
+                'error' => 'Invalid image!'
+            ], 400);
+        }
 
-            $fileNameWithExt = $request->file('image')->getClientOriginalName();
-            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('image')->getClientOriginalExtension();
-            $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-            $request->file('image')->storeAs('public/project/progress_images', $fileNameToStore);
-
-            ProjectImage::create([
-                'project_id' => $id,
-                'project_image_stage' => $request->stage,
-                'project_image_path' => $fileNameToStore
-            ]);            
+        if(Project::find($request->project_id)){
+            if($request->hasFile('images')){
+                foreach($request->file('images') as $image){
+                    $fileNameWithExt = $image->getClientOriginalName();
+                    $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                    $extension = $image->getClientOriginalExtension();
+                    $validExts = ['jpg','png'];
+                    if(in_array($extension, $validExts)){
+                        $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+                        $image->storeAs('public/project/progress_images', $fileNameToStore);
+                        ProjectImage::create([
+                            'project_id' => $request->project_id,
+                            'project_image_stage' => $request->stage,
+                            'project_image_path' => $fileNameToStore
+                        ]);
+                    }
+                    else{
+                        return response([
+                            'error' => 'File must be an image!'
+                        ], 400);
+                    }
+                }
+            }            
 
             return response([
                 'message' => 'Image Added!'

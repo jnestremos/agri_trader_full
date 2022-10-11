@@ -15,6 +15,7 @@ class StockOut extends Model
         'supply_id',
         'supply_qty',
         'supply_unit',
+        'stockOut_stage',
         'stockOut_remark',
     ];
 

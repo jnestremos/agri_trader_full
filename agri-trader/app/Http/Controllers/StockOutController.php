@@ -14,6 +14,7 @@ class StockOutController extends Controller
             'supply_id' => 'required|array',
             'supply_qty' => 'required|array',       
             'stockOut_remark' => 'required',
+            'stockOut_stage' => 'required',
         ]);
 
         if(!$stock){
@@ -30,7 +31,8 @@ class StockOutController extends Controller
                 'supply_id' => $request->supply_id[$i],
                 'supply_qty' => $request->supply_qty[$i],
                 'supply_unit' => $supplyy->supply_unit,
-                'stockOut_remark' => $request->stockOut_remark
+                'stockOut_remark' => $request->stockOut_remark,
+                'stockOut_stage' => $request->stockOut_stage,
             ]);
             $inventory = SupplyInventory::where('supply_id', $request->supply_id[$i])->first();
             SupplyInventory::where('supply_id', $request->supply_id[$i])->update([

@@ -81,13 +81,13 @@ export default {
             var prodObj = this.getProduceListForOwner.filter((pp) => {
                 return parseInt(p.produce_id) === parseInt(pp.id)
             })
-            var arr = p.prod_name.split(' ')
-            if(arr.indexOf('(Class)')){
-                arr.splice(arr.indexOf('(Class)') - 1, 0, prodObj[0].prod_type)
+            var arr = p.prod_name.split('(Class')
+            if(arr.indexOf('(Class') != -1){
+                arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
                 return arr.join(' ')
             }
             else{
-                return p.prod_name + ' ' + p.prod_type
+                return p.prod_name + ' ' + prodObj[0].prod_type
             }            
         },
         showProduce(p){

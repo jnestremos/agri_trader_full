@@ -41,9 +41,9 @@
       <b-carousel class="mb-2" id="carousel-1" :interval="4000"
       controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333; width:100%; height:100%;">
       
-        <b-carousel-slide style="height:50vh;">
+        <b-carousel-slide v-for="(image, index) in getProgressData.project_images" :key="index" style="height:50vh;">
           <template #img>
-            <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" src="https://picsum.photos/1024/480/?image=55" alt="image slot">
+            <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" :src="getProgressData.project_images && getProgressData.project_images.length > 0 && image && image.project_image_path ? require(`../../../../../public/storage/project/progress_images/${image.project_image_path}`) : ''" alt="image slot">
           </template>
         </b-carousel-slide>        
       </b-carousel>     

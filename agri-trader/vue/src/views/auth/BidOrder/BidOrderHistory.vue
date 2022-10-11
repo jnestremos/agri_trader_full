@@ -7,6 +7,7 @@
       <table width="95%" style="margin: 0 auto; border-collapse: collapse; border-spacing:0;">
         <thead>
           <tr>
+            <th>Order ID</th>
             <th>Produce</th>
             <th>Bid</th>
             <th>Quantity (in kgs)</th>
@@ -19,7 +20,8 @@
         </thead>
         <tbody>           
           <tr v-for="(order, index) in getOrderHistory.orders" :key="index">
-            <td style="border-left: 2px solid black">{{ getProduceName(order) }}</td>
+            <td style="border-left: 2px solid black">{{ order.id }}</td>
+            <td>{{ getProduceName(order) }}</td>
             <td>{{ getBidType(order) }}</td>
             <td>{{ getQty(order) }}</td>
             <td>{{ getStatus(order) }}</td>
@@ -27,7 +29,7 @@
             <td v-if="order.order_initialPrice">{{ order.order_initialPrice.toFixed(2) }}</td>
             <td>{{ getTotal(order) }}</td>
             <td style="border-right: 2px solid black; text-align:right"><button class="btn btn-success" @click="triggerModal(order)">View Details</button></td>
-            <b-modal no-close-on-esc no-close-on-backdrop size="lg" centered :id="`modal-${order.id}`" :title="getProduceName(order)" hide-footer>              
+            <b-modal no-close-on-esc no-close-on-backdrop size="lg" centered :id="`modal-${order.id}`" :title="`Order #${order.id} for ` + getProduceName(order)" hide-footer>              
               <div style="width:100%; position:relative" class="p-1">
                 <div class="d-flex align-items-baseline justify-content-between" style="width:100%;">              
                   <div class="d-flex align-items-baseline w-50">
@@ -371,9 +373,9 @@ export default {
             return parseInt(prodTraderObj[0].produce_id) === parseInt(pp.id)
           })
           console.log(prodObj)
-          var arr = prodTraderObj[0].prod_name.split(' ')
-          if(arr.indexOf('(Class)')){
-            arr.splice(arr.indexOf('(Class)') - 1, 0, prodObj[0].prod_type)
+          var arr = prodTraderObj[0].prod_name.split('(Class')
+          if(arr.indexOf('(Class') != -1){
+            arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
             return arr.join(' ')
           }
           else{
