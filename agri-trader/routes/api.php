@@ -159,6 +159,38 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             }
         });
 
+        Route::get('/projects/owner/report', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();
+            $traders = [];
+            $projects = [];
+            $contracts = [];
+            $contract_shares = [];
+            $produces = [];
+            foreach($farms as $farm){
+                if(!in_array($farm->trader()->first(), $traders)){
+                    array_push($traders, $farm->trader()->first());
+                }
+                foreach(Contract::where('farm_id', $farm->id)->get() as $contract){
+                    array_push($contracts, $contract);
+                    array_push($contract_shares, $contract->contract_share()->first());
+                    array_push($projects, $contract->project()->first());
+                    if(!in_array($contract->produce()->first(), $produces)){
+                        array_push($produces, $contract->produce()->first());
+                    }
+                }
+            }
+
+            return response([
+                'farms' => $farms,
+                'traders' => $traders,
+                'projects' => $projects,
+                'contracts' => $contracts,
+                'contract_shares' => $contract_shares,
+                'produces' => $produces,
+            ]);
+        });
+
         Route::get('/farms/owner/all', function (){
             $user = User::find(auth()->id())->farm_owner()->first();
             $farms = Farm::where('farm_owner_id', $user->id);
@@ -198,6 +230,37 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     'farms' => $farms->get()
                 ]);
             }        
+        });
+
+        Route::get('/farms/owner/report', function(){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();
+            $contracts = [];
+            $projects = [];
+            $farm_produces = [];
+            $traders = [];
+            foreach($farms as $farm){
+                if(!in_array($farm->trader()->first(), $traders)){
+                    array_push($traders, $farm->trader()->first());
+                }
+                $contractss = Contract::where('farm_id', $farm->id)->get();
+                foreach($contractss as $contract){
+                    array_push($contracts, $contract);
+                    array_push($projects, $contract->project()->first());
+                }
+                $produces = DB::table('farm_produce')->where('farm_id', $farm->id)->get();
+                foreach($produces as $produce){
+                    array_push($farm_produces, $produce);
+                }
+            }
+            return response([
+                'contracts' => $contracts,
+                'projects' => $projects,
+                'traders' => $traders,
+                'farm_produces' => $farm_produces,
+                'farms' => $farms,
+                'produces' => Produce::get()
+            ]);
         });
 
         Route::get('/farm/owner/{id}', function ($id){
@@ -287,6 +350,75 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::prefix('project/profit/sharing/owner')->group(function () {
             Route::patch('/{id}', [ProfitSharingController::class, 'updateAR']);
             Route::delete('/{id}', [ProfitSharingController::class, 'deleteAR']);
+        });
+
+        Route::get('/dashboard/owner', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();
+            $contracts = [];
+            $projects = [];
+            $sales = [];
+            foreach($farms as $farm){
+                foreach(Contract::where('farm_id', $farm->id)->get() as $contract){
+                    array_push($contracts, $contract);
+                }
+            }
+            foreach($contracts as $contract){
+                array_push($projects, $contract->project()->first());
+            }
+            foreach($projects as $project){
+                foreach($project->sale()->get() as $sale){
+                    array_push($sales, $sale);
+                }
+            }
+            $profit_sharings = ProfitSharing::where('farm_owner_id', $user->id)->get();
+
+            return response([
+                'sales' => $sales,
+                'profit_sharings' => $profit_sharings,
+            ]);
+        });
+
+        Route::get('/reports/salesReport/owner', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();
+            $contracts = [];
+            $projects = [];
+            $sales = [];
+            $produces = [];
+            $produce_traders = [];
+            $orders = [];
+            foreach($farms as $farm){
+                foreach(Contract::where('farm_id', $farm->id)->get() as $contract){
+                    array_push($contracts, $contract);
+                }
+            }
+            foreach($contracts as $contract){
+                array_push($projects, $contract->project()->first());
+                if(!in_array($contract->produce()->first(), $produces)){
+                    array_push($produces, $contract->produce()->first());
+                }
+            }
+            foreach($projects as $project){
+                foreach($project->sale()->get() as $sale){
+                    array_push($sales, $sale);            
+                    array_push($orders, $sale->bid_order()->first());                
+                }
+            }
+            foreach($orders as $order){
+                if(!in_array($order->produce_trader()->first(), $produce_traders)){
+                    array_push($produce_traders, $order->produce_trader()->first());
+                }
+            }
+            return response([
+                'sales' => $sales,
+                'contracts' => $contracts,
+                'projects' => $projects,
+                'produces' => $produces,
+                'produce_traders' => $produce_traders,
+                'orders' => $orders,
+                'farms' => $farms,
+            ]);
         });
 
     });

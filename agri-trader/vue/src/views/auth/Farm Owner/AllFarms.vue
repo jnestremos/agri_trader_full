@@ -2,6 +2,7 @@
   <div class="allFarmsForOwner">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Farms and Owners</h3>
+        <router-link to="/farms/owner/reports"><button class="btn btn-primary">View All Farms</button></router-link>
     </div>
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getFarmDataForOwner.farms.length > 0">

@@ -75,6 +75,9 @@ import AllFarmsOwner from '../views/auth/Farm Owner/AllFarms.vue'
 import AllProducesOwner from '../views/auth/Farm Owner/AllProduces.vue'
 import ShowFarmOwner from '../views/auth/Farm Owner/ShowFarm.vue'
 import ShowProduceOwner from '../views/auth/Farm Owner/ShowProduce.vue'
+import SalesReportOwner from '../views/auth/Farm Owner/SalesReportOwner.vue'
+import FarmReportOwner from '../views/auth/Farm Owner/FarmReportOwner.vue'
+import ProjectReportOwner from '../views/auth/Farm Owner/ProjectReportOwner.vue'
 
 Vue.use(VueRouter)
 
@@ -428,6 +431,12 @@ const routes = [
         component: AllProjectsOwner
       },
       {
+        path: '/projects/owner/report',
+        name: 'ProjectReportOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: ProjectReportOwner
+      },
+      {
         path: '/projects/owner/:id',
         name: 'ShowProjectOwner', 
         meta: {needsAuth : true, role:'farm_owner'},
@@ -438,6 +447,12 @@ const routes = [
         name: 'FarmsOwner',
         meta: {needsAuth: true, role: 'farm_owner'},
         component: AllFarmsOwner
+      },
+      {
+        path: '/farms/owner/reports',
+        name: 'FarmReportOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: FarmReportOwner
       },
       {
         path: '/produces/owner/all',
@@ -456,6 +471,12 @@ const routes = [
         name: 'ProduceOwnerDetails',
         meta: {needsAuth: true, role: 'farm_owner'},
         component: ShowProduceOwner
+      },
+      {
+        path: '/reports/salesReport/owner',
+        name: 'SalesReportOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: SalesReportOwner
       },
     ]
   }, 

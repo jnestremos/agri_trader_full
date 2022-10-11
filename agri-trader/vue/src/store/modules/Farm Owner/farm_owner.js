@@ -73,7 +73,40 @@ const state = {
     produce: null,
     history: null,
     profit_sharing: null,
-    produce_yield: null
+    produce_yield: null,
+
+    dashboard_owner: {
+        sales: null,
+        profit_sharings: null,
+    },
+
+    sales_report: {
+        sales: null,
+        produces: null,
+        produce_traders: null,
+        projects: null,
+        contracts: null,
+        farms: null,
+        orders: null,
+    },
+
+    farm_report: {
+        contracts: null,
+        projects: null,
+        traders: null,
+        farm_produces: null,
+        farms: null,
+        produces: null
+    },
+
+    project_report: {
+        projects: null,
+        contracts: null,
+        produces: null,
+        farms: null,
+        contract_shares: null,
+        traders: null,
+    }
 
 }
 
@@ -144,10 +177,50 @@ const getters = {
     },
     getProduceInfoForOwner(){
         return state.produce_info
-    },    
+    },  
+    getDashboardOwnerData(){
+        return state.dashboard_owner
+    },
+    getSalesReportForOwner(){
+        return state.sales_report
+    },
+    getFarmReportForOwner(){
+        return state.farm_report
+    },
+    getProjectReportForOwner(){
+        return state.project_report
+    }
 }
 
 const actions = {
+    fetchOwnerDashboardData({ commit }){
+        return axiosClient.get(`/dashboard/owner`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setOwnerDashboardData', res.data)
+        })
+    },
+    fetchSalesReportForOwner({ commit }){
+        return axiosClient.get('/reports/salesReport/owner')
+        .then((res) => {
+            console.log(res.data)
+            commit('setSalesReportOwner', res.data)
+        })
+    },
+    fetchFarmReportForOwner({ commit }){
+        return axiosClient.get(`/farms/owner/report`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setFarmReportForOwner', res.data)
+        })
+    },
+    fetchProjectReportForOwner({ commit }){
+        return axiosClient.get(`/projects/owner/report`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProjectReportForOwner', res.data)
+        })
+    },
     fetchAllProjectsForOwner({ commit }, query = null){
         if(query){
             return axiosClient.get('/projects/owner/all?'+query)
@@ -253,6 +326,35 @@ const actions = {
 }
 
 const mutations = {
+    setProjectReportForOwner: (state, data) => {
+        state.project_report.contracts = data.contracts
+        state.project_report.projects = data.projects
+        state.project_report.traders = data.traders
+        state.project_report.produces = data.produces
+        state.project_report.farms = data.farms
+        state.project_report.contract_shares = data.contract_shares
+    },
+    setFarmReportForOwner: (state, data) => {
+        state.farm_report.contracts = data.contracts
+        state.farm_report.projects = data.projects
+        state.farm_report.farm_produces = data.farm_produces
+        state.farm_report.farms = data.farms
+        state.farm_report.traders = data.traders
+        state.farm_report.produces = data.produces
+    },
+    setSalesReportOwner: (state, data) => {
+        state.sales_report.sales = data.sales
+        state.sales_report.contracts = data.contracts
+        state.sales_report.projects = data.projects
+        state.sales_report.farms = data.farms
+        state.sales_report.produces = data.produces
+        state.sales_report.produce_traders = data.produce_traders
+        state.sales_report.orders = data.orders
+    },
+    setOwnerDashboardData: (state, data) => {
+        state.dashboard_owner.sales = data.sales
+        state.dashboard_owner.profit_sharings = data.profit_sharings
+    },
     setProjectOwner(state, data){
         state.project = data.project
         state.contract = data.contract

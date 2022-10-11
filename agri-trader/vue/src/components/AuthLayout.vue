@@ -28,11 +28,10 @@
           <li><router-link style="color:black" :to="role == 'trader' ? '/farms' : '/farms/owner/all'">{{ role == 'trader' ? 'Farms and Owners' : 'Farms' }}</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supplyOrder/statusDashboard">Supply Purchase Orders</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/bid/orders">Bid Orders</router-link></li>
-          <li v-if="role == 'trader'"><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>
-          <li>Delivery</li>
-          <li><router-link style="color:black" to="/supplyInventory/dashboard">Supply Inventory </router-link></li>
-          <li><router-link style="color:black" to="/supply/list"> Supply Profile </router-link></li>
-          <li>Sales Income Report</li>
+          <li v-if="role == 'trader'"><router-link style="color:black" :to="`/messages/${getID}/trader`">Chat</router-link></li>          
+          <li v-if="role == 'trader'"><router-link style="color:black" to="/supplyInventory/dashboard">Supply Inventory </router-link></li>
+          <li v-if="role == 'trader'"><router-link style="color:black" to="/supply/list"> Supply Profile </router-link></li>
+          <li><router-link style="color:black" :to="role == 'farm_owner' ? `/reports/salesReport/owner`: ``">Sales Report</router-link></li>
           <li>Profit Sharing Report</li>
         </ul>
       </div>

@@ -52,7 +52,7 @@
   </template>
   
   <script>
-import { format } from 'date-fns'
+import { add, format, sub } from 'date-fns'
   import { mapActions, mapGetters } from 'vuex'
   export default {
       name: 'ProjectReport',
@@ -76,6 +76,22 @@ import { format } from 'date-fns'
             filter_dateTo: null,
         }
       },
+      watch: {
+        filter_dateFrom(newVal){
+            if(newVal >= this.filter_dateTo){
+                this.filter_dateFrom = format(sub(new Date(newVal), {
+                    days: 1
+                }), 'yyyy-MM-dd')
+            }
+        },
+        filter_dateTo(newVal){
+            if(newVal <= this.filter_dateFrom){
+                this.filter_dateTo = format(add(new Date(newVal), {
+                    days: 1
+                }), 'yyyy-MM-dd')
+            }
+        }
+    },
       methods: {
           ...mapActions(['readyApp', 'fetchProjectReport']),
           setContract(e){

@@ -2,7 +2,8 @@
   <div class="allProjectsOwner">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Projects</h3>  
-        <button class="btn btn-primary">Show Completed Projects</button>      
+        <!-- <button class="btn btn-primary">Show Completed Projects</button>       -->
+        <router-link to="/projects/owner/report"><button class="btn btn-primary">View All Projects</button></router-link>
     </div> 
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getProjectDataForOwner.projects.length > 0">
