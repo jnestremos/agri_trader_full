@@ -7,7 +7,7 @@
         <div style="width:60%; height:65%;" class="pb-5">
             <form class="d-flex flex-column justify-content-between mt-2" style="height:80%;" @submit.prevent="">
                 <div class="d-flex justify-content-between align-items-center w-100">
-                    <label for="supplier_name" class="form-label me-4" style="font-size: large;">Supply Name</label>
+                    <label for="supplier_name" class="form-label me-4 fw-bold" style="font-size: large;">Supply Name</label>
                 </div>
                 <div class="form-row">
                     <div class="col-lg-6 mb-3">
@@ -16,7 +16,7 @@
                 </div>
                 <div class="form-row">
                     <div class="col-lg-4 mb-3 me-3">
-                        <label for="supplyOrder_SupplyType" class="form-label me-3" style="font-size: large;">Supply Type</label>
+                        <label for="supplyOrder_SupplyType" class="form-label me-3 fw-bold" style="font-size: large;">Supply Type</label>
                             <select class="form-select" @change="setSupplyType($event)">
                                 <option selected disabled value="">Select Supply Type</option>
                                 <option value="Fertilizer">Fertilizer</option>
@@ -26,7 +26,7 @@
                             </select>
                     </div>
                     <div class="col-lg-4 mb-3 me-3">
-                        <label for="supplyOrder_SupplyType" class="form-label me-3" style="font-size: large;">Supply For</label>
+                        <label for="supplyOrder_SupplyType" class="form-label me-3 fw-bold" style="font-size: large;">Supply For</label>
                             <select v-if="getProducesForAddSupply" class="form-select" @change="setSupplyFor($event)">
                                 <option selected disabled value="">Select Supply For</option>
                                 <option v-for="(type, index) in getProducesForAddSupply" :key="index" :value="type.prod_type">{{ type.prod_type }}</option>                                
@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-start align-items-center w-100">
-                    <label for="supplier_contactPerson" class="form-label me-4" style="font-size: large;">Description</label>
+                    <label for="supplier_contactPerson" class="form-label me-4 fw-bold" style="font-size: large;">Description</label>
                 </div>
                 <div class="form-row">
                     <div class = "col-lg-6 mb-3">
@@ -50,19 +50,19 @@
                     </div>
                 </div> -->
                 <div class="form-row">
-                    <div class="col-lg-3 mb-4">
-                        <label for="Initial Price" class="form-label me-4" style="font-size: large;">Initial Price</label>
-                        <input type="number" name="supply_initialPrice" id="" class="form-control" v-model="supply.supply_initialPrice" @change="validateAmount($event)" @blur="validateAmount($event)" style="width:100px;">
+                    <div class="col-lg- mb-4">
+                        <label for="Initial Price" class="form-label me-4 fw-bold" style="font-size: large;">Initial Price</label>
+                        <input type="number" name="supply_initialPrice" id="" class="form-control" v-model="supply.supply_initialPrice" @change="validateAmount($event)" @blur="validateAmount($event)">
                     </div>
                     <div class="col-lg-2 mb-4 me-4">
-                            <label for="supplyOrder_unitType" class="form-label me-4" >Unit Type</label>
+                            <label for="supplyOrder_unitType" class="form-label me-4 fw-bold" style="font-size: large;">Unit Type</label>
                             <select class="form-select" @change="setUnit($event)">
                                 <option selected value="Sack">Sack</option>
                                 <option value="Bottle">Bottle</option>
                                 <option value="Sachet">Sachet</option>
                                 <option value="Pack">Pack</option>
                             </select>
-                        </div>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="col-lg-4 mb-2 me-3">
@@ -74,7 +74,7 @@
                 </div>
                 <div class="btn-toolbar mt-3" role="toolbar">
                     <div class="btn-group me-3">
-                        <button class="btn btn-success" style="width:100px" @click="sendSupply()">Add</button>
+                        <button class="btn btn-success fw-bold" style="width:150px; height:50px" @click="sendSupply()">Add</button>
                     </div>                   
                 </div>          
             </form>

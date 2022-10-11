@@ -29,14 +29,14 @@
                                     <input class="form-check-input" type="checkbox" :checked="data.purchaseOrder_paymentType == 'Full'" value="Full" ref="full" @change="setPaymentType($event)"/>Full Payment
                                 </div>
                             </div>
-                            <div class="form-row mt-3">
-                                <div class="col-md-2">
+                            <div class="form-row mt-2">
+                                <div class="col-md-4">
                                     <label for="payment_totalPrice" class="form-label"> Total Price </label>
                                     <input type="text" name="payment_totalPrice" id="" class="form-control" placeholder="7,500.00" disabled v-model="data.purchaseOrder_totalBalance">
                                 </div>
                             </div>
                             <div class="form-row mt-3">
-                                <div class="col-lg-2">
+                                <div class="col-lg-3">
                                     <label for="payment_downpaymentAmount" class="form-label"> Downpayment Amount </label>
                                     <input type="number" name="payment_totalPrice" id="" class="form-control" :disabled="!(data.purchaseOrder_paymentType == 'Partial')" v-model="data.purchaseOrder_dpAmount">
                                 </div>
@@ -46,23 +46,23 @@
                                 </div>
                             </div>
                             <div class="form-row mb-3">
-                                <div class="col-lg-2">
+                                <div class="col-md-3">
                                     <label for="payment_downpaymentAmount" class="form-label"> Balance </label>
                                     <input type="text" name="payment_totalPrice" id="" class="form-control" v-model="data.purchaseOrder_balance" disabled>
                                 </div>                            
                             </div>
                             <div class="form-row">
-                                <div class="col-lg-2">
+                                <div class="col-lg-5">
                                     <label for="farm_imageUrl" class="form-label me-4" style="width:100%;">Select Images for Proof of Payment:</label>
                                     <input type="file" name="farm_imageUrl" id="" multiple class="form-control" @change="setImageUrl($event)">                    
                                 </div>
                             </div>
                             <div class="btn-toolbar pt-4" role="toolbar">
                                 <div class="btn-group me-3 mt-3">
-                                    <button class="btn btn-secondary" style="width:200px; height: 60px;" @click="backToPO()">Return to PO Summary</button>
+                                    <button class="btn btn-secondary" style="width:200px; height: 50px;" @click="backToPO()">Return to PO Summary</button>
                                 </div>
                                 <div class="btn-group me-3 mt-3">
-                                    <button class="btn btn-success" :disabled="validateData" @click="sendPayment()" style="width:200px; height: 60px;">Confirm Payment</button>
+                                    <button class="btn btn-success" :disabled="validateData" @click="sendPayment()" style="width:200px; height: 50px;">Confirm Payment</button>
                                 </div>
                             </div>
                         </form>

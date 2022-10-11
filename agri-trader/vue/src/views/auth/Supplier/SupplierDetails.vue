@@ -4,33 +4,33 @@
         <h3>Supplier Details</h3>        
     </div>          
     <div class="container-fluid d-flex" style="height:90%; position:relative; z-index: 9;">
-        <div style="width:60%; height:65%;" class="pb-5">
+        <div style="width:90%; height:65%;" class="pb-5">
             <form class="d-flex flex-column justify-content-between mt-2" style="height:80%;" @submit.prevent="">
                 <div class="d-flex justify-content-between align-items-center w-100">
-                    <label for="supplier_name" class="form-label me-4" style="font-size: large;">Company Name</label>
+                    <label for="supplier_name" class="form-label me-4 fw-bold" style="font-size: large;">Company Name</label>
                 </div>
                 <div class="form-row">
-                    <div class="col-lg-9 mb-3">
+                    <div class="col-lg-7 mb-3">
                         <input type="text" name="company_name" id="" class="form-control" v-model="supplier.supplier_name">
                     </div>
                 </div>
                 <div class="d-flex justify-content-start align-items-center w-100" style="height:50%">
-                    <label for="supplier_contactPerson" class="form-label me-4" style="font-size: large;">Contact Person</label>
+                    <label for="supplier_contactPerson" class="form-label me-4 fw-bold" style="font-size: large;">Contact Person</label>
                 </div>
                 <div class="form-row">
-                    <div class="col-lg-3 mb-3">
+                    <div class="col-lg-2 mb-3">
                         <label for="contact_firstName" class="form-label me-4" style="font-size:small">First Name</label>
                         <input type="text" name="supplier_contactFirstName" id="" class="form-control form-control-sm" v-model="supplier.contact_firstName">
                     </div>
-                    <div class="col-lg-3 mb-3">
+                    <div class="col-lg-2 mb-3">
                         <label for="contact_middleName" class="form-label me-4" style="font-size:small">Middle Name</label>
                         <input type="text" name="supplier_contactMiddleName" id="" class="form-control form-control-sm" v-model="supplier.contact_middleName">
                     </div>
-                    <div class="col-lg-3 mb-3">
+                    <div class="col-lg-2 mb-3">
                         <label for="contact_lastName" class="form-label me-4" style="font-size:small">Last Name</label>
                         <input type="text" name="supplier_contactLastName" id="" class="form-control form-control-sm" v-model="supplier.contact_lastName">
                     </div>
-                    <div class="col-lg-3 mb-3">
+                    <div class="col-lg-1 mb-3">
                         <label for="contact_lastName" class="form-label me-4" style="font-size:small">Suffix</label>
                         <select name="" class="form-select form-select-sm" id="" style="width:100px;" @change="setSuffix($event)">
                             <option selected value="">None</option>
@@ -41,63 +41,64 @@
                             <option value="IV">IV</option>
                         </select>
                     </div>
-                    <div class="col-lg-3 mb-3">
+                    <div class="col-lg-2 mb-3">
                         <label for="contact_lastName" class="form-label me-4" style="font-size:small">Position</label>
                         <input type="text" name="supplier_contactSuffix" id="" class="form-control form-control-sm" v-model="supplier.contact_position">
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100">
-                    <label for="contact_information" class="form-label me-4" style="font-size: large;">Address</label>
+                    <label for="contact_information" class="form-label me-4 fw-bold" style="font-size: large;">Address</label>
                 </div>
                 <div class="form-row">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <input type="number" name="address_zipCode" id="" class="form-control" placeholder="Zip Code" v-model="supplier.address_zipcode">
                     </div>
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <input type="text" name="address_street" id="" class="form-control" placeholder="Street" v-model="supplier.address_street">
                     </div>
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <input type="text" name="address_town" id="" class="form-control" placeholder="Municipality / City" v-model="supplier.address_town">
                     </div>
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <input type="text" name="address_province" id="" class="form-control" placeholder="Province" v-model="supplier.address_province">
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100">
-                    <label for="contact_information" class="form-label me-4" style="font-size: large;">Contact Information</label>
+                    <label for="contact_information" class="form-label me-4 fw-bold" style="font-size: large;">Contact Information</label>
                 </div>
                 <div class="form-row">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Phone Number" class="form-label me-4" style="font-size: smaller;">Phone Number</label>
                         <input type="tel" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_phoneNumber">
                     </div>
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">Telephone Number</label>
                         <input type="tel" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_telNumber">
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-lg-6 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Email Address</label>
                         <input type="email" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_email">
                     </div>
                 </div>
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <label for="contact_information" class="form-label me-4 fw-bold" style="font-size: large;">Payment Details</label>
+                </div>
                 <div class="form-row">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Phone Number" class="form-label me-4" style="font-size: smaller;">Bank Name</label>
                         <input type="text" name="supplier_contactNumber" id="" class="form-control" v-model="supplier.supplier_bankName">
                     </div>
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Telephone Number" class="form-label me-4" style="font-size: smaller;">E-Wallet Used</label>
                         <input type="text" name="supplier_contactTelephone" id="" class="form-control" v-model="supplier.supplier_otherName">
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Account Name</label>
                         <input type="text" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_accName">
                     </div>
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-3 mb-3">
                         <label for="Email Address" class="form-label me-4" style="font-size: smaller;">Account Number</label>
                         <input type="text" name="supplier_email" id="" class="form-control" v-model="supplier.supplier_accNum">
                     </div>
