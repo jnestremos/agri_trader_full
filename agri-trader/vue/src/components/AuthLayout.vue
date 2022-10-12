@@ -34,6 +34,7 @@
           <li><router-link style="color:black" :to="role == 'farm_owner' ? `/reports/salesReport/owner`: ``">Sales Report</router-link></li>
           <li><router-link style="color:black" to="/reports/dashboard">Reports Dashboard</router-link></li>
           <li>Profit Sharing Report</li>
+          <li><router-link style="color:black" to="/reports/profitSharing/owner">Profit Sharing Report</router-link></li>
         </ul>
       </div>
     </div>

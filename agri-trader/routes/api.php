@@ -281,7 +281,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'farm' => $farm,
                 'farm_address' => $farm_address,
                 'owner' => $owner,
-                'projects' => $projects
+                'projects' => $projects,
+                'produces' => Produce::get(),
             ]);
         });
 
@@ -291,10 +292,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $farm_ids = [];
             $produce_trader_ids = [];
             $produce_list = Produce::all();
+            $farm_produces = [];
             foreach($farms as $farm){
                 array_push($farm_ids, $farm->id);
-                $farm_produces = DB::table('farm_produce')->where('farm_id', $farm->id)->get();
-                foreach($farm_produces as $produce){
+                $farm_producess = DB::table('farm_produce')->where('farm_id', $farm->id)->get();
+                foreach($farm_producess as $produce){
+                    array_push($farm_produces, $produce);
                     if(!in_array($produce->produce_trader_id, $produce_trader_ids)){
                         array_push($produce_trader_ids, $produce->produce_trader_id);                        
                     }
@@ -305,15 +308,42 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 return response([
                     'produces' => $produces->paginate(6),
                     'produce_list' => $produce_list,
+                    'farm_produces' => $farm_produces,
                 ]);
             }
             else{
                 return response([
                     'produces' => $produces->get(),
                     'produce_list' => $produce_list,
+                    'farm_produces' => $farm_produces,
                 ]);
             }
         }); 
+
+        Route::get('/produces/owner/report', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $farms = Farm::where('farm_owner_id', $user->id)->get();            
+            $farm_ids = [];
+            $produce_trader_ids = [];
+            $produce_list = Produce::all();
+            $farm_produces = [];
+            foreach($farms as $farm){
+                array_push($farm_ids, $farm->id);
+                $farm_producess = DB::table('farm_produce')->where('farm_id', $farm->id)->get();
+                foreach($farm_producess as $produce){
+                    array_push($farm_produces, $produce);
+                    if(!in_array($produce->produce_trader_id, $produce_trader_ids)){
+                        array_push($produce_trader_ids, $produce->produce_trader_id);                        
+                    }
+                }
+            }
+            $produces = ProduceTrader::whereIn('id', $produce_trader_ids)->get();
+            return response([
+                'produces' => $produces,
+                'farm_produces' => $farm_produces,
+                'produce_list' => $produce_list,
+            ]);
+        });
         
         
         Route::get('/produce/owner/{id}', function ($id) {
@@ -419,6 +449,36 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'orders' => $orders,
                 'farms' => $farms,
             ]);
+        });
+
+        Route::get('/reports/profitSharing/owner', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $profit_sharings = ProfitSharing::where('farm_owner_id', $user->id)->get();
+            $farms = [];
+            $projects = [];
+            $contracts = [];
+            $produces = [];
+            foreach($profit_sharings as $profit_share){
+                $project = $profit_share->project()->first();
+                array_push($projects, $project);
+                $contract = $project->contract()->first();
+                array_push($contracts, $contract);
+                if(!in_array($contract->produce()->first(), $produces)){
+                    array_push($produces, $contract->produce()->first());
+                }
+                if(!in_array($contract->farm()->first(), $farms)){
+                    array_push($farms, $contract->farm()->first());
+                }
+            }
+
+            return response([
+                'farms' => $farms,
+                'profit_sharings' => $profit_sharings,
+                'projects' => $projects,
+                'contracts' => $contracts,
+                'produces' => $produces,
+            ]);
+            
         });
 
     });

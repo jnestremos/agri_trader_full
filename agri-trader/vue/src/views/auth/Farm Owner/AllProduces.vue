@@ -2,10 +2,9 @@
   <div class="allProducesForOwner">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
         <h3>Produce List</h3>
-        <div class="d-flex justify-content-between align-items-center" style="width:200px;">
-            <router-link to="/produces/add" style="text-decoration:none; color:white;"><button class="btn btn-success" style="width:60px;">Add</button></router-link>
-            <button>Edit</button>
-            <button>Search</button>
+        <div class="d-flex justify-content-between align-items-center">
+            <router-link to="/produces/add" style="text-decoration:none; color:white;"><button class="btn btn-success me-3" style="width:60px;">Add</button></router-link>
+            <router-link to="/produces/owner/report" style="text-decoration:none; color:white;"><button class="btn btn-primary">View All Produces</button></router-link>            
         </div>
     </div>
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
@@ -13,13 +12,14 @@
             <div class="row mb-5" v-for="(produce, index) in filtered" :key="index">                     
                 <div class="col-4" style="height:30vh" v-for="(p, i) in produce" :key="i">                
                     <div class="d-flex produce" style="height:100%; border-radius:50px; position: relative;" @click="showProduce(p)">
-                        <div class="" style="position: absolute; top:5%; left:5%; 
-                        width:90%;">
+                        <div class="" style="position: absolute; top:5%; left:5%; width:90%;">
                             <div class="d-flex mb-5">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
                                 <h3 class="mb-4">{{ getProdName(p) }}</h3>
                             </div>                                                                                
                             <h4 class="d-flex">Time to Harvest: <p class="ms-3">{{ p.prod_timeOfHarvest }}</p></h4>                            
+                            <h4 class="d-flex">Farms Associated: <p class="ms-3">{{ getFarmsAssociated(p) }}</p></h4>                            
+                            <h4 class="d-flex">Last Date of Harvest: <p class="ms-3">{{ getLastDateHarvest(p) }}</p></h4>                            
                         </div>                                                
                     </div>
                 </div>                
@@ -65,6 +65,22 @@ export default {
     },
     methods: {
         ...mapActions(['readyApp', 'fetchAllProducesForOwner']),
+        getLastDateHarvest(produce){
+            var farmProdObj = this.getFarmProduceListForOwner.filter((p) => {
+                return parseInt(produce.id) === parseInt(p.produce_trader_id)
+            })
+            farmProdObj = farmProdObj.sort((a, b) => {
+                return new Date(a.prod_lastDateOfHarvest) - new Date(b.prod_lastDateOfHarvest)
+            })   
+            farmProdObj = farmProdObj.reverse()     
+            return farmProdObj[0].prod_lastDateOfHarvest
+        },
+        getFarmsAssociated(produce){
+            var farmProdObj = this.getFarmProduceListForOwner.filter((p) => {
+                return parseInt(produce.id) === parseInt(p.produce_trader_id)
+            })
+            return farmProdObj.length
+        },
         filteredProdArray(){
             var filtered = [];
             var arr = this.getProduceDataForOwner.produces;             
@@ -117,7 +133,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getProduceDataForOwner', 'getProduceListForOwner'])
+        ...mapGetters(['getProduceDataForOwner', 'getProduceListForOwner', 'getFarmProduceListForOwner'])
     }
 }
 </script>
