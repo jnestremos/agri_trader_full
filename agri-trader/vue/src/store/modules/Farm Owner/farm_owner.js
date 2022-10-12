@@ -106,6 +106,14 @@ const state = {
         farms: null,
         contract_shares: null,
         traders: null,
+    },
+
+    profit_report: {
+        farms: null,
+        profit_sharings: null,
+        projects: null,
+        contracts: null,
+        produces: null,
     }
 
 }
@@ -189,6 +197,9 @@ const getters = {
     },
     getProjectReportForOwner(){
         return state.project_report
+    },
+    getProfitSharingReportForOwner(){
+        return state.profit_report
     }
 }
 
@@ -219,6 +230,13 @@ const actions = {
         .then((res) => {
             console.log(res.data)
             commit('setProjectReportForOwner', res.data)
+        })
+    },
+    fetchProfitSharingReportForOwner({ commit }){
+        return axiosClient.get(`/reports/profitSharing/owner`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProfitSharingReportForOwner', res.data)
         })
     },
     fetchAllProjectsForOwner({ commit }, query = null){
@@ -326,6 +344,13 @@ const actions = {
 }
 
 const mutations = {
+    setProfitSharingReportForOwner: (state, data) => {
+        state.profit_report.profit_sharings = data.profit_sharings
+        state.profit_report.farms = data.farms
+        state.profit_report.projects = data.projects
+        state.profit_report.contracts = data.contracts
+        state.profit_report.produces = data.produces
+    },
     setProjectReportForOwner: (state, data) => {
         state.project_report.contracts = data.contracts
         state.project_report.projects = data.projects

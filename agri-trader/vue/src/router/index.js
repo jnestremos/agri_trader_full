@@ -76,6 +76,7 @@ import AllProducesOwner from '../views/auth/Farm Owner/AllProduces.vue'
 import ShowFarmOwner from '../views/auth/Farm Owner/ShowFarm.vue'
 import ShowProduceOwner from '../views/auth/Farm Owner/ShowProduce.vue'
 import SalesReportOwner from '../views/auth/Farm Owner/SalesReportOwner.vue'
+import ProfitSharingReportOwner from '../views/auth/Farm Owner/ProfitSharingReportOwner.vue'
 import FarmReportOwner from '../views/auth/Farm Owner/FarmReportOwner.vue'
 import ProjectReportOwner from '../views/auth/Farm Owner/ProjectReportOwner.vue'
 
@@ -477,6 +478,12 @@ const routes = [
         name: 'SalesReportOwner',
         meta: {needsAuth: true, role: 'farm_owner'},
         component: SalesReportOwner
+      },
+      {
+        path: '/reports/profitSharing/owner',
+        name: 'ProfitSharingReportOwner',
+        meta: {needsAuth: true, role: 'farm_owner'},
+        component: ProfitSharingReportOwner
       },
     ]
   }, 

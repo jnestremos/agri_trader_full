@@ -32,7 +32,7 @@
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supplyInventory/dashboard">Supply Inventory </router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supply/list"> Supply Profile </router-link></li>
           <li><router-link style="color:black" :to="role == 'farm_owner' ? `/reports/salesReport/owner`: ``">Sales Report</router-link></li>
-          <li>Profit Sharing Report</li>
+          <li><router-link style="color:black" to="/reports/profitSharing/owner">Profit Sharing Report</router-link></li>
         </ul>
       </div>
     </div>

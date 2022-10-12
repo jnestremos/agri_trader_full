@@ -72,22 +72,28 @@ export default {
             this.readyApp()
         })
     },
-    watch: {
-        filter_dateFrom(newVal){
-            if(newVal >= this.filter_dateTo){
-                this.filter_dateFrom = format(sub(new Date(newVal), {
+    watch:{
+        filter_dateFrom(newVal, oldVal){
+            if(!newVal){
+               this.filter_dateFrom = oldVal 
+            }
+            else if(newVal > this.filter_dateTo){
+                this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
                     days: 1
                 }), 'yyyy-MM-dd')
             }
         },
-        filter_dateTo(newVal){
-            if(newVal <= this.filter_dateFrom){
-                this.filter_dateTo = format(add(new Date(newVal), {
-                    days: 1
-                }), 'yyyy-MM-dd')
+        filter_dateTo(newVal, oldVal){
+            if(!newVal){
+                this.filter_dateTo = oldVal 
             }
-        }
-    },
+            else if(newVal < this.filter_dateFrom){
+                this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
+                    days: 1
+                }) , 'yyyy-MM-dd')
+            }
+        },
+      },
     data(){
         return {
             filter_dateFrom: null,

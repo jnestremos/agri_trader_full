@@ -421,6 +421,36 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             ]);
         });
 
+        Route::get('/reports/profitSharing/owner', function (){
+            $user = User::find(auth()->id())->farm_owner()->first();
+            $profit_sharings = ProfitSharing::where('farm_owner_id', $user->id)->get();
+            $farms = [];
+            $projects = [];
+            $contracts = [];
+            $produces = [];
+            foreach($profit_sharings as $profit_share){
+                $project = $profit_share->project()->first();
+                array_push($projects, $project);
+                $contract = $project->contract()->first();
+                array_push($contracts, $contract);
+                if(!in_array($contract->produce()->first(), $produces)){
+                    array_push($produces, $contract->produce()->first());
+                }
+                if(!in_array($contract->farm()->first(), $farms)){
+                    array_push($farms, $contract->farm()->first());
+                }
+            }
+
+            return response([
+                'farms' => $farms,
+                'profit_sharings' => $profit_sharings,
+                'projects' => $projects,
+                'contracts' => $contracts,
+                'produces' => $produces,
+            ]);
+            
+        });
+
     });
 
     Route::group(['middleware' => ['role:trader']], function () {

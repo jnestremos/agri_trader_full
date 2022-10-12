@@ -1,6 +1,6 @@
 <template>
-    <div class="ProfitSharingReport">
-      <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
+  <div class="profitSharingReportOwner">
+    <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
               <h3>Profit Sharing Report</h3>
       </div>
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
@@ -10,14 +10,14 @@
                   <label class="form-label me-4 fw-bold">Farm</label>
                   <select class="form-select" @change="setFarm($event)">
                       <option value="None">Select Farm</option>
-                      <option v-for="(farm, index) in getProfitSharingReport.farms" :key="index" :value="farm.id">{{ getFarmName(farm) }}</option>
+                      <option v-for="(farm, index) in getProfitSharingReportForOwner.farms" :key="index" :value="farm.id">{{ getFarmName(farm) }}</option>
                   </select>
               </div>              
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Produce</label>
                   <select class="form-select" @change="setProduce($event)">
                       <option selected value="None">Select Produce</option>
-                      <option v-for="(produce, index) in getProfitSharingReport.produces" :key="index" :value="produce.id">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
+                      <option v-for="(produce, index) in getProfitSharingReportForOwner.produces" :key="index" :value="produce.id">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
                   </select>
               </div>              
           </div>
@@ -41,12 +41,12 @@
                           <th scope="col">Project No.</th>
                           <th scope="col">Project Name</th>
                           <th scope="col">Farm Name</th>
-                          <th scope="col">Produce Name</th>
                           <th scope="col">Total Sales</th>
-                          <th scope="col">Total Expenses</th>
+                          <th scope="col">Produce Name</th>
+                          <!-- <th scope="col">Total Expenses</th> -->
                           <th scope="col">Owner Share</th>
-                          <th scope="col">Trader Share</th>
-                          <th scope="col">Net Profit</th>
+                          <!-- <th scope="col">Trader Share</th> -->
+                          <!-- <th scope="col">Net Profit</th> -->
                           <th scope="col">Date Completed</th>
                       </tr>
                   </thead>
@@ -55,12 +55,12 @@
                         <td>{{ report.project_id }}</td>
                         <td>{{ getProjectName(report) }}</td>
                         <td>{{ getFarmNameTable(report) }}</td>
-                        <td>{{ getProduceName(report) }}</td>
                         <td>{{ report.ar_totalSales }}</td>
-                        <td>{{ report.ar_totalExpenses }}</td>
+                        <td>{{ getProduceName(report) }}</td>
+                        <!-- <td>{{ report.ar_totalExpenses }}</td> -->
                         <td>{{ report.ar_ownerShare }}</td>
-                        <td>{{ report.ar_totalSales - report.ar_ownerShare }}</td>
-                        <td>{{ report.ar_profit }}</td>
+                        <!-- <td>{{ report.ar_totalSales - report.ar_ownerShare }}</td> -->
+                        <!-- <td>{{ report.ar_profit }}</td> -->
                         <td>{{ report.ar_approvedOn }}</td>
                     </tr>
                   </tbody>
@@ -68,26 +68,26 @@
             </div>
         </div>
       </div>
-    </div>
-  </template>
-  
-  <script>
-import { format, sub, add } from 'date-fns';
-  import { mapActions, mapGetters } from 'vuex';
-  export default {
-      name: "ProfitSharingReport",
-      created() {
-        this.fetchProfitSharingReport()
+  </div>
+</template>
+
+<script>
+import { add, format, sub } from 'date-fns'
+import { mapActions, mapGetters } from 'vuex'
+export default {
+    name: "ProfitSharingReportOwner",
+    created(){
+        this.fetchProfitSharingReportForOwner()
         .then(() => {
-            var sortedData = this.getProfitSharingReport.profit_sharing.sort((a, b) => {
+            var sortedData = this.getProfitSharingReportForOwner.profit_sharings.sort((a, b) => {
                 return new Date(a.created_at) - new Date(b.created_at)
             })    
             this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
             this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')
             this.readyApp()
-        })          
-      },
-      data(){
+        })        
+    },
+    data(){
         return {
             filter_farm: "None",
             filter_produce: "None",
@@ -117,10 +117,10 @@ import { format, sub, add } from 'date-fns';
             }
         },
       },
-      methods: {
-          ...mapActions(['readyApp', 'fetchProfitSharingReport']),
-          resetFilter(){
-            var sortedData = this.getProfitSharingReport.profit_sharing.sort((a, b) => {
+    methods: {
+        ...mapActions(['readyApp', 'fetchProfitSharingReportForOwner']),
+        resetFilter(){
+            var sortedData = this.getProfitSharingReportForOwner.profit_sharing.sort((a, b) => {
                 return new Date(a.created_at) - new Date(b.created_at)
             })   
             this.filter_farm = 'None' 
@@ -135,45 +135,39 @@ import { format, sub, add } from 'date-fns';
             this.filter_type = e.target.value
           },
           getFarmName(farm){
-            var farmObj = this.getProfitSharingReport.farms.filter((f) => {
+            var farmObj = this.getProfitSharingReportForOwner.farms.filter((f) => {
                 return parseInt(farm.id) === parseInt(f.id)
-            })
-            var ownerObj = this.getProfitSharingReport.farm_owners.filter((o) => {
-                return parseInt(farmObj[0].farm_owner_id) === parseInt(o.id)
-            })
-            return farmObj[0].farm_name + ' - ' + ownerObj[0].owner_firstName + ' ' + ownerObj[0].owner_lastName
+            })            
+            return farmObj[0].farm_name
           },
           getProjectName(report){
-            var projectObj = this.getProfitSharingReport.projects.filter((p) => {
+            var projectObj = this.getProfitSharingReportForOwner.projects.filter((p) => {
                 return parseInt(report.project_id) === parseInt(p.id)
             })
-            var contractObj = this.getProfitSharingReport.contracts.filter((c) => {
+            var contractObj = this.getProfitSharingReportForOwner.contracts.filter((c) => {
                 return parseInt(projectObj[0].contract_id) === parseInt(c.id)
             })
             return contractObj[0].farm_name + ' Project'
           },
           getFarmNameTable(report){
-            var farmObj = this.getProfitSharingReport.farms.filter((f) => {
+            var farmObj = this.getProfitSharingReportForOwner.farms.filter((f) => {
                 return parseInt(report.farm_id) === parseInt(f.id)
-            })
-            var ownerObj = this.getProfitSharingReport.farm_owners.filter((o) => {
-                return parseInt(farmObj[0].farm_owner_id) === parseInt(o.id)
-            })
-            return farmObj[0].farm_name + ' - ' + ownerObj[0].owner_firstName + ' ' + ownerObj[0].owner_lastName
+            })            
+            return farmObj[0].farm_name
           },
           getProduceName(report){
-            var prodObj = this.getProfitSharingReport.produces.filter((p) => {
+            var prodObj = this.getProfitSharingReportForOwner.produces.filter((p) => {
                 return parseInt(report.produce_id) === parseInt(p.id)
             })  
             return prodObj[0].prod_name + ' ' + prodObj[0].prod_type
           }
-      },
-      computed: {
-        ...mapGetters(['getProfitSharingReport']),
+    },
+    computed: {
+        ...mapGetters(['getProfitSharingReportForOwner']),
         filteredTable(){
-            var table = [];
-            if(this.getProfitSharingReport.profit_sharing){
-                table = this.getProfitSharingReport.profit_sharing.filter((p) => {
+            var table = []
+            if(this.getProfitSharingReportForOwner.profit_sharings){
+                table = this.getProfitSharingReportForOwner.profit_sharings.filter((p) => {
                     return format(new Date(p.created_at), 'yyyy-MM-dd') >= format(new Date(this.filter_dateFrom), 'yyyy-MM-dd')
                     && format(new Date(p.created_at), 'yyyy-MM-dd') <= format(new Date(this.filter_dateTo), 'yyyy-MM-dd')
                 })
@@ -196,11 +190,10 @@ import { format, sub, add } from 'date-fns';
             }                       
             return table
         }
-      },
-  }
-  </script>
-  
-  
-  <style>
-  
-  </style>
+    }
+}
+</script>
+
+<style>
+
+</style>
