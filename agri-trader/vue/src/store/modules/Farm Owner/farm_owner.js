@@ -54,6 +54,7 @@ const state = {
         farm_address: null,
         owner: null,
         projects: null,
+        produces: null,
     },
 
     produce_info: {
@@ -114,6 +115,12 @@ const state = {
         projects: null,
         contracts: null,
         produces: null,
+    },
+
+    produce_report: {
+        produces: null,
+        farm_produces: null,
+        produce_list: null
     }
 
 }
@@ -200,6 +207,9 @@ const getters = {
     },
     getProfitSharingReportForOwner(){
         return state.profit_report
+    },
+    getProduceReportForOwner(){
+        return state.produce_report
     }
 }
 
@@ -237,6 +247,13 @@ const actions = {
         .then((res) => {
             console.log(res.data)
             commit('setProfitSharingReportForOwner', res.data)
+        })
+    },
+    fetchProduceReportForOwner({ commit }){
+        return axiosClient.get(`/produces/owner/report`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProduceReportForOwner', res.data)
         })
     },
     fetchAllProjectsForOwner({ commit }, query = null){
@@ -344,6 +361,11 @@ const actions = {
 }
 
 const mutations = {
+    setProduceReportForOwner: (state, data) => {
+        state.produce_report.produces = data.produces
+        state.produce_report.farm_produces = data.farm_produces
+        state.produce_report.produce_list = data.produce_list
+    },
     setProfitSharingReportForOwner: (state, data) => {
         state.profit_report.profit_sharings = data.profit_sharings
         state.profit_report.farms = data.farms
@@ -457,6 +479,7 @@ const mutations = {
             state.produce_data.produces = data.produces
         }
         state.produce_list = data.produce_list
+        state.farmProduce_list = data.farm_produces
     },
     setFarmForOwner: (state, data) => {
         state.farm_info.farm = data.farm
@@ -464,6 +487,7 @@ const mutations = {
         state.farm_info.farm_address = data.farm_address
         state.farm_info.owner = data.owner
         state.farm_info.projects = data.projects
+        state.farm_info.produces = data.produces
     },
     setProduceForOwner: (state, data) => {
         state.produce_info.produce_history = data.produce_history

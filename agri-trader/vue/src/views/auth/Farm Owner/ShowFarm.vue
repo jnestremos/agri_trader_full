@@ -3,8 +3,8 @@
     <div class="showFarm p-4" style="position:relative; height:100%; overflow-y: hidden;">
         <div class="grid">
             <div class="farm-image">
-                <!-- <img alt="" width="80%" style="border-radius:10%; float:right;" :src="[getFarmInfoForOwner.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmInfoForOwner.farm.farm_imageUrl}`) : '']" -->
-                picture here {{ $route.params.id }}
+                <img alt="" width="80%" style="border-radius:10%; float:right;" :src="[getFarmInfoForOwner.farm.farm_imageUrl ? require(`../../../../../public/storage/farms/${getFarmInfoForOwner.farm.farm_imageUrl}`) : '']">
+                <!-- picture here {{ $route.params.id }} -->
             </div>
             <div class="location d-flex flex-column justify-content-center">              
                 <h2 v-if="getFarmInfoForOwner.farm">{{ getFarmInfoForOwner.farm.farm_name }}</h2>
@@ -59,7 +59,7 @@
                             <div class="row">
                                 <div class="col-6 mb-5" v-for="(produce, index) in getFarmInfoForOwner.farm_produces" :key="index" style="height:10vh;">
                                     <div class="produce d-flex justify-content-center align-items-center" v-b-tooltip.hover :title="produce.on_hand_qty + ' kgs'" style="height:100%; border-radius: 20px; cursor:default">                                                            
-                                        <p class="mt-2" style="font-weight:bold; text-align: center; font-size:0.8rem">{{ produce.prod_name }}</p>                                                                                                                                                                                               
+                                        <p class="mt-2" style="font-weight:bold; text-align: center; font-size:0.8rem">{{ getProduceName(produce) }}</p>                                                                                                                                                                                               
                                     </div>                      
                                 </div>                  
                             </div>
@@ -98,6 +98,19 @@ export default {
     },
     methods: {
         ...mapActions(['readyApp', 'fetchFarmForOwner']),
+        getProduceName(produce){
+        var prodObj = this.getFarmInfoForOwner.produces.filter((p) => {
+          return parseInt(produce.produce_id) === parseInt(p.id)
+        })
+        var arr = produce.prod_name.split('(Class')
+        if(arr.indexOf('(Class') != -1){
+          arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
+          arr.join(' ')
+        }
+        else{
+          return produce.prod_name + ' ' + prodObj[0].prod_type
+        }
+      }
     },
     computed: {
         ...mapGetters(['getFarmInfoForOwner'])
