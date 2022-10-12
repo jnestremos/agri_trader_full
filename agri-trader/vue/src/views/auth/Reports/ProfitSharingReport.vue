@@ -59,12 +59,17 @@
                         <td>{{ report.ar_totalSales }}</td>
                         <td>{{ report.ar_totalExpenses }}</td>
                         <td>{{ report.ar_ownerShare }}</td>
-                        <td>{{ report.ar_totalSales - report.ar_ownerShare }}</td>
+                        <td>{{ Math.abs(report.ar_totalSales - report.ar_ownerShare) }}</td>
                         <td>{{ report.ar_profit }}</td>
                         <td>{{ report.ar_approvedOn }}</td>
                     </tr>
                   </tbody>
               </table>
+            </div>
+            <div class="d-flex align-items-baseline justify-content-between mt-5">
+                <h5>Total Income: </h5>
+                <h5>Total Expenses: </h5>
+                <h5>Balance: </h5>
             </div>
         </div>
       </div>

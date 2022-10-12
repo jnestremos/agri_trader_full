@@ -735,13 +735,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     array_push($farms, $contract->farm()->first());
                     array_push($farm_owners, $contract->farm()->first()->farm_owner()->first());
                 }
-                if(!in_array($contract->produce()->first(), $farms)){
+                if(!in_array($contract->produce()->first(), $produces)){
                     array_push($produces, $contract->produce()->first());
                 }
             }       
             $profit_sharing = [];           
-            foreach($projects as $project){                
-                array_push($profit_sharing, $project->profit_sharing()->first());
+            foreach($projects as $project){    
+                if($project->profit_sharing()->first()){
+                    array_push($profit_sharing, $project->profit_sharing()->first());
+                }                            
             }
             return response([
                 'profit_sharing' => $profit_sharing,                
