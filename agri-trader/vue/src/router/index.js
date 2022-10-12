@@ -63,6 +63,10 @@ import SupplyPurchaseExpenseReport from '../views/auth/Reports/SupplyPurchaseExp
 import ProfitSharingReport from '../views/auth/Reports/ProfitSharingReport.vue'
 import IncomeAndExpenditures from '../views/auth/Reports/IncomeAndExpenditures.vue'
 import TraderSalesReport from '../views/auth/Reports/TraderSalesReport.vue'
+import ProduceReport from '../views/auth/Reports/ProduceReport.vue'
+import ReceivingReportsList from '../views/auth/Reports/ReceivingReportsList.vue'
+import SupplyPurchaseOrderReports from '../views/auth/Reports/SupplyPurchaseOrderReports.vue'
+import AllReports from '../views/auth/Reports/AllReports.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -419,6 +423,30 @@ const routes = [
         name:"TraderSalesReport",
         meta:{needsAuth: true, role: "trader"},
         component:TraderSalesReport
+      },
+      {
+        path:"/reports/ProduceReport",
+        name:"ProduceReport",
+        meta:{needsAuth: true, role: "trader"},
+        component:ProduceReport
+      },
+      {
+        path:"/reports/ReceivingReport",
+        name:"ReceivingReportsList",
+        meta:{needsAuth: true, role: "trader"},
+        component:ReceivingReportsList
+      },
+      {
+        path:"/reports/spo",
+        name:"SupplyPurchaseOrderReports",
+        meta:{needsAuth: true, role: "trader"},
+        component:SupplyPurchaseOrderReports
+      },
+      {
+        path:"/reports/dashboard",
+        name:"AllReports",
+        meta:{needsAuth: true, role: "trader"},
+        component:AllReports
       },
     ]
   },

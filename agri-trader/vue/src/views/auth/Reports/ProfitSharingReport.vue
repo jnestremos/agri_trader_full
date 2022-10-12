@@ -1,7 +1,10 @@
 <template>
     <div class="ProfitSharingReport">
       <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
-              <h3>Profit Sharing Report</h3>
+        <h3>Profit Sharing Report</h3>
+        <div class="d-flex">
+            <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
+        </div>
       </div>
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">

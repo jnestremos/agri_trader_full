@@ -1,7 +1,7 @@
 <template>
-    <div class="TraderSalesReport">
+    <div class="ProduceReport">
       <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
-        <h3>Sales Report</h3>
+        <h3>Produce Report</h3>
         <div class="d-flex">
             <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
         </div>
@@ -10,9 +10,9 @@
         <div style="width:85%; height:65%" class="pb-5">
           <div class="form-row mb-3 mt-2">
               <div class="col-lg-3 me-3">
-                  <label class="form-label me-4 fw-bold">Farm Project</label>
+                  <label class="form-label me-4 fw-bold">Produce</label>
                   <select class="form-select">
-                      <option value="None">Select Project</option>
+                      <option value="None">Select Produce</option>
                       <option>1</option>
                       <option>2</option>
                       <option>3</option>
@@ -33,11 +33,10 @@
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                   <thead align="center">
                       <tr>
-                          <th scope="col">Project No.</th>
-                          <th scope="col">Project Name</th>
-                          <th scope="col">Quantity Sold</th>
-                          <th scope="col">Quantity Remaining</th>
-                          <th scope="col">Amount</th>
+                          <th scope="col">Produce Name</th>
+                          <th scope="col">Associated Farms</th>
+                          <th scope="col">Last Date of Harvest</th>
+                          <th scope="col">Latest Price</th>
                       </tr>
                   </thead>
                   <tbody align="center">
@@ -53,7 +52,7 @@
   <script>
   import { mapActions } from 'vuex';
   export default {
-      name: "TraderSalesReport",
+      name: "ProduceReport",
       created() {
           this.readyApp()
       },

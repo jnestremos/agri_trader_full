@@ -2,6 +2,9 @@
     <div class="incomeSummary">
         <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
             <h3>Income Summary</h3>
+            <div class="d-flex">
+                <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
+            </div>
         </div>
         <div class="d-flex justify-content-between align-items-baseline px-3" style="width:100%; background; height:5%;">
             <div class="d-flex justify-content-between align-items-baseline h-100 w-50">
