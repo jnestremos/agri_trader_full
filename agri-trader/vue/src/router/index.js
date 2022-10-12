@@ -62,6 +62,7 @@ import OtherExpendituresReport from '../views/auth/Reports/OtherExpendituresRepo
 import SupplyPurchaseExpenseReport from '../views/auth/Reports/SupplyPurchaseExpense.vue'
 import ProfitSharingReport from '../views/auth/Reports/ProfitSharingReport.vue'
 import IncomeAndExpenditures from '../views/auth/Reports/IncomeAndExpenditures.vue'
+import TraderSalesReport from '../views/auth/Reports/TraderSalesReport.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
@@ -411,6 +412,12 @@ const routes = [
         name:"IncomeAndExpenditures",
         meta:{needsAuth: true, role: "trader"},
         component:IncomeAndExpenditures
+      },
+      {
+        path:"/reports/TraderSalesReport",
+        name:"TraderSalesReport",
+        meta:{needsAuth: true, role: "trader"},
+        component:TraderSalesReport
       },
     ]
   },
