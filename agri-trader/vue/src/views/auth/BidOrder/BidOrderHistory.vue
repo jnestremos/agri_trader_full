@@ -1,6 +1,6 @@
 <template>
   <div class="bidOrderHistory h-100 w-100">
-    <div class="container-fluid w-100 d-flex pe-5 pt-3 justify-content-between align-items-center" style="height:10%;">
+    <div class="container-fluid w-100 d-flex pe-5 pt-3 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>My Orders</h3>
     </div>
     <div class="container-fluid m-0 pe-3 pt-4" style="width:100%; height:90%; overflow-y: scroll;">

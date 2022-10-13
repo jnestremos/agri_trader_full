@@ -1,6 +1,6 @@
 <template>
   <div class="showProduce px-3">
-    <div class="container-fluid w-100 d-flex align-items-center" style="height:10%;">
+    <div class="container-fluid w-100 d-flex align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3 v-if="getProduceDetails.produce">{{ getProduceDetails.produce.prod_name + ' ' + getProduceDetails.produce.prod_type }}</h3>        
     </div>  
     <div class="container-fluid d-flex justify-content-between mb-5" style="width:70%; float:left;">

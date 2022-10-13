@@ -1,6 +1,6 @@
 <template>
   <div class="addProduce" style="position:relative;">
-        <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%;">
+        <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Add Produce</h3>        
     </div>       
     <div class="container-fluid" style="height:60%; float:left; width:40%;">    
