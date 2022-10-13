@@ -67,11 +67,11 @@
                     </tr>                                                                    
                 </tbody>
             </table>
-            <div class="btn-toolbar mt-3" role="toolbar">
-                <div class="btn-group me-3">
-                    <router-link to="/supply/add"> <button class="btn btn-success" style="width:200px; height: 50px;"> Add Supply Profile </button> </router-link>
-                </div> 
-            </div>
+        </div>
+        <div class="btn-toolbar mt-3" role="toolbar">
+            <div class="btn-group me-3">
+                <router-link to="/supply/add"> <button class="btn btn-success" style="width:200px; height: 50px;"> Add Supply Profile </button> </router-link>
+            </div> 
         </div>     
     </div>
   </div>
