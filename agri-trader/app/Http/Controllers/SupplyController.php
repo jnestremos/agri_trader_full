@@ -88,15 +88,21 @@ class SupplyController extends Controller
             ], 400);
         }
 
-        // $supply = Supply::where('supply_name', $request->supply_name)->first();
+        $supply = Supply::where([
+            ['supplier_id', $request->supplier_id],
+            ['supply_name', $request->supply_name],
+            ['supply_type', $request->supply_type],
+            ['supply_for', $request->supply_for],
+            ['supply_description', $request->supply_description],
+            ['supply_initialPrice', $request->supply_initialPrice],
+            ['supply_unit', $request->supply_unit],
+            ])->first();           
 
-        // if($supply){
-        //     if($supply->supplier()->first()->trader_id == Trader::where('user_id', auth()->id())->first()->id){
-        //         return response([
-        //             'error' => 'Supply was already added!'
-        //         ], 400);
-        //     }
-        // }
+        if($supply){
+            return response([
+                'error' => 'Supply was already added!'
+            ], 400);                        
+        }
 
        
         Supply::create([

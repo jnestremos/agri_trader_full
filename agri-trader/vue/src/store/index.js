@@ -21,6 +21,7 @@ import supplyInventory from './modules/Supply Inventory/supplyInventory'
 import stockOut from './modules/StockOut/stockOut'
 import expenditure from './modules/Expenditure/expenditure'
 import profitSharing from './modules/Profit Sharing/profitSharing'
+import salesReport from './modules/Sales Report/salesReport'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -67,6 +68,7 @@ export default new Vuex.Store({
     supplyInventory,
     stockOut,
     expenditure,
-    profitSharing
+    profitSharing,
+    salesReport
   },
 })

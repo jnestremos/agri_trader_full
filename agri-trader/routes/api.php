@@ -46,6 +46,7 @@ use App\Models\StockOut;
 use App\Models\Supplier;
 use App\Models\Supply;
 use App\Models\SupplyInventory;
+use App\Models\SupplyOrderPayment;
 use App\Models\SupplyOrderReturn;
 use App\Models\SupplyPurchaseOrder;
 use App\Models\Trader;
@@ -876,6 +877,156 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'farm_owners' => $farm_owners,
                 'farm_owner_addresses' => $farm_owner_addresses,
                 'farm_owner_contact_numbers' => $farm_owner_contact_numbers,
+            ]);
+        });
+
+        Route::get('reports/supplyPurchaseOrders', function (){
+            $trader = User::find(auth()->id())->trader()->first();
+            $purchaseOrders = SupplyPurchaseOrder::where('trader_id', $trader->id)->get();
+            $purchaseOrders_filtered = SupplyPurchaseOrder::select(DB::raw('supplier_id, purchaseOrder_num, count(supply_id) as qty, purchaseOrder_status, created_at'))->where('trader_id', $trader->id)
+            ->groupBy('purchaseOrder_num')->get();
+            $purchaseOrder_accs = [];
+            $suppliers = [];
+            $supplies = [];
+
+            foreach($purchaseOrders as $purchaseOrder){
+                if(!in_array($purchaseOrder->supplier()->first(), $suppliers)){
+                    array_push($suppliers, $purchaseOrder->supplier()->first());
+                }
+                if(!in_array($purchaseOrder->supply()->first(), $supplies)){
+                    array_push($supplies, $purchaseOrder->supply()->first());
+                }
+                $purchaseOrder_acc = SupplyOrderPayment::where('purchaseOrder_num', $purchaseOrder->purchaseOrder_num)->latest()->first();
+                if(!in_array($purchaseOrder_acc, $purchaseOrder_accs)){
+                    array_push($purchaseOrder_accs, $purchaseOrder_acc);
+                }
+            } 
+
+            return response([
+                'purchaseOrders' => $purchaseOrders,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+                'purchaseOrders_filtered' => $purchaseOrders_filtered,
+                'purchaseOrder_accs' => $purchaseOrder_accs,
+            ]);
+            
+        });
+
+        Route::get('/reports/receivingReports', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $purchaseOrders = SupplyPurchaseOrder::where('trader_id', $user->id)->get();
+            $receiving_reports = [];
+            $suppliers = [];
+            $supplies = [];
+            foreach($purchaseOrders as $order){
+                foreach(ReceivingReport::where('purchaseOrder_num', $order->purchaseOrder_num)->get()
+                 as $report){
+                    array_push($receiving_reports, $report);
+                    if(!in_array($report->supply()->first(), $supplies)){
+                        array_push($supplies, $report->supply()->first());
+                    }
+                    if(!in_array($report->supply()->first()->supplier()->first(), $suppliers)){
+                        array_push($suppliers, $report->supply()->first()->supplier()->first());
+                    }
+                 }
+            }
+            
+            return response([
+                'receiving_reports' => $receiving_reports,
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,
+            ]);
+        });
+
+        Route::get('/reports/salesReport', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $contracts = Contract::where('trader_id', $user->id)->get();
+            $projects = [];
+            foreach($contracts as $contract){
+                array_push($projects, $contract->project()->first());
+            }
+            $produce_traders = [];
+            $produces = [];
+            $orders = BidOrder::where('trader_id', $user->id)->get();
+            foreach($orders as $order){
+                if(!in_array($order->produce_trader()->first(), $produce_traders)){
+                    array_push($produce_traders, $order->produce_trader()->first());
+                }
+                if(!in_array($order->produce_trader()->first()->produce()->first(), $produces)){
+                    array_push($produces, $order->produce_trader()->first()->produce()->first());
+                }
+            }
+            $sales = [];
+            foreach($projects as $project){
+                foreach($project->sale()->get() as $sale){
+                    array_push($sales, $sale);
+                }
+            }
+
+            return response([
+                'sales' => $sales,
+                'contracts' => $contracts,
+                'projects' => $projects,
+                'produce_traders' => $produce_traders,
+                'produces' => $produces,
+                'orders' => $orders,
+            ]);
+        });    
+
+        Route::get('/reports/produces', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $produce_traders = ProduceTrader::where('trader_id', $user->id)->get();
+            $farm_produces = [];
+            $produces = [];
+            foreach($produce_traders as $produce_trader){               
+                if(!in_array($produce_trader->produce()->first(), $produces)){
+                    array_push($produces, $produce_trader->produce()->first());
+                }
+                foreach(DB::table('farm_produce')->where('produce_trader_id', $produce_trader->id)->get()
+                as $farm_produce){
+                    array_push($farm_produces, $farm_produce);
+                }
+            }
+
+            return response([
+                'produce_traders' => $produce_traders,
+                'farm_produces' => $farm_produces,
+                'produces' => $produces,
+            ]);
+        });
+
+        Route::get('/reports/supplyReturns', function (){
+            $user = User::find(auth()->id())->trader()->first();
+            $orders = SupplyPurchaseOrder::where('trader_id', $user->id)->get();
+            $receiving_reports = [];
+            $returns = [];
+            $supplies = [];
+            $suppliers = [];
+            foreach($orders as $order){
+                if(!in_array($order->supply()->first(), $supplies)){
+                    array_push($supplies, $order->supply()->first());
+                }
+                if(!in_array($order->supplier()->first(), $suppliers)){
+                    array_push($suppliers, $order->supplier()->first());
+                }
+                if(!in_array($order->supply()->first(), $supplies)){
+                    array_push($supplies, $order->supply()->first());
+                }
+                $reports = ReceivingReport::where('purchaseOrder_num', $order->purchaseOrder_num)->get();
+                foreach($reports as $report){
+                    array_push($receiving_reports, $report);
+                }
+                $returnss = SupplyOrderReturn::where('returnOrder_num', $order->purchaseOrder_num)->get();
+                foreach($returnss as $return){
+                    array_push($returns, $return);
+                }
+            }
+            return response([
+                'orders' => $orders,
+                'receiving_reports' => $receiving_reports,
+                'returns' => $returns,
+                'supplies' => $supplies,
+                'suppliers' => $suppliers,
             ]);
         });
 

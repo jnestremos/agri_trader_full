@@ -7,12 +7,20 @@ const state = {
         supplies: null,
         // supplier_contact: null,
         // supplier_contact_person: null,
+    },
+    receiving_report: {
+        receiving_reports: null,
+        suppliers: null,
+        supplies: null,
     }
 }
 
 const getters = {
     getPOForRR(){
         return state.init_RR
+    },
+    getReceivingReport(){
+        return state.receiving_report
     }
 }
 
@@ -22,6 +30,13 @@ const actions = {
         .then((res) => {
             console.log(res.data)
             commit('setPOForRR', res.data)
+        })
+    },
+    fetchReceivingReport({ commit }){
+        return axiosClient.get(`/reports/receivingReports`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setReceivingReport', res.data)
         })
     },
     fetchPOforUpdateRR({ commit }, id){
@@ -55,6 +70,11 @@ const actions = {
 }
 
 const mutations = {
+    setReceivingReport: (state, data) => {
+        state.receiving_report.receiving_reports = data.receiving_reports
+        state.receiving_report.suppliers = data.suppliers
+        state.receiving_report.supplies = data.supplies
+    },
     setPOForRR: (state, data) => {
         state.init_RR.orders = data.orders
         state.init_RR.suppliers = data.suppliers

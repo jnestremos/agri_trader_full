@@ -34,6 +34,7 @@
                 <th>Quantity</th>
                 <th>Date of Stock-in</th>
                 <th>Grade</th>
+                <th>Price</th>
             </tr>
         </thead>
         <tbody>
@@ -43,6 +44,7 @@
             <td>{{ record.produce_yield_qtyHarvested }}</td>
             <td>{{ record.produce_yield_dateHarvestTo }}</td>
             <td>{{ record.produce_yield_class }}</td>
+            <td>{{ record.produce_yield_price }}</td>
           </tr>
         </tbody>    
       </table>

@@ -66,6 +66,7 @@ import TraderSalesReport from '../views/auth/Reports/TraderSalesReport.vue'
 import ProduceReport from '../views/auth/Reports/ProduceReport.vue'
 import ReceivingReportsList from '../views/auth/Reports/ReceivingReportsList.vue'
 import SupplyPurchaseOrderReports from '../views/auth/Reports/SupplyPurchaseOrderReports.vue'
+import ReturnsReport from '../views/auth/Reports/ReturnsReport.vue'
 import AllReports from '../views/auth/Reports/AllReports.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
@@ -419,7 +420,7 @@ const routes = [
         component:IncomeAndExpenditures
       },
       {
-        path:"/reports/TraderSalesReport",
+        path:"/reports/salesReport",
         name:"TraderSalesReport",
         meta:{needsAuth: true, role: "trader"},
         component:TraderSalesReport
@@ -441,6 +442,12 @@ const routes = [
         name:"SupplyPurchaseOrderReports",
         meta:{needsAuth: true, role: "trader"},
         component:SupplyPurchaseOrderReports
+      },
+      {
+        path:"/reports/supplyOrderReturns",
+        name:"ReturnsReport",
+        meta:{needsAuth: true, role: "trader"},
+        component:ReturnsReport
       },
       {
         path:"/reports/dashboard",

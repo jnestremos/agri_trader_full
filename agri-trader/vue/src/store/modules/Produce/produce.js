@@ -25,7 +25,13 @@ const state = {
     },
     produces: null,
     filtered_produces: [],
-    produce_trader: null
+    produce_trader: null,
+
+    produce_report: {
+        produce_traders: null,
+        farm_produces: null,
+        produces: null,
+    }
 }
 
 const getters = {
@@ -46,10 +52,20 @@ const getters = {
     },
     getProduceTraderr(){
         return state.produce_trader
-    }    
+    },
+    getProduceReport(){
+        return state.produce_report
+    }
 }
 
 const actions = {
+    fetchProduceReport({ commit }){
+        return axiosClient.get(`reports/produces`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setProduceReport', res.data)
+        })
+    },
     fetchAllProduces({ commit }, query = null){
         if(query){
             return axiosClient.get(`/produce/list/?${query}`)
@@ -97,6 +113,11 @@ const actions = {
 }
 
 const mutations = {
+    setProduceReport: (state, data) => {
+        state.produce_report.produce_traders = data.produce_traders
+        state.produce_report.produces = data.produces
+        state.produce_report.farm_produces = data.farm_produces
+    },
     setAllProduces: (state, data) => {
         if(data.produces.data){            
             state.produce_data.produces = data.produces.data

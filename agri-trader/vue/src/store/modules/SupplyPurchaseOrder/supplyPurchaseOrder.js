@@ -61,6 +61,21 @@ const state = {
         supplies: null,
         suppliers: null,
         refunds_filtered: null,
+    },
+
+    purchaseOrder_report: {
+        purchaseOrders_filtered: null,
+        purchaseOrders: null,
+        purchaseOrder_accs: null,        
+        suppliers: null,        
+        supplies: null,        
+    },
+    returns_report: {
+        returns: null,
+        receiving_reports: null,
+        orders: null,
+        supplies: null,
+        suppliers: null,
     }
     
 }   
@@ -80,10 +95,23 @@ const getters = {
     },
     getSupplyRefunds(){
         return state.supply_refunds
+    },
+    getPurchaseOrderReport(){
+        return state.purchaseOrder_report
+    },
+    getPurchaseReturnsReport(){
+        return state.returns_report
     }
 }
 
 const actions = {
+    fetchPurchaseReturnsReport({ commit }){
+        return axiosClient.get(`/reports/supplyReturns`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setReturnsReport', res.data)
+        })
+    },
     formForAddPO({ commit }){
         return axiosClient.get(`/supplyOrder`)
         .then((res) => {
@@ -97,8 +125,7 @@ const actions = {
             headers: {
                 'Content-type' : 'multipart/form-data'
             }
-        })
-        
+        })        
         .then((res) => {
             console.log(res.data)
             commit('asd')
@@ -122,6 +149,13 @@ const actions = {
                 commit('setPODashboard', res.data)
             })
         }
+    },
+    fetchPurchaseOrderReport({ commit }){
+        return axiosClient.get(`reports/supplyPurchaseOrders/`)
+        .then((res) => {
+            console.log(res.data)
+            commit('setPurchaseOrderReport', res.data)
+        })
     },
     updatePOStatus({ commit }, id){
         return axiosClient.patch(`/supplyOrder/${id}`)
@@ -170,6 +204,20 @@ const actions = {
 }
 
 const mutations = {
+    setReturnsReport: (state, data) => {
+        state.returns_report.returns = data.returns
+        state.returns_report.receiving_reports = data.receiving_reports
+        state.returns_report.orders = data.orders
+        state.returns_report.supplies = data.supplies
+        state.returns_report.suppliers = data.suppliers
+    },
+    setPurchaseOrderReport: (state, data) => {
+        state.purchaseOrder_report.purchaseOrders = data.purchaseOrders
+        state.purchaseOrder_report.purchaseOrders_filtered = data.purchaseOrders_filtered
+        state.purchaseOrder_report.suppliers = data.suppliers
+        state.purchaseOrder_report.supplies = data.supplies
+        state.purchaseOrder_report.purchaseOrder_accs = data.purchaseOrder_accs
+    },
     setFormPO: (state, data) => {
         state.form_PO.uuid = data.uuid
         state.form_PO.suppliers = data.suppliers
