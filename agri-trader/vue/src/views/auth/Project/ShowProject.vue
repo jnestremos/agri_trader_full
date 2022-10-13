@@ -1,6 +1,6 @@
 <template>
   <div class="showProject">
-    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
+    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>About Project</h3>        
     </div>           
     <form action="" @submit.prevent="sendProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">         

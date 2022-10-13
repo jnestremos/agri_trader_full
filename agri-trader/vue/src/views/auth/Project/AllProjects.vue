@@ -1,6 +1,6 @@
 <template>
   <div class="allProjects">
-    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
+    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Projects</h3>
         <div class="d-flex justify-content-between align-items-center" style="width:200px;">
             <router-link v-if="getFarmsForProject" :to="getFarmsForProject.length > 0 ? '/project/add' : ''" :style="[getFarmsForProject.length > 0 ? {'cursor' : 'pointer'} : {'cursor' : 'default'}]"><button :class="[getFarmsForProject.length > 0 ? 'btn btn-success me-3' : 'btn btn-secondary me-3']" style="width:60px" :disabled="getFarmsForProject.length == 0">Add</button></router-link>

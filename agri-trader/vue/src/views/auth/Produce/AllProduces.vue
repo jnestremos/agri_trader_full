@@ -11,7 +11,7 @@
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getProduces.length > 0">            
             <div class="row mb-5" v-for="(produce, index) in filtered" :key="index">                     
-                <div class="col-4" style="height:30vh" v-for="(p, i) in produce" :key="i">                
+                <div class="col-4 mt-3" style="height:30vh" v-for="(p, i) in produce" :key="i">                
                     <div class="d-flex produce" style="height:100%; border-radius:50px; position: relative;" @click="showProduce(p.produce_id)">
                         <div class="" style="position: absolute; top:5%; left:5%; 
                         width:90%;">
