@@ -18,7 +18,7 @@
                 <li>About</li>
                 <li>Produces</li>
                 <li>Traders</li>
-                <li>Contact</li>
+                <li><router-link :to="`/messages/${getID()}/dist`">Chat</router-link></li>
                 <li><router-link to="/bid_order/history">Orders</router-link></li>
             </ul>
         </div>
@@ -31,6 +31,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import auth from '../store/modules/Auth/auth'
 export default {
     name: "DistributorLayout",
     methods: {
@@ -43,8 +44,11 @@ export default {
             .catch((err) => {
                 console.log(err)
             })
+        },
+        getID(){
+            return auth.state.user.id
         }        
-    }
+    },
 }
 </script>
 
