@@ -20,7 +20,7 @@
       </b-nav>
     </div>
     <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
-      <div style="background-color:green; width:100%; height:60%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
+      <div style="background-color:green; width:100%; height:70%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">
         <ul class="d-flex flex-column justify-content-around h-100 text-left" style="list-style:none">
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supplier/list">Suppliers</router-link></li>
           <li><router-link style="color:black" :to="role == 'trader' ? '/projects' : '/projects/owner/all'">Projects</router-link></li>
@@ -33,6 +33,7 @@
           <li v-if="role == 'trader'"><router-link style="color:black" to="/supply/list"> Supply Profile </router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/reports/ReceivingReport">Receiving Reports</router-link></li>
           <li v-if="role == 'trader'"><router-link style="color:black" to="/reports/supplyExpenditures"> Supply Expenditures </router-link></li>          
+          <li v-if="role == 'trader'"><router-link style="color:black" to="/reports/otherExpenditures"> Other Expenditures </router-link></li>          
           <li><router-link style="color:black" :to="role == 'farm_owner' ? `/reports/salesReport/owner`: `/reports/salesReport`">Sales Report</router-link></li>
           <li><router-link style="color:black" :to="role == 'trader' ? '/reports/ProfitSharing' : '/reports/profitSharing/owner'">Profit Sharing Report</router-link></li>
         </ul>

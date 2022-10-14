@@ -1,10 +1,7 @@
 <template>
   <div class="OtherExpendituresReport">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
-        <h3>Other Expenditures Report</h3>
-        <div class="d-flex">
-            <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
-        </div>
+        <h3>Other Expenditures Report</h3>        
     </div>
     <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
       <div style="width:85%; height:65%" class="pb-5">
