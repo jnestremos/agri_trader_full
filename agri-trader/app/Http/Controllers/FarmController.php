@@ -25,7 +25,7 @@ class FarmController extends Controller
             'farm_hectares' => 'required|numeric',
             'farm_titleNum' => 'required|string|unique:farms,farm_titleNum',
             'farm_name' => 'required|string|unique:farms,farm_name',
-            'farm_imageUrl' => 'required|image|mimes:jpg,jpeg,png|max:5048',
+            'farm_imageUrl' => 'required|image|mimes:jpg,jpeg,png',
             //'farm_imageUrl' => 'required',
             'farm_province' => 'required',
             'farm_address' => 'required',
