@@ -72,21 +72,27 @@ export default {
     components: { IncomeSummaryGraph },   
     created(){
         this.fetchIncomeSummary()
-        .then(() => {            
-            this.incomeSumm = this.getIncomeSummary.incomeSumm
-            console.log(this.incomeSumm)
-            this.bid_order_accounts = this.getIncomeSummary.bid_order_accounts
-            var dates = [];            
-            this.bid_order_accounts.forEach((a) => {                
-                dates.push(new Date(a.created_at))
-            })   
-            dates = dates.sort((a, b) => {
-                return new Date(a) - new Date(b)
-            })
-            console.log(format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd'))
-            this.filter_dateFrom = format(new Date(dates[0]), 'yyyy-MM-dd')
-            this.filter_dateTo = format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd')            
-            this.readyApp()
+        .then(() => {   
+            if((this.getIncomeSummary.incomeSumm && this.getIncomeSummary.incomeSumm.length > 0)
+            || (this.getIncomeSummary.bid_order_accounts && this.getIncomeSummary.bid_order_accounts.length > 0)){
+                this.incomeSumm = this.getIncomeSummary.incomeSumm
+                console.log(this.incomeSumm)
+                this.bid_order_accounts = this.getIncomeSummary.bid_order_accounts
+                var dates = [];            
+                this.bid_order_accounts.forEach((a) => {                
+                    dates.push(new Date(a.created_at))
+                })   
+                dates = dates.sort((a, b) => {
+                    return new Date(a) - new Date(b)
+                })
+                console.log(format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd'))
+                this.filter_dateFrom = format(new Date(dates[0]), 'yyyy-MM-dd')
+                this.filter_dateTo = format(new Date(dates[dates.length - 1]), 'yyyy-MM-dd')            
+                this.readyApp()
+            }         
+           else{
+            this.$router.push({ name: 'Dashboard' })
+           }
         })        
     },
     data(){
