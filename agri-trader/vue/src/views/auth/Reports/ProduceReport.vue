@@ -22,6 +22,7 @@
                           <th scope="col">Associated Farms</th>
                           <th scope="col">Time To Harvest</th>
                           <th scope="col">Last Date of Harvest</th>
+                          <th scope="col">Qty In-Stock</th>
                           <th scope="col">Latest Price</th>
                       </tr>
                   </thead>
@@ -31,6 +32,7 @@
                         <td>{{ produce.prod_numOfFarms }}</td>
                         <td>{{ produce.prod_timeOfHarvest }}</td>
                         <td>{{ produce.prod_lastDateOfHarvest }}</td>
+                        <td>{{ produce.prod_totalQty }}</td>
                         <td>{{ getLatestPrice(produce) }}</td>                        
                       </tr>                                                                        
                   </tbody>

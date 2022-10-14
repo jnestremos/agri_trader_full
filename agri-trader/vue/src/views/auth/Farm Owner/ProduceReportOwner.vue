@@ -22,6 +22,7 @@
                           <th scope="col">Time to Harvest</th>                          
                           <th scope="col">Last Date of Harvest</th>                                                   
                           <th scope="col">Farms Associated</th>                                                   
+                          <th scope="col">Qty In-Stock</th>                                                   
                           <th scope="col">Date Created</th>
                       </tr>
                   </thead>
@@ -31,6 +32,7 @@
                         <td>{{ produce.prod_timeOfHarvest }}</td>
                         <td>{{ getLastDateHarvest(produce) }}</td>                                                             
                         <td>{{ getFarmsAssociated(produce) }}</td>                                                             
+                        <td>{{ getQty(produce) }}</td>                                                             
                         <td>{{ produce.created_at.split('T')[0] }}</td>
                     </tr>
                   </tbody>
@@ -90,6 +92,13 @@ export default {
             })
             return farmProdObj.length
         },
+        getQty(produce){
+            var farmProdObj = this.getProduceReportForOwner.farm_produces.filter((p) => {
+                return parseInt(produce.id) === parseInt(p.produce_trader_id)
+            })
+            var total = farmProdObj.reduce((a, b) => a.on_hand_qty + b.on_hand_qty, 0)
+            return total
+        }
     },
     computed: {
         ...mapGetters(['getProduceReportForOwner']),

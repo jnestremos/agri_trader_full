@@ -72,7 +72,7 @@ export default {
     created(){
         this.fetchBidOrderReport()
         .then(() => {
-            if(this.getBidOrderReport.orders){
+            if(this.getBidOrderReport.orders && this.getBidOrderReport.orders.length > 0){
                 var orders = this.getBidOrderReport.orders.sort((a, b) => {
                     return new Date(a.created_at) - new Date(b.created_at)
                 })
