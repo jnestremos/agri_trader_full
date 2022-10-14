@@ -1,6 +1,6 @@
 <template>
   <div class="bidOrderReport">
-    <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
+    <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA; background-color: #E0EDCA;">
             <h3>Bid Orders</h3>
         </div>
         <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">

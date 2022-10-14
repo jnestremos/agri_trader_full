@@ -1,6 +1,6 @@
 <template>
   <div class="distributorListOfBids">
-    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
+    <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Bid Orders</h3>
     </div>
     <div class="container-fluid p-3 m-0" style="height:90%; width:100%;">
