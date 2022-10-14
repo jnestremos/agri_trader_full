@@ -243,7 +243,7 @@ export default {
             .then(() => {
                 this.$toastr.s('Purchase Order Sent Successfully!')
                 setTimeout(() => {
-                    this.$router.push({ name: 'InitialPurchaseOrder' })
+                    this.$router.push({ name: 'PurchaseOrderDashboard' })
                 }, 5000)
             })
             .catch((err) => {

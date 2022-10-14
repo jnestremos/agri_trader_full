@@ -25,7 +25,7 @@ return new class extends Migration
             $table->double('purchaseOrder_percentage');                  
             $table->double('purchaseOrder_balance');                  
             $table->double('purchaseOrder_totalBalance');  
-            $table->json('purchaseOrder_images');
+            $table->json('purchaseOrder_images')->nullable();
             $table->timestamps();
         });
     }

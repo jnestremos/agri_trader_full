@@ -38,6 +38,10 @@ class SupplyOrderRefundController extends Controller
                     'purchaseOrder_subTotal' => $request->purchaseOrder_subTotal[$i] * $request->purchaseOrder_qtyDefect[$i],
                     'refund_remark' => $request->refund_remark
                 ]);
+                SupplyPurchaseOrder::where('purchaseOrder_num', $return->purchaseOrder_num)
+                ->update([
+                    'purchaseOrder_status' => 'Request for Refund'
+                ]);
             } 
             else{
                 SupplyOrderRefund::create([
@@ -50,8 +54,11 @@ class SupplyOrderRefundController extends Controller
                     'refund_remark' => $request->refund_remark
                 ]);
             }         
-
         }
+        SupplyPurchaseOrder::where('purchaseOrder_num', $request->purchaseOrder_num)
+        ->update([
+            'purchaseOrder_status' => 'Request for Refund'
+        ]);
     }
 
     public function getSupplyRefunds(){

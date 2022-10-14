@@ -32,7 +32,7 @@
                               <td>{{ supply.purchaseOrder_subTotal }}</td>                                            
                               <td>{{ supply.refundOrder_status }}</td>
                               <td>{{ supply.created_at.split('T')[0] }}</td>                          
-                            <b-modal size="xl" :hide-footer="supply.refundOrder_status == 'Confirmed'" :id="`modal-${supply.id}`" :title="`Refund Details for ${supply.purchaseOrder_num}`">
+                            <b-modal size="xl" :hide-footer="supply.refundOrder_status == 'Confirmed'" :id="`modal-${supply.purchaseOrder_num}`" :title="`Refund Details for ${supply.purchaseOrder_num}`">
                                 <div class="w-100 h-100">                                    
                                     <div :style="[getItems(supply) && getItems(supply).length > 5 ? {'overflow-y':'scroll'} : {}, {'height':'30vh'}]">
                                         <table style="width:100%; background:lightgray">
@@ -138,7 +138,7 @@
       methods: {
           ...mapActions(['readyApp', 'fetchSupplyRefunds', 'updateSupplyRefund']),
           triggerModal(supply){
-            this.$bvModal.show(`modal-${supply.id}`)
+            this.$bvModal.show(`modal-${supply.purchaseOrder_num}`)
             this.purchaseOrder_num = supply.purchaseOrder_num
           },
           setPurchaseNum(e){

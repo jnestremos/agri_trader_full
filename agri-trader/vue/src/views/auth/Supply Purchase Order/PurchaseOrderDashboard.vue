@@ -148,7 +148,8 @@ export default {
                 purchaseOrder_bankName: null,
                 purchaseOrder_accNum: null,
                 purchaseOrder_accName: null,
-            }
+            },
+            modalID: null
         }
     },
     methods: {
@@ -222,6 +223,7 @@ export default {
             this.data.purchaseOrder_bankName = accObj[0].purchaseOrder_bankName,
             this.data.purchaseOrder_accNum = accObj[0].purchaseOrder_accNum,
             this.data.purchaseOrder_accName = accObj[0].purchaseOrder_accName,
+            this.modalID = `modal-${order.purchaseOrder_num}`
             this.$bvModal.show(`modal-${order.purchaseOrder_num}`)
         },
         setStatus(e){
@@ -298,7 +300,7 @@ export default {
                 var orderObj = this.getPODashboard.purchaseOrders_filtered.filter((o) => {
                     return o.purchaseOrder_num === id
                 })
-                if(orderObj[0].purchaseOrder_status == 'Pending'){
+                if(orderObj[0].purchaseOrder_status == 'Pending' && this.modalID == modalID){
                     this.updatePOStatus(orderObj[0].purchaseOrder_num)
                     .then(() => {
                         this.$toastr.s('Purchase Order Added Successfully!')
