@@ -293,7 +293,7 @@ export default {
             if(this.getStockOutForProject.length > 0){
               var check = true
               this.getStockOutForProject.forEach((s) => {
-                if(s.stockOut.stage != stage){
+                if(s.stockOut_stage != stage){
                   check = false
                 }
                 else {
@@ -312,14 +312,14 @@ export default {
               }              
             }
           }
-          else if(this.getProjectImages.images){
+          if(this.getProjectImages.images){
             if(this.getProjectImages.images.length == 0){
               alert(`Please add progress images for ${stage} stage`)
               this.$router.push({ path: `/projects/${this.$route.params.id}/images` })
             }
             else if(this.getProjectImages.images.length > 0){
               var images = this.getProjectImages.images.filter((a) => {
-                return a.project_image_stage === this.stage
+                return a.project_image_stage === stage
               })
               if(images.length == 0){
                 alert(`Please add progress images for ${stage} stage`)

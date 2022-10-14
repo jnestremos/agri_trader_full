@@ -16,7 +16,7 @@
         </b-carousel-slide>        
       </b-carousel>     
     </div>   
-    <div v-if="getProjectImages.project && (getProjectImages.project.project_status_id == 4 || getProjectImages.project.project_status_id == 5)" style="width:95%; margin:0 auto;">
+    <div v-if="getProjectImages.project && (getProjectImages.project.project_status_id != 4 || getProjectImages.project.project_status_id != 5)" style="width:95%; margin:0 auto;">
         <div class="d-flex align-items-baseline mb-4">
             <label for="" class="form-label me-3">Add Images:</label>
             <input type="file" @change="setImages($event)" name="" class="form-control" style="width:300px;" multiple id="">
@@ -26,7 +26,7 @@
             <label for="" class="form-label me-3"><b>{{ stage }}</b></label>
         </div>
     </div>
-    <button v-if="getProjectImages.project && (getProjectImages.project.project_status_id == 4 || getProjectImages.project.project_status_id == 5)" style="position:absolute; right:5%; bottom:5%;" @click="sendPictures()" class="btn btn-primary">Add Pictures</button> 
+    <button v-if="getProjectImages.project && (getProjectImages.project.project_status_id != 4 || getProjectImages.project.project_status_id != 5)" style="position:absolute; right:5%; bottom:5%;" @click="sendPictures()" class="btn btn-primary">Add Pictures</button> 
   </div>
 </template>
 

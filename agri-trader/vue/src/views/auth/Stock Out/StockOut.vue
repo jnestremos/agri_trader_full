@@ -15,6 +15,10 @@
                           <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Project ID:</label>
                           <input type="text" name="stockIn_Date" id="" class="form-control" placeholder="022654" :value="$route.params.id" disabled>
                       </div>
+                      <div class="col-lg-3 me-3">
+                          <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Current Stage:</label>
+                          <input type="text" name="stockIn_Date" id="" class="form-control" placeholder="022654" :value="stage" disabled>
+                      </div>
                   </div>
                   <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
@@ -158,15 +162,62 @@ export default {
     created() {
         this.fetchStockOut(this.$route.params.id)
         .then(() => {
-            var arrr = []
-            var arr = []
-            this.getStockOut.inventory.forEach((s) => {
-                arr.push(false)
-                arrr.push(s.supply_id)
-            })
-            this.addedItems_check = arr
-            this.addedItems_idOrder = arrr
-            this.readyApp()
+            if(this.getProject && this.getProject.project_floweringStart){
+
+                var project_floweringStart = this.getProject.project_floweringStart
+                var project_floweringEnd = this.getProject.project_floweringEnd
+                var project_fruitBuddingStart = this.getProject.project_fruitBuddingStart
+                var project_fruitBuddingEnd = this.getProject.project_fruitBuddingEnd
+                var project_devFruitStart = this.getProject.project_devFruitStart
+                var project_devFruitEnd = this.getProject.project_devFruitEnd
+                var project_harvestableStart = this.getProject.project_harvestableStart
+                var project_harvestableEnd = this.getProject.project_harvestableEnd
+                var stage = null
+                var dateToday = format(new Date(), 'yyyy-MM-dd')
+
+                var floweringCheck = project_floweringStart <= dateToday
+                && project_floweringEnd >= dateToday
+
+                var buddingCheck = project_fruitBuddingStart <= dateToday
+                && project_fruitBuddingEnd >= dateToday
+
+                var devFruitCheck = project_devFruitStart <= dateToday
+                && project_devFruitEnd >= dateToday
+
+                var harvestableCheck = project_harvestableStart <= dateToday
+                && project_harvestableEnd >= dateToday
+                
+                if(floweringCheck){
+                    stage = 'Flowering'
+                } 
+                else if(buddingCheck){
+                    stage = 'Fruit Budding'
+                } 
+                else if(devFruitCheck){
+                    stage = 'Developing Fruit'
+                } 
+                else if(harvestableCheck){
+                    stage = 'Harvestable'
+                }  
+                else{
+                    stage = 'No Stage'
+                }
+
+                var arrr = []
+                var arr = []
+                this.getStockOut.inventory.forEach((s) => {
+                    arr.push(false)
+                    arrr.push(s.supply_id)
+                })
+                this.addedItems_check = arr
+                this.addedItems_idOrder = arrr
+                this.stage = stage
+                this.readyApp()
+            }
+            else{
+                this.$router.push({ path: `/projects/${this.$route.params.id}` }) 
+            }
+           
         })
         .catch((err) => {
             console.error(err)
@@ -183,7 +234,8 @@ export default {
             addedItems_qty: [],
             addedItems_check: null,
             addedItems_idOrder: null,
-            stockOut_remark: null
+            stockOut_remark: null,
+            stage: null
         }
     },  
     watch: {
@@ -279,6 +331,7 @@ export default {
                 supply_id: this.addedItems_id,
                 supply_qty: this.addedItems_qty,
                 stockOut_remark: this.stockOut_remark,
+                stockOut_stage: this.stage,
             }
             this.addStockOut(data)
             .then(() => {
@@ -290,7 +343,7 @@ export default {
         }
     },
         computed:{
-        ...mapGetters(['getStockOut']),
+        ...mapGetters(['getStockOut', 'getProject']),
         filteredTable(){
             var table = [];
             if(this.filter_supplier != 'None'){
