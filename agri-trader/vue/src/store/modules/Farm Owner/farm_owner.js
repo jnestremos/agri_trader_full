@@ -75,6 +75,11 @@ const state = {
     history: null,
     profit_sharing: null,
     produce_yield: null,
+    progress_images: null,
+    expenditures: null,
+    stockOut: null,
+    suppliers: null,
+    supplies: null,
 
     dashboard_owner: {
         sales: null,
@@ -89,6 +94,8 @@ const state = {
         contracts: null,
         farms: null,
         orders: null,
+        produce_yields: null,
+        produce_inventories: null,
     },
 
     farm_report: {
@@ -144,6 +151,21 @@ const getters = {
     },
     getProfitSharingOwner(){
         return state.profit_sharing
+    },
+    getImagesOwner(){
+        return state.progress_images
+    },
+    getExpendituresOwner(){
+        return state.expenditures
+    },
+    getStockOutOwner(){
+        return state.stockOut
+    },
+    getSuppliersOwner(){
+        return state.suppliers
+    },
+    getSuppliesOwner(){
+        return state.supplies
     },
     getShareOwner(){
         return state.share
@@ -397,6 +419,8 @@ const mutations = {
         state.sales_report.produces = data.produces
         state.sales_report.produce_traders = data.produce_traders
         state.sales_report.orders = data.orders
+        state.sales_report.produce_inventories = data.produce_inventories
+        state.sales_report.produce_yields = data.produce_yields
     },
     setOwnerDashboardData: (state, data) => {
         state.dashboard_owner.sales = data.sales
@@ -412,6 +436,11 @@ const mutations = {
         state.history = data.history
         state.profit_sharing = data.profit_sharing
         state.produce_yield = data.produce_yield
+        state.progress_images = data.progress_images
+        state.expenditures = data.expenditures
+        state.stockOut = data.stockOut
+        state.suppliers = data.suppliers
+        state.supplies = data.supplies
     },
     setAllProjects(state, data){
         if(data.projects.data){

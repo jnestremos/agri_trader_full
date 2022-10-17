@@ -26,7 +26,7 @@
                     <div class="d-flex w-50 align-items-baseline">                        
                         <input type="number" name="" id="" style="width:150px" class="form-control me-3" disabled :value="getRemaining(y)">
                         <h5 class="me-3">kgs</h5>
-                        <button class="btn btn-danger" :disabled="getRemaining(y) == 0">Declare as Unsold</button>
+                        <button class="btn btn-danger" :disabled="getRemaining(y) == 0" @click="declareUnsold(y)">Declare as Unsold</button>
                     </div>                    
                 </div>            
             </div>                      
@@ -51,7 +51,7 @@
                             <td>{{ sale.bid_order_id }}</td>
                             <td>{{ getOrderDate(sale) }}</td>
                             <td>{{ getOrderClass(sale) }}</td>
-                            <td>{{ sale.sale_type }}</td>
+                            <td :style="sale.sale_type && sale.sale_type == 'Unsold Goods' ? {'color':'red'} : {}">{{ sale.sale_type }}</td>
                             <td>{{ sale.sale_qty }} kg/s</td>
                             <td>{{ sale.sale_stockLeft }} kg/s</td>
                             <td>Php {{ sale.sale_price.toFixed(2) }}</td>
@@ -84,7 +84,40 @@ export default {
         
     },
     methods: {
-        ...mapActions(['readyApp', 'fetchProduceInventory']),
+        ...mapActions(['readyApp', 'fetchProduceInventory', 'addUnsold']),
+        declareUnsold(y){
+            let qty = prompt('Please set a qty')
+            var prodInventoryObj = this.getProduceInventory.produce_inventories.filter((i) => {
+                return parseInt(y.id) === parseInt(i.produce_yield_id)
+            })
+            if(!qty || isNaN(qty) || parseInt(qty) > prodInventoryObj[0].produce_inventory_qtyOnHand){
+                alert("Invalid Qty Placed!")   
+            }
+            else{
+                let price = prompt('Please set a price for goods unsold')
+                if(!price || isNaN(price)){
+                    alert("Invalid Price Placed!")    
+                }
+                else{
+                    var data = {
+                        id: y.id,
+                        qty: qty,
+                        price: price,
+                    }
+                    this.addUnsold(data)
+                    .then(() => {
+                        location.reload()
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        this.errors = err.response.data.errors
+                        for(var error in this.errors){
+                            this.$toastr.e(this.errors[error][0])
+                        }                        
+                    })
+                }
+            }            
+        },
         getRemaining(y){
             var prodInventoryObj = this.getProduceInventory.produce_inventories.filter((i) => {
                 return parseInt(y.id) === parseInt(i.produce_yield_id)
@@ -92,16 +125,32 @@ export default {
             return prodInventoryObj[0].produce_inventory_qtyOnHand
         },
         getOrderDate(sale){
-            var bidOrderObj = this.getProduceInventory.bid_orders.filter((o) => {
-                return parseInt(sale.bid_order_id) === parseInt(o.id)
-            })
-            return bidOrderObj[0].created_at.split('T')[0]
+            if(sale.bid_order_id){
+                var bidOrderObj = this.getProduceInventory.bid_orders.filter((o) => {
+                    return parseInt(sale.bid_order_id) === parseInt(o.id)
+                })
+                return bidOrderObj[0].created_at.split('T')[0]
+            }
+            else{
+                return sale.created_at.split('T')[0]
+            }         
         },
         getOrderClass(sale){
-            var bidOrderObj = this.getProduceInventory.bid_orders.filter((o) => {
-                return parseInt(sale.bid_order_id) === parseInt(o.id)
-            })
-            return bidOrderObj[0].order_grade
+            if(sale.bid_order_id){
+                var bidOrderObj = this.getProduceInventory.bid_orders.filter((o) => {
+                    return parseInt(sale.bid_order_id) === parseInt(o.id)
+                })
+                return bidOrderObj[0].order_grade
+            }
+            else{
+                var prodInventoryObj = this.getProduceInventory.produce_inventories.filter((i) => {
+                    return parseInt(sale.produce_inventory_id) === parseInt(i.id)
+                })
+                var yieldObj = this.getProduceInventory.produce_yields.filter((y) => {
+                    return parseInt(prodInventoryObj[0].produce_yield_id) === parseInt(y.id)
+                })
+                return yieldObj[0].produce_yield_class
+            }     
         }
     },
     computed: {

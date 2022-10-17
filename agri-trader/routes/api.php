@@ -37,6 +37,7 @@ use App\Models\ProduceYield;
 use App\Models\ProfitSharing;
 use App\Models\Project;
 use App\Models\ProjectBid;
+use App\Models\ProjectImage;
 use App\Models\ProjectStatus;
 use App\Models\ReceivingReport;
 use App\Models\Refund;
@@ -96,7 +97,17 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['middleware' => ['role:farm_owner']], function (){
 
-        Route::get('project/owner/{id}', function ($id){                
+        Route::get('project/owner/{id}', function ($id){ 
+            $suppliers = [];
+            $supplies = [];
+            foreach(Project::find($id)->stock_out()->get() as $stock){
+                if(!in_array($stock->supplier()->first(), $suppliers)){
+                    array_push($suppliers, $stock->supplier()->first());
+                }
+                if(!in_array($stock->supply()->first(), $supplies)){
+                    array_push($supplies, $stock->supply()->first());
+                }
+            }
             return response([
                 'farm' => Project::find($id)->contract()->first()->farm()->first(),
                 'contract' => Project::find($id)->contract()->first(),
@@ -106,7 +117,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produce' => Project::find($id)->contract()->first()->produce()->first(),
                 'history' => DB::table('project_status_history')->where('project_id', $id)->get(),
                 'profit_sharing' => ProfitSharing::where('project_id', $id)->first(),
-                'produce_yield' => ProduceYield::where('project_id', $id)->get()              
+                'produce_yield' => ProduceYield::where('project_id', $id)->get(),
+                'progress_images' => Project::find($id)->project_image()->get(),      
+                'expenditures' => Project::find($id)->expenditure()->get(),      
+                'stockOut' => Project::find($id)->stock_out()->get(),      
+                'suppliers' => $suppliers,
+                'supplies' => $supplies,                 
             ], 200);
         });
 
@@ -419,6 +435,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             $produces = [];
             $produce_traders = [];
             $orders = [];
+            $produce_inventories = [];
+            $produce_yields = [];
+            $orders = [];
             foreach($farms as $farm){
                 foreach(Contract::where('farm_id', $farm->id)->get() as $contract){
                     array_push($contracts, $contract);
@@ -432,20 +451,41 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             }
             foreach($projects as $project){
                 foreach($project->sale()->get() as $sale){
-                    array_push($sales, $sale);            
-                    array_push($orders, $sale->bid_order()->first());                
+                    array_push($sales, $sale);
+                    $inventory = ProduceInventory::find($sale->produce_inventory_id);
+                    if(!in_array($inventory, $produce_inventories)){
+                        array_push($produce_inventories, $inventory);             
+                    }                    
+                    if(!in_array($inventory->produce_yield()->first(), $produce_yields)){
+                        array_push($produce_yields, $inventory->produce_yield()->first());             
+                    }                    
+                    if($sale->bid_order()->first()){
+                        array_push($orders, $sale->bid_order()->first());             
+                    }
+                    else{
+                        $produce_trader = $inventory->produce_yield()->first()
+                        ->produce_trader()->first();
+                        if(!in_array($produce_trader, $produce_traders)){
+                            array_push($produce_traders, $produce_trader);
+                        }
+                        if(!in_array($produce_trader->produce()->first(), $produces)){
+                            array_push($produces, $produce_trader->produce()->first());
+                        }
+                    }                                   
                 }
             }
             foreach($orders as $order){
                 if(!in_array($order->produce_trader()->first(), $produce_traders)){
                     array_push($produce_traders, $order->produce_trader()->first());
                 }
-            }
+            }            
             return response([
                 'sales' => $sales,
                 'contracts' => $contracts,
                 'projects' => $projects,
                 'produces' => $produces,
+                'produce_inventories' => $produce_inventories,
+                'produce_yields' => $produce_yields,
                 'produce_traders' => $produce_traders,
                 'orders' => $orders,
                 'farms' => $farms,
@@ -485,6 +525,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::group(['middleware' => ['role:trader']], function () {
+
+        Route::post('/harvest/{id}/unsold', [ProduceYieldController::class, 'sellUnsold']);
 
         Route::controller(SupplierController::class)->prefix('supplier')->group(function () {
             Route::get('/', 'fetchSuppliers');
@@ -629,6 +671,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'suppliers' => $suppliers,
                 'stockOut' => $stockOut,
                 'produces' => $produces,
+                'project' => Project::find($id)
             ]);
             
         });
@@ -962,12 +1005,32 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     array_push($sales, $sale);
                 }
             }
+            $produce_inventories = [];
+            $produce_yields = [];
+            foreach($sales as $sale){
+                $inventory = ProduceInventory::find($sale->produce_inventory_id);
+                $produce_trader = $inventory->produce_yield()->first()->produce_trader()->first();
+                if(!in_array($inventory, $produce_inventories)){
+                    array_push($produce_inventories, $inventory);
+                }
+                if(!in_array($inventory->produce_yield()->first(), $produce_yields)){
+                    array_push($produce_yields, $inventory->produce_yield()->first());
+                }
+                if(!in_array($produce_trader, $produce_traders)){
+                    array_push($produce_traders, $produce_trader);
+                }
+                if(!in_array($produce_trader->produce()->first(), $produces)){
+                    array_push($produces, $produce_trader->produce()->first());
+                }
+            }
 
             return response([
                 'sales' => $sales,
                 'contracts' => $contracts,
                 'projects' => $projects,
                 'produce_traders' => $produce_traders,
+                'produce_inventories' => $produce_inventories,
+                'produce_yields' => $produce_yields,
                 'produces' => $produces,
                 'orders' => $orders,
             ]);
@@ -1743,6 +1806,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'bid_orders' => $bid_orders,
             ], 200);
         });
+        
 
 
 

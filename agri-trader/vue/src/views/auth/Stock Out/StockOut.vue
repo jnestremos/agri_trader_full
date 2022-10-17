@@ -23,7 +23,7 @@
                   <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Supplier</label>
-                            <select class="form-select" :disabled="!(getStockOut.inventory && getStockOut.inventory.length > 0)" id="supplier_name" @change="setSupplier($event)">
+                            <select class="form-select" :disabled="!(getStockOut.inventory && getStockOut.inventory.length > 0) || (getStockOut.project && (getStockOut.project.project_status_id == 4 || getStockOut.project.project_status_id == 5))" id="supplier_name" @change="setSupplier($event)">
                                 <option selected value="None">Select Supplier</option>
                                 <option v-for="(supplier, index) in getStockOut.suppliers" :key="index" :value="supplier.id">{{ supplier.supplier_name }}</option>
                             </select>                    
@@ -58,7 +58,7 @@
                           </thead>
                           <tbody align="center">
                               <tr v-for="(item, index) in filteredTable" :key="index">
-                                  <td><input :checked="checkItem(item.supply_id)" @change="addItem($event)" :value="item.supply_id" type="checkbox"></td>
+                                  <td><input :disabled="getStockOut.project && (getStockOut.project.project_status_id == 4 || getStockOut.project.project_status_id == 5)" :checked="checkItem(item.supply_id)" @change="addItem($event)" :value="item.supply_id" type="checkbox"></td>
                                   <td>{{ getSupplierName(item) }}</td>
                                   <td>{{ item.supply_name }}</td>
                                   <td>{{ item.supply_type }}</td>
@@ -82,12 +82,12 @@
                       </div>
                       <div class="col-lg-3 me-3">
                           <label for="stockOut_Remarks" class="form-label me-4">Remarks</label>
-                          <input type="text" name="stockIn_transactedBy" id="" v-model="stockOut_remark" class="form-control">
+                          <input type="text" :disabled="getStockOut.project && (getStockOut.project.project_status_id == 4 || getStockOut.project.project_status_id == 5)" name="stockIn_transactedBy" id="" v-model="stockOut_remark" class="form-control">
                       </div>
                   </div>
                   <div class="btn-toolbar pt-4" role="toolbar">
                       <div class="btn-group me-3">
-                        <b-button variant="success" class="fw-bold" @click="sendStock()" style="width:200px; height:60px" :disabled="!(filteredTable && filteredTable.length > 0)">Stock Out To Project</b-button>
+                        <b-button variant="success" class="fw-bold" @click="sendStock()" style="width:200px; height:60px" :disabled="!(filteredTable && filteredTable.length > 0) || (getStockOut.project && (getStockOut.project.project_status_id == 4 || getStockOut.project.project_status_id == 5))">Stock Out To Project</b-button>
                       </div>
                       <div class="btn-group me-3">
                         <b-button variant="secondary" v-b-modal.modal-1 :disabled="!(getStockOut.stockOut && getStockOut.stockOut.length > 0)" class="fw-bold" style="width:200px; height:60px">View All Items Used for Project</b-button>

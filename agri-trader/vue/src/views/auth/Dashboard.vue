@@ -11,7 +11,7 @@
           <h5>Total Sales</h5>
           <div style="height:300px; background-color:greenyellow; border-radius:20px;" class="px-3 pb-3">
             <TotalSalesGraph style="height:100%; width:100%;" v-if="getRole == 'trader' && getTotalSales && getTotalSales.length > 0" :chartData="getTotalSales" label="Total Sales"/>
-            <TotalSalesOwnerGraph style="height:100%; width:100%;" v-else-if="getRole == 'farm_owner' && salesOwner && salesOwner.length > 0" :chartData="salesOwner" :labels="salesLabels"/>
+            <TotalSalesOwnerGraph style="height:100%; width:100%;" v-else-if="getRole == 'farm_owner' && salesOwner && salesOwner.length > 0" :chartData="salesOwner" :labels="salesLabels" label="Total Sales"/>
           </div>
         </div>
         <!-- <div class="col-4">
@@ -22,8 +22,8 @@
         </div> -->
         <div class="col-6">
           <h5 v-if="getRole == 'trader'">Income Summary</h5>
-          <h5 v-else>Profit Sharing</h5>
-          <div style="height:300px; background-color:greenyellow; border-radius:20px; cursor:pointer" class="px-3 pb-3" @click="redirectIncomeSummary()">
+          <h5 v-else>Profit Sharing</h5>          
+          <div :style="[getRole == 'trader' ? {'cursor':'pointer'} : {}, {'height':'300px'}, {'background-color':'greenyellow'}, {'border-radius':'20px'}]" class="px-3 pb-3" @click="redirectIncomeSummary()">
             <IncomeSummaryGraph style="height:100%; width:100%;" v-if="getRole == 'trader' && getIncomeSumm" :chartData="getIncomeSumm" label="Income"/>
             <ProfitSharingOwnerGraph style="height:100%; width:100%;" v-else-if="getRole == 'farm_owner' && profitsOwner && profitsOwner.length > 0" :chartData="profitsOwner" :labels="shareLabels"/>
           </div>
@@ -144,7 +144,9 @@ export default {
     methods: {
       ...mapActions(['readyApp', 'fetchDashboardData', 'fetchOwnerDashboardData']),
       redirectIncomeSummary(){
-        this.$router.push({ name: 'IncomeSummary' })
+        if(this.getRole == 'trader'){
+          this.$router.push({ name: 'IncomeSummary' })        
+        }      
       }
     }
     

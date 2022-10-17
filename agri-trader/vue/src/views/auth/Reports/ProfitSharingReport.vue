@@ -11,14 +11,14 @@
           <div class="form-row mb-3 mt-2">
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Farm</label>
-                  <select class="form-select" @change="setFarm($event)">
+                  <select class="form-select" :disabled="this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length == 0" @change="setFarm($event)">
                       <option value="None">Select Farm</option>
                       <option v-for="(farm, index) in getProfitSharingReport.farms" :key="index" :value="farm.id">{{ getFarmName(farm) }}</option>
                   </select>
               </div>              
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Produce</label>
-                  <select class="form-select" @change="setProduce($event)">
+                  <select class="form-select" :disabled="this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length == 0" @change="setProduce($event)">
                       <option selected value="None">Select Produce</option>
                       <option v-for="(produce, index) in getProfitSharingReport.produces" :key="index" :value="produce.id">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
                   </select>
@@ -27,13 +27,13 @@
           <div class="form-row mb-3 mt-2">
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">From</label>
-                <input type="date" v-model="filter_dateFrom" class="form-control">
+                <input type="date" :disabled="this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length == 0" v-model="filter_dateFrom" class="form-control">
             </div>
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">To</label>
                 <div class="d-flex align-items-baseline">
-                    <input type="date" v-model="filter_dateTo" class="form-control me-3">
-                    <input type="reset" class="btn btn-secondary" value="Reset" @click="resetFilter()">
+                    <input type="date" :disabled="this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length == 0" v-model="filter_dateTo" class="form-control me-3">
+                    <input type="reset" :disabled="this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length == 0" class="btn btn-secondary" value="Reset" @click="resetFilter()">
                 </div>
             </div>
           </div>
@@ -87,11 +87,13 @@ import { format, sub, add } from 'date-fns';
       created() {
         this.fetchProfitSharingReport()
         .then(() => {
-            var sortedData = this.getProfitSharingReport.profit_sharing.sort((a, b) => {
-                return new Date(a.created_at) - new Date(b.created_at)
-            })    
-            this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
-            this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')
+            if(this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length > 0){
+                var sortedData = this.getProfitSharingReport.profit_sharing.sort((a, b) => {
+                    return new Date(a.created_at) - new Date(b.created_at)
+                })    
+                this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
+                this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')                
+            }
             this.readyApp()
         })          
       },

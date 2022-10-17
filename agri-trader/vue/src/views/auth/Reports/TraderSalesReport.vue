@@ -24,11 +24,11 @@
           <div class="form-row mb-3 mt-2">
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">From</label>
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" v-model="filter_dateFrom">
             </div>
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">To</label>
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" v-model="filter_dateTo">
             </div>
           </div>
           <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
@@ -95,7 +95,7 @@ import { add, format, sub } from 'date-fns';
             if(!newVal){
                this.filter_dateFrom = oldVal 
             }
-            else if(newVal > this.filter_dateTo){
+            else if(newVal >= this.filter_dateTo){
                 this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
                     days: 1
                 }), 'yyyy-MM-dd')
@@ -105,7 +105,7 @@ import { add, format, sub } from 'date-fns';
             if(!newVal){
                 this.filter_dateTo = oldVal 
             }
-            else if(newVal < this.filter_dateFrom){
+            else if(newVal <= this.filter_dateFrom){
                 this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
                     days: 1
                 }) , 'yyyy-MM-dd')
@@ -121,23 +121,51 @@ import { add, format, sub } from 'date-fns';
             this.filter_produce = e.target.value
           },
           getProduceNameSale(sale){
-            var orderObj = this.getSalesReport.orders.filter((o) => {
-                return parseInt(sale.bid_order_id) === parseInt(o.id)
-            })
-            var prodTraderObj = this.getSalesReport.produce_traders.filter((p) => {
-                return parseInt(orderObj[0].produce_trader_id) === parseInt(p.id)
-            })
-            var prodObj = this.getSalesReport.produces.filter((p) => {
-                return parseInt(prodTraderObj[0].produce_id) === parseInt(p.id)
-            })
-            var arr = prodTraderObj[0].prod_name.split('(Class')
-            if(arr.indexOf('(Class') != -1){
-                arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
-                return arr.join(' ')
+            var prodTraderObj = null
+            var prodObj = null
+            var arr = null
+            if(sale.bid_order_id){
+                var orderObj = this.getSalesReport.orders.filter((o) => {
+                    return parseInt(sale.bid_order_id) === parseInt(o.id)
+                })
+                prodTraderObj = this.getSalesReport.produce_traders.filter((p) => {
+                    return parseInt(orderObj[0].produce_trader_id) === parseInt(p.id)
+                })
+                prodObj = this.getSalesReport.produces.filter((p) => {
+                    return parseInt(prodTraderObj[0].produce_id) === parseInt(p.id)
+                })
+                arr = prodTraderObj[0].prod_name.split('(Class')
+                if(arr.indexOf('(Class') != -1){
+                    arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
+                    return arr.join(' ')
+                }
+                else{
+                    return prodTraderObj[0].prod_name + ' ' + prodObj[0].prod_type
+                }
             }
             else{
-                return prodTraderObj[0].prod_name + ' ' + prodObj[0].prod_type
+                var inventoryObj = this.getSalesReport.produce_inventories.filter((i) => {
+                    return parseInt(sale.produce_inventory_id) === parseInt(i.id)
+                })
+                var yieldObj = this.getSalesReport.produce_yields.filter((y) => {
+                    return parseInt(inventoryObj[0].produce_yield_id) === parseInt(y.id)
+                })
+                prodTraderObj = this.getSalesReport.produce_traders.filter((p) => {
+                    return parseInt(yieldObj[0].produce_trader_id) === parseInt(p.id)
+                })
+                prodObj = this.getSalesReport.produces.filter((p) => {
+                    return parseInt(prodTraderObj[0].produce_id) === parseInt(p.id)
+                })
+                arr = prodTraderObj[0].prod_name.split('(Class')
+                if(arr.indexOf('(Class') != -1){
+                    arr.splice(arr.indexOf('(Class'), 0, prodObj[0].prod_type)
+                    return arr.join(' ')
+                }
+                else{
+                    return prodTraderObj[0].prod_name + ' ' + prodObj[0].prod_type
+                }
             }
+
           },
           getProjectNameSale(sale){
             var projObj = this.getSalesReport.projects.filter((p) => {
@@ -173,6 +201,8 @@ import { add, format, sub } from 'date-fns';
         filteredTable(){
             var table = []       
             var orderObj = null            
+            var inventoryObj = null            
+            var yieldObj = null            
             var container = []
             var containerr = []
             if(this.getSalesReport.sales){
@@ -183,7 +213,7 @@ import { add, format, sub } from 'date-fns';
                 if(this.filter_project != "None" && this.filter_produce != 'None'){                                       
                     orderObj = this.getSalesReport.orders.filter((o) => {
                         return parseInt(o.produce_trader_id) === parseInt(this.filter_produce)
-                    })
+                    })                    
                     orderObj.forEach((o) => {
                         containerr = table.filter((s) => {
                             return parseInt(o.id) === parseInt(s.bid_order_id)
@@ -192,6 +222,23 @@ import { add, format, sub } from 'date-fns';
                             container.push(c)
                         })
                     })
+                    containerr = table.filter((s) => {
+                        return s.bid_order_id === null
+                    })
+                    console.log(containerr)
+                    containerr.forEach((s) => {
+                        inventoryObj = this.getSalesReport.produce_inventories.filter((i) => {
+                            return parseInt(s.produce_inventory_id) === parseInt(i.id)
+                        })
+                        inventoryObj.forEach((i) => {
+                            yieldObj = this.getSalesReport.produce_yields.filter((y) => {
+                                return parseInt(i.produce_yield_id) === parseInt(y.id)
+                            })
+                            if(parseInt(yieldObj[0].produce_trader_id) === parseInt(this.filter_produce)){
+                                container.push(s)
+                            }
+                        })                            
+                    })   
                     container = container.filter((c) => {
                         return parseInt(this.filter_project) === parseInt(c.project_id)
                     })
@@ -208,6 +255,23 @@ import { add, format, sub } from 'date-fns';
                         containerr.forEach((c) => {
                             container.push(c)
                         })
+                    })
+                    containerr = table.filter((s) => {
+                        return s.bid_order_id === null
+                    })
+                    console.log(containerr)
+                    containerr.forEach((s) => {
+                        inventoryObj = this.getSalesReport.produce_inventories.filter((i) => {
+                            return parseInt(s.produce_inventory_id) === parseInt(i.id)
+                        })
+                        inventoryObj.forEach((i) => {
+                            yieldObj = this.getSalesReport.produce_yields.filter((y) => {
+                                return parseInt(i.produce_yield_id) === parseInt(y.id)
+                            })
+                            if(parseInt(yieldObj[0].produce_trader_id) === parseInt(this.filter_produce)){
+                                container.push(s)
+                            }
+                        })                            
                     })
                     table = container
                 }

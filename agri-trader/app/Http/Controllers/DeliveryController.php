@@ -133,6 +133,7 @@ class DeliveryController extends Controller
                     Sale::create([
                         'bid_order_id' => $order->id,
                         'project_id' => $order->project_id,
+                        'produce_inventory_id' => $inventory->id,
                         'sale_type' => 'Sales (Project Bid)',
                         'sale_qty' => $order->order_finalQty,
                         'sale_stockLeft' => $inventory->produce_inventory_qtyOnHand,
@@ -331,6 +332,7 @@ class DeliveryController extends Controller
                     Sale::create([
                         'bid_order_id' => $order->id,
                         'project_id' => $order->project_id,
+                        'produce_inventory_id' => $inventory->id,
                         'sale_type' => 'Sales (On-Hand Bid)',
                         'sale_qty' => $order->order_finalQty,
                         'sale_stockLeft' => $inventory->produce_inventory_qtyOnHand,

@@ -21,6 +21,13 @@ const getters = {
 }
 
 const actions = {
+    addUnsold({ commit }, data){
+        return axiosClient.post(`/harvest/${data.id}/unsold`, data)
+        .then((res) => {
+            console.log(res.data)
+            commit('asd')
+        })
+    },
     fetchProduceInventory({ commit }, id){
         return axiosClient.get(`/harvest/${id}/inventory`)
         .then((res) => {
@@ -41,6 +48,9 @@ const mutations = {
         state.produce_inventory.produce_inventories = data.produce_inventories
         state.produce_inventory.sales = data.sales
         state.produce_inventory.bid_orders = data.bid_orders
+    },
+    asd: () => {
+        console.log(1)
     }
 }
 

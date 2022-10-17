@@ -4,6 +4,7 @@ import axiosClient from "../../../axios";
 const state = {
     expenditures: null,
     project_commenceDate: null,
+    project: null,
     expenditure_report: {
         expenditures: null,
         contracts: null,
@@ -14,6 +15,9 @@ const state = {
 const getters = {
     getExpenditures(){
         return state.expenditures
+    },
+    getProjectForExpenditure(){
+        return state.project
     },
     getProjectCommenceDate(){
         return state.project_commenceDate
@@ -51,6 +55,7 @@ const mutations = {
     setExpenditure: (state, data) => {
         state.expenditures = data.expenditures
         state.project_commenceDate = data.project_commenceDate
+        state.project = data.project
     },
     asd: () => {
         console.log(1)

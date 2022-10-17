@@ -16,7 +16,8 @@ class ExpenditureController extends Controller
         }
         return response([
             'project_commenceDate' => Project::find($id)->project_commenceDate,
-            'expenditures' => Expenditure::where('project_id', $id)->get()
+            'expenditures' => Expenditure::where('project_id', $id)->get(),
+            'project' => Project::find($id)
         ]);
     }
 

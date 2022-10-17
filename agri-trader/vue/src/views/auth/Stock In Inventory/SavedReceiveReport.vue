@@ -1,7 +1,7 @@
 <template>
   <div class="SavedReceiveReport">
     <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
-            <h3>Supply | Receive Report Summary</h3>
+            <h3>Supply | Return/Refund</h3>
     </div>
     <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">
@@ -15,18 +15,7 @@
                         <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
                         <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567" v-model="data.purchaseOrder_num">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <p class="font-weight-bold" style="font-size:110%">Supplier Name: Pacifica Agrivet</p>
-                    </div>
-                    <div class="col-sm-3">
-                        <p class="font-weight-bold" style="font-size:110%">Contact Person: Juan dela Cruz</p>
-                    </div>
-                    <div class="col-sm-3">
-                        <p class="font-weight-bold" style="font-size:110%">Contact Number: 09123456789</p>
-                    </div>
-                </div>
+                </div>                
                 <div class="mb-2" style="width:100% height:90%; clear:left;">
                     <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">
                         <thead align="center">

@@ -6,6 +6,8 @@ const state = {
         contracts: null,
         projects: null,
         produce_traders: null,
+        produce_inventories: null,
+        produce_yields: null,
         produces: null,
         orders: null,
     }
@@ -35,6 +37,8 @@ const mutations = {
         state.sales_report.produce_traders = data.produce_traders
         state.sales_report.produces = data.produces
         state.sales_report.orders = data.orders
+        state.sales_report.produce_yields = data.produce_yields
+        state.sales_report.produce_inventories = data.produce_inventories
     }
 }
 

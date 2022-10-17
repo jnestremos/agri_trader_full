@@ -12,6 +12,7 @@ class Sale extends Model
     protected $fillable = [
         'bid_order_id',
         'project_id',
+        'produce_inventory_id',
         'sale_type',
         'sale_qty',
         'sale_stockLeft',

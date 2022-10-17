@@ -10,6 +10,7 @@ use App\Models\ProduceInventory;
 use App\Models\ProduceTrader;
 use App\Models\ProduceYield;
 use App\Models\Project;
+use App\Models\Sale;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -180,5 +181,56 @@ class ProduceYieldController extends Controller
         return response([
             'message' => 'Harvest Successful!'
         ], 200);
+    }
+
+    public function sellUnsold(Request $request, $id){
+        $yield = $request->validate([            
+            'qty' => 'required|numeric',
+            'price' => 'required|numeric'
+        ]);
+
+        $yieldd = ProduceYield::find($id);
+        if(!$yield || !$yieldd){
+            return response([
+                'error' => 'Error selling unsold produces!'
+            ], 400);
+        }
+
+        $yield = ProduceYield::find($id);   
+
+        $inventory = $yield->produce_inventory()->first();
+
+        ProduceYield::find($id)->produce_inventory()->update([
+            'produce_inventory_qtyOnHand' => $inventory->produce_inventory_qtyOnHand - $request->qty
+        ]);
+
+        $produce_trader = ProduceTrader::find($yield->produce_trader_id);
+        $farm_produce = DB::table('farm_produce')->where([
+            ['produce_trader_id', $produce_trader->id],
+            ['farm_id', Project::find($yield->project_id)->contract()->first()->farm()->first()->id]
+        ])->first();
+
+        ProduceTrader::find($yield->produce_trader_id)->update([
+            'prod_totalQty' => $produce_trader->prod_totalQty - $request->qty
+        ]);
+
+        DB::table('farm_produce')->where([
+            ['produce_trader_id', $produce_trader->id],
+            ['farm_id', Project::find($yield->project_id)->contract()->first()->farm()->first()->id]
+        ])->update([
+            'on_hand_qty' => $farm_produce->on_hand_qty - $request->qty
+        ]);
+
+       
+        Sale::create([       
+            'project_id' => $yield->project_id,
+            'produce_inventory_id' => $inventory->id,
+            'sale_type' => 'Unsold Goods',
+            'sale_qty' => $request->qty,
+            'sale_stockLeft' => ProduceYield::find($id)->produce_inventory()->first()->produce_inventory_qtyOnHand,
+            'sale_price' => $request->price,
+            'sale_total' => $request->price * $request->qty 
+        ]);
+
     }
 }

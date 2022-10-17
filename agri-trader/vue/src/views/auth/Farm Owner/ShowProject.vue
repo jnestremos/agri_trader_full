@@ -37,8 +37,8 @@
             </div>
           </div>
         </div>
-        <div class="row px-5 w-100 m-0" style="height:70%;">
-          <div class="col-9 p-0 d-flex flex-column justify-content-evenly">
+        <div class="row ps-5 w-100 m-0" style="height:70%;">
+          <div class="col-8 p-0 d-flex flex-column justify-content-evenly">
             <div class="row w-100 m-0">
               <div class="col-4 p-0 d-flex align-items-baseline">
                 <p v-if="getProduceOwner">Produce: {{ getProduceOwner.prod_name + ' ' + getProduceOwner.prod_type }}</p>
@@ -108,7 +108,7 @@
               </div>            
             </div>          -->
           </div>  
-          <div class="col-3 d-flex flex-column justify-content-evenly">
+          <div class="col-4 d-flex flex-column justify-content-evenly">
             <div class="row w-100 m-0">
               <div v-if="getRole == 'farm_owner'" class="col-12 p-0 d-flex align-items-baseline">
                 <label for="project_status_id" class="form-label me-4">Project Status:</label>
@@ -154,8 +154,11 @@
             <div class="row w-100 m-0"></div> 
             <div class="row w-100 m-0"></div> 
             <div v-if="getProjectOwner">
-              <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:25%;" v-if="getProjectOwner.project_status_id == 2 || getProjectOwner.project_status_id == 4 || getProjectOwner.project_status_id == 5">                
-                <input type="button" v-if="getProduceYieldOwner && getProduceYieldOwner.length > 0" v-b-modal.modal-2 value="Harvest" class="btn btn-primary me-3">                                                                            
+              <div class="d-flex justify-content-between align-items-center" style="position:absolute; bottom:7%; right:8%;" v-if="getProjectOwner.project_status_id == 2 || getProjectOwner.project_status_id == 4 || getProjectOwner.project_status_id == 5">                      
+                <input type="button" v-if="getImagesOwner && getImagesOwner.length > 0" v-b-modal.modal-3 value="View Images" class="btn btn-primary me-3">
+                <input type="button" v-if="getExpendituresOwner && getExpendituresOwner.length > 0" v-b-modal.modal-4 value="View Expenditures" class="btn btn-primary me-3">
+                <input type="button" v-if="getStockOutOwner && getStockOutOwner.length > 0" v-b-modal.modal-5 value="View Supplies Used" class="btn btn-primary me-3">
+                <input type="button" v-if="getProduceYieldOwner && getProduceYieldOwner.length > 0" v-b-modal.modal-2 value="View Harvest" class="btn btn-primary me-3">
                 <input type="button" v-b-modal.modal-1 v-if="getProfitSharingOwner" value="View Profit Sharing" class="btn btn-primary">
                 <b-modal size="lg" :hide-footer="getProjectOwner && getProjectOwner.project_completionDate != null" id="modal-1" :title="`Profit Sharing for Project #${$route.params.id}`">
                   <div class="w-100 h-100">
@@ -235,6 +238,74 @@
                     </div>
                   </div>
                 </b-modal>
+                <b-modal size="lg" hide-footer id="modal-3" :title="`Progress Images for Project #${$route.params.id}`">
+                  <div class="w-100 h-100"> 
+                    <div class="d-flex justify-content-center mb-3" style="width:95%; margin:0 auto">
+                        <h4>{{ title }}</h4>
+                    </div>
+                    <b-carousel class="mb-2" id="carousel-1" :interval="0"
+                    controls indicators background="#ababab" @sliding-end="onSlideEnd" style="text-shadow: 1px 1px 2px #333; width:100%; height:100%;">      
+                      <b-carousel-slide v-for="(image, index) in getImagesOwner" :key="index" style="height:50vh;">
+                        <template #img>
+                          <img class="d-block img-fluid w-100" style="width:100%; height:100%; object-fit:cover" :src="getImagesOwner && getImagesOwner.length > 0 && image && image.project_image_path ? require(`../../../../../public/storage/project/progress_images/${image.project_image_path}`) : ''" alt="image slot">        
+                        </template>     
+                      </b-carousel-slide>        
+                    </b-carousel>                                       
+                  </div>
+                </b-modal>
+                <b-modal size="lg" hide-footer id="modal-4" :title="`Progress Images for Project #${$route.params.id}`">
+                  <div class="w-100 h-100"> 
+                    <table style="width:100%">
+                      <thead>
+                        <tr>
+                          <th>Type of Expenses</th>
+                          <th>Payment Type</th>
+                          <th>Amount</th>
+                          <th>Remarks</th>   
+                          <th>Date</th>                   
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr :style="getExpendituresOwner && getExpendituresOwner.length > 13 ? {'overflow-y':'scroll'} : {}" v-for="(exp, index) in getExpendituresOwner" :key="index">
+                          <td>{{ exp.exp_type }}</td>
+                          <td>{{ exp.exp_paymentType }}</td>
+                          <td>{{ exp.exp_amount }}</td>
+                          <td>{{ exp.exp_remark }}</td>
+                          <td>{{ exp.exp_dateFrom + ' ' + exp.exp_dateTo }}</td>
+                        </tr>                        
+                      </tbody>
+                    </table>
+                  </div>
+                </b-modal>
+                <b-modal size="lg" hide-footer id="modal-5" :title="`Supplies Used for Project #${$route.params.id}`">
+                  <div class="w-100 h-100"> 
+                    <table style="width:100%">
+                      <thead>
+                        <tr>
+                          <th>Supplier Name</th>
+                          <th>Supply Name</th>
+                          <th>Supply Type</th>
+                          <th>Supply For</th>                                    
+                          <th>Quantity</th>
+                          <th>Unit</th>               
+                          <th>Date Used</th>   
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr :style="getStockOutOwner && getStockOutOwner.length > 13 ? {'overflow-y':'scroll'} : {}" 
+                          v-for="(item, index) in getStockOutOwner" :key="index">
+                          <td>{{ getSupplierName(item) }}</td>
+                          <td>{{ getSupplyName(item) }}</td>
+                          <td>{{ getSupplyType(item) }}</td>
+                          <td>{{ getSupplyFor(item) }}</td>
+                          <td>{{ item.supply_qty }}</td>
+                          <td>{{ item.supply_unit }}</td>
+                          <td>{{ item.created_at.split('T')[0] }}</td>
+                        </tr>                        
+                      </tbody>
+                    </table>
+                  </div>
+                </b-modal>
               </div>
               <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%;" v-else>                                                  
                 <input type="submit" value="Update Project" class="btn btn-primary">                                      
@@ -286,7 +357,10 @@
             } 
             else{
               this.data.project_status_id = 4
-            }              
+            }   
+            if(this.getImagesOwner && this.getImagesOwner.length > 0){
+              this.title = `Picture # 1 (${this.getImagesOwner[0].project_image_stage} Stage)`
+            }           
             this.readyApp()    
           })      
       },
@@ -377,7 +451,34 @@
             'updateProjectOwner', 
             'updateProfitSharingForOwner',
             'deleteProfitSharingForOwner'
-          ]),        
+          ]),
+          getSupplierName(item){
+            var supplierObj = this.getSuppliersOwner.filter((s) => {
+                return parseInt(item.supplier_id) === parseInt(s.id)
+            })
+            return supplierObj[0].supplier_name
+          },
+          getSupplyName(item){
+            var supplyObj = this.getSuppliesOwner.filter((s) => {
+                return parseInt(item.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_name
+          },
+          getSupplyType(item){
+            var supplyObj = this.getSuppliesOwner.filter((s) => {
+                return parseInt(item.supply_id) === parseInt(s.id)
+            })
+            return supplyObj[0].supply_type
+          },
+          getSupplyFor(item){
+              var supplyObj = this.getSuppliesOwner.filter((s) => {
+                  return parseInt(item.supply_id) === parseInt(s.id)
+              })
+              return supplyObj[0].supply_for
+          }, 
+          onSlideEnd(slide){
+            this.title = `Picture # ${slide + 1} (${this.getImagesOwner[slide].project_image_stage} Stage)`
+          },       
           setStatus(e){
             console.log(e.target.value)
             this.data.project_status_id = parseInt(e.target.value)
@@ -439,7 +540,12 @@
           'getShareOwner',
           'getHistoryOwner',
           'getProfitSharingOwner',
-          'getProduceYieldOwner'
+          'getProduceYieldOwner',
+          'getImagesOwner',
+          'getExpendituresOwner',
+          'getStockOutOwner',
+          'getSuppliersOwner',
+          'getSuppliesOwner',
           ]),      
           getRole(){
             return auth.state.user.role
@@ -501,6 +607,7 @@
       },
       data(){
         return {
+          title: null,
           errors: null,
           edit: false,        
           stage1: false,
@@ -533,6 +640,9 @@
     background:lightgreen;
     table-layout: fixed;
     width:100%
+  }
+  th, td{
+    padding: 10px
   }
   
   </style>

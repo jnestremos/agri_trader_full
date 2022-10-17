@@ -13,6 +13,7 @@ const state = {
         suppliers: null,
         stockOut: null,
         produces: null,
+        project: null,
     },
     stockOut_report: {
         stockOut: null,
@@ -79,6 +80,7 @@ const mutations = {
         state.stockOut.suppliers = data.suppliers
         state.stockOut.supplies = data.supplies
         state.stockOut.produces = data.produces
+        state.stockOut.project = data.project
     },
     asd: () => {
         console.log(1)
