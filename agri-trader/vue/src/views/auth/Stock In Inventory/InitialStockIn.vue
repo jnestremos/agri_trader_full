@@ -16,6 +16,11 @@
                         <!-- <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567"> -->
                         <input type="text" name="" id="" class="form-control" style="width:350px;" disabled v-model="data.purchaseOrder_num">
                     </div>
+                    <div class="col-lg-3 me-3">
+                        <label for="stockIn_purchaseOrderNum" class="form-label me-4" >RR No.:</label>
+                        <!-- <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567"> -->
+                        <input type="text" name="" id="" class="form-control" style="width:350px;" disabled v-model="data.report_num">
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-3">
@@ -110,6 +115,7 @@ export default {
                 purchaseOrder_unit.push(o.purchaseOrder_unit)
                 purchaseOrder_subTotal.push(o.purchaseOrder_subTotal)
             })
+            this.data.report_num = `RR-${this.getPOForRR.uuid}`
             this.data.supply_id = supply_id
             this.data.purchaseOrder_qtyGood = purchaseOrder_qtyGood
             this.data.purchaseOrder_qtyDefect = purchaseOrder_qtyDefect
@@ -126,6 +132,7 @@ export default {
     data(){
         return{
             data: {
+                report_num: null,
                 purchaseOrder_num: null,
                 supply_id: null,
                 purchaseOrder_qtyGood: null,

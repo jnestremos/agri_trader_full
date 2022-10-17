@@ -10,6 +10,7 @@ class ReceivingReport extends Model
     use HasFactory;
 
     protected $fillable = [
+        'report_num',
         'supply_id',
         'purchaseOrder_num',
         'purchaseOrder_qtyGood',

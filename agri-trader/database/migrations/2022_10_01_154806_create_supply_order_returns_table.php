@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('supply_order_returns', function (Blueprint $table) {
             $table->id();
+            $table->string('report_num');
             $table->foreignId('supply_id')->constrained('supplies')->onDelete('cascade')->onUpdate('cascade');
             $table->string('returnOrder_num');
             $table->string('purchaseOrder_num');

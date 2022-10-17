@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ReceivingReport;
 use App\Models\Supply;
 use App\Models\SupplyOrderPayment;
 use App\Models\SupplyOrderReturn;
@@ -45,6 +46,7 @@ class SupplyOrderReturnController extends Controller
         }
         for($i = 0; $i < count($request->supply_id); $i++){            
             SupplyOrderReturn::create([
+                'report_num' => ReceivingReport::where('purchaseOrder_num', $request->purchaseOrder_num)->first()->report_num,
                 'supply_id' => $request->supply_id[$i],
                 'returnOrder_num' => 'PO-'.$uuid,
                 'purchaseOrder_num' => $order_num,

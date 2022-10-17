@@ -79,6 +79,7 @@ const mutations = {
         state.init_RR.orders = data.orders
         state.init_RR.suppliers = data.suppliers
         state.init_RR.supplies = data.supplies
+        state.init_RR.uuid = data.uuid
         // state.init_RR.supplier_contact = data.supplier_contact
         // state.init_RR.supplier_contact_person = data.supplier_contact_person
     },

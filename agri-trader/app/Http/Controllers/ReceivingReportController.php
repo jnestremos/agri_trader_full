@@ -15,6 +15,7 @@ class ReceivingReportController extends Controller
 {
     public function addReceivingReport(Request $request){
         $report = $request->validate([
+            'report_num' => 'required',
             'purchaseOrder_num' => 'required',
             'supply_id' => 'required|array',
             'purchaseOrder_qtyGood' => 'required|array',
@@ -41,6 +42,7 @@ class ReceivingReportController extends Controller
         }
         for($i = 0; $i < count($request->supply_id); $i++){
             ReceivingReport::create([
+                'report_num' => $request->report_num,
                 'supply_id' => $request->supply_id[$i],
                 'purchaseOrder_num' => $request->purchaseOrder_num,
                 'purchaseOrder_qtyGood' => $request->purchaseOrder_qtyGood[$i],
@@ -98,6 +100,14 @@ class ReceivingReportController extends Controller
     }
     
     public function getPOForRR ($id){
+        $uuid = null;        
+        while(true){
+            $uuid = mt_rand(000000, 999999);
+            // $uuid = Str::uuid()->toString();
+            if(!ReceivingReport::where('report_num', 'RR-'.$uuid)->first()){
+                break;
+            }
+        }        
         $stockIn = StockIn::where('purchaseOrder_num', $id)->first();
         if($stockIn){
             return response([
@@ -130,6 +140,7 @@ class ReceivingReportController extends Controller
                 'orders' => $orders,
                 'suppliers' => $suppliers,
                 'supplies' => $supplies,
+                'uuid' => $uuid
                 // 'supplier_contact' => $supplier_contact,
                 // 'supplier_contact_person' => $supplier_contact_person,
             ]);            

@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('receiving_reports', function (Blueprint $table) {
             $table->id();
+            $table->string('report_num');
             $table->foreignId('supply_id')->constrained('supplies')->onUpdate('cascade')->onDelete('cascade');            
             $table->string('purchaseOrder_num');
             $table->integer('purchaseOrder_qtyGood');

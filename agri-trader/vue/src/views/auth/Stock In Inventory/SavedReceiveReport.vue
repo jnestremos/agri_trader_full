@@ -15,6 +15,10 @@
                         <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
                         <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567" v-model="data.purchaseOrder_num">
                     </div>
+                    <div class="col-lg-3 me-3">
+                        <label for="stockIn_purchaseOrderNum" class="form-label me-4" >RR No.:</label>
+                        <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567" :value="getPOForRR.orders && getPOForRR.orders.length > 0 ? getPOForRR.orders[0].report_num : ''">
+                    </div>
                 </div>                
                 <div class="mb-2" style="width:100% height:90%; clear:left;">
                     <table id="supplySelect" class="table table-striped table-bordered align-middle" style="width:100%;">

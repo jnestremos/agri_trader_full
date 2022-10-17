@@ -10,6 +10,7 @@ class SupplyOrderReturn extends Model
     use HasFactory;
 
     protected $fillable = [
+        'report_num',
         'supply_id',
         'returnOrder_num',
         'purchaseOrder_num',
