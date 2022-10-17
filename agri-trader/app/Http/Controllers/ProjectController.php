@@ -121,35 +121,7 @@ class ProjectController extends Controller
                 ], 400);
             }
         }
-        // if(($request->project_floweringStart == null && $request->project_floweringEnd != null) 
-        // || ($request->project_floweringStart != null && $request->project_floweringEnd == null)
-        // || ($request->project_fruitBuddingStart == null && $request->project_fruitBuddingEnd != null)
-        // || ($request->project_fruitBuddingStart != null && $request->project_fruitBuddingEnd == null)
-        // || ($request->project_devFruitStart == null && $request->project_devFruitEnd != null)
-        // || ($request->project_devFruitStart != null && $request->project_devFruitEnd == null)
-        // || ($request->project_harvestableStart == null && $request->project_harvestableEnd != null)
-        // || ($request->project_harvestableStart != null && $request->project_harvestableEnd == null)){
-            
-        //     return response([                
-        //         'error' => 'One of the dates fields has been missed out!'
-        //     ], 400);
 
-        // }
-
-        // if(
-        //     Carbon::create($request->project_floweringStart)->greaterThan(Carbon::create($request->project_floweringEnd))
-        //     || Carbon::create($request->project_floweringEnd)->greaterThan(Carbon::create($request->project_fruitBuddingStart))
-        //     || Carbon::create($request->project_fruitBuddingStart)->greaterThan(Carbon::create($request->project_fruitBuddingEnd))
-        //     || Carbon::create($request->project_fruitBuddingEnd)->greaterThan(Carbon::create($request->project_devFruitStart))
-        //     || Carbon::create($request->project_devFruitStart)->greaterThan(Carbon::create($request->project_devFruitEnd))
-        //     || Carbon::create($request->project_devFruitEnd)->greaterThan(Carbon::create($request->project_harvestableStart))            
-        //     || Carbon::create($request->project_harvestableStart)->greaterThan(Carbon::create($request->project_harvestableEnd))
-        //     || Carbon::create($request->project_commenceDate)->greaterThan(Carbon::create($request->project_floweringStart))){
-            
-        //         return response([
-        //             'error' => 'Invalid Date Input!'
-        //         ], 400);
-        // }
 
         $share = ContractShare::create([
             'contractShare_type' => $request->contractShare_type,
@@ -158,13 +130,7 @@ class ProjectController extends Controller
 
         $farm = Farm::find($request->farm_id);
 
-
-        // return response([
-        //     'produce_trader_id' => $request->produce_trader_id,
-        //     'farm_id' => $farm->id,
-        //     'trader_id' => auth()->id(),
-        //     'share_id' => $share->id
-        // ], 200);
+      
 
         $contract = Contract::create([
             'trader_id' => $trader->id,

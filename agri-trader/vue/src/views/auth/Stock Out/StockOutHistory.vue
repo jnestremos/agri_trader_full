@@ -9,7 +9,7 @@
                     <div class="form-row mt-3">
                         <div class="col-lg-3 me-3">
                             <label for="stockInHitsory_supplierList" class="form-label me-4">Choose Project</label>
-                            <select class="form-select" id="project_id" :disabled="!(getProjectIDS > 0)" @change="setProject($event)">
+                            <select class="form-select" id="project_id" :disabled="!(getProjectIDS.length > 0)" @change="setProject($event)">
                                 <option selected value="None">Select Project</option>
                                 <option v-for="(id, index) in getProjectIDS" :key="index" :value="id">{{ 'Project # ' + id }}</option> 
                             </select>  
@@ -54,7 +54,7 @@
                             </thead>
                             <tbody align="center">
                                 <tr v-for="(stock, index) in filteredTable" :key="index">
-                                    <td>{{ stock.purchaseOrder_num }}</td>
+                                    <td>{{ stock.project_id }}</td>
                                     <td>{{ getSupplierName(stock) }}</td>
                                     <td>{{ getSupplyName(stock) }}</td>
                                     <td>{{ getSupplyType(stock) }}</td>

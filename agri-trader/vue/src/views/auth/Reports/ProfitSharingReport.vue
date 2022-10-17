@@ -2,9 +2,9 @@
     <div class="ProfitSharingReport">
       <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Profit Sharing Report</h3>
-        <div class="d-flex">
+        <!-- <div class="d-flex">
             <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
-        </div>
+        </div> -->
       </div>
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">
@@ -69,11 +69,11 @@
                   </tbody>
               </table>
             </div>
-            <div class="d-flex align-items-baseline justify-content-between mt-5">
+            <!-- <div class="d-flex align-items-baseline justify-content-between mt-5">
                 <h5>Total Income: </h5>
                 <h5>Total Expenses: </h5>
                 <h5>Balance: </h5>
-            </div>
+            </div> -->
         </div>
       </div>
     </div>

@@ -175,11 +175,7 @@ class ProduceYieldController extends Controller
                     'message_body' => "Project # ".$order->project_id." has now been completely harvested! Please wait for further instructions regarding delivery."                        
                 ]);
             }
-        }
-        // DB::table('produce_trader')->where([['produce_id', '=', $request->produce_id], ['trader_id', '=', auth()->id()]])->update([
-        //     'prod_totalQty' => $prodTotalQty + $yield->produce_yield_qtyHarvested,
-        //     'prod_lastDateOfHarvest' => ProduceYield::where('produce_id', $request->produce_id)->orderBy('desc')->first()
-        // ]);
+        }  
 
         return response([
             'message' => 'Harvest Successful!'

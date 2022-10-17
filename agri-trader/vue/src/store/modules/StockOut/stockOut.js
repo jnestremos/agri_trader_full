@@ -68,10 +68,10 @@ const actions = {
 
 const mutations = {
     setStockOutHistory: (state, data) => {
-        state.stockOut.stockOut = data.stockOut
-        state.stockOut.suppliers = data.suppliers
-        state.stockOut.supplies = data.supplies
-        state.stockOut.produces = data.produces
+        state.stockOut_history.stockOut_history = data.stockOut_history
+        state.stockOut_history.suppliers = data.suppliers
+        state.stockOut_history.supplies = data.supplies
+        state.stockOut_history.produces = data.produces
     },
     setStockOut: (state, data) => {
         state.stockOut.stockOut = data.stockOut
