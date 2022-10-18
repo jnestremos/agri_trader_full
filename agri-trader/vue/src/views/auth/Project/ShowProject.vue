@@ -292,12 +292,21 @@ export default {
           if(this.getStockOutForProject){
             if(this.getStockOutForProject.length > 0){
               var check = true
+              // for(var i = 0; i < this.getStockOutForProject.length; i++){
+              //   if(this.getStockOutForProject[i].stockOut_stage != stage){
+              //     check = false
+              //   }
+              //   else{
+              //     check = true
+              //     break
+              //   }
+              // }
               this.getStockOutForProject.forEach((s) => {
                 if(s.stockOut_stage != stage){
                   check = false
                 }
                 else {
-                  check = true                  
+                  check = true                             
                 }
               })
               if(!check){

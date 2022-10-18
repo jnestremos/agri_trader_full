@@ -78,6 +78,27 @@ export default {
     created() {
         this.fetchSupplyInventory()
         .then(() => {
+            var message = ''
+            var redirect = false
+            if(this.getSupplyInventory.inventory && this.getSupplyInventory.inventory.length > 0){
+                this.getSupplyInventory.inventory.forEach((i) => {
+                    if(i.supply_qty <= i.supply_reorderLevel){
+                        var supplierObj = this.getSupplyInventory.suppliers.filter((s) => {
+                            return parseInt(i.supplier_id) === parseInt(s.id)
+                        })
+                        message += `${supplierObj[0].supplier_name} ${i.supply_name} \t ${i.supply_qty}/${i.supply_reorderLevel}\n`
+                    }
+                    if(i.supply_qty == 0 && redirect == false){
+                        redirect = true
+                    }
+                })
+                if(message != ''){
+                    alert(`Please restock the following supplies immediately! \n \n Stock Name \t Stock Qty / Reorder Level \n \n ${message}`)
+                }
+                if(redirect){
+                    this.$router.push({ name: 'InitialPurchaseOrder' })
+                }
+            }
             this.readyApp()
         })        
     },

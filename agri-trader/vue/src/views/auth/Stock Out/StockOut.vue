@@ -205,10 +205,28 @@ export default {
 
                 var arrr = []
                 var arr = []
+                var message = ''
+                var redirect = false
                 this.getStockOut.inventory.forEach((s) => {
                     arr.push(false)
                     arrr.push(s.supply_id)
+                    if(s.supply_qty <= s.supply_reorderLevel){
+                        var supplierObj = this.getStockOut.suppliers.filter((ss) => {
+                            return parseInt(s.supplier_id) === parseInt(ss.id)
+                        })
+                        message += `${supplierObj[0].supplier_name} ${s.supply_name} \t ${s.supply_qty}/${s.supply_reorderLevel}\n`
+                    }
+                    if(s.supply_qty == 0 && redirect == false){
+                        redirect = true
+                    }
                 })
+                if(message != ''){
+                    console.log(1)
+                    alert(`Please restock the following supplies immediately! \n \n Stock Name \t Stock Qty / Reorder Level \n \n ${message}`)
+                }
+                if(redirect){
+                    this.$router.push({ name: 'InitialPurchaseOrder' })
+                }
                 this.addedItems_check = arr
                 this.addedItems_idOrder = arrr
                 this.stage = stage
