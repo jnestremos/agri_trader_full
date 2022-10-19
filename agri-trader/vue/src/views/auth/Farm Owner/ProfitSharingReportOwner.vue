@@ -71,6 +71,9 @@
                   </tbody>
               </table>
             </div>
+            <div class="d-flex align-items-baseline justify-content-between mt-5">
+                <h5>Total Share Generated: {{ getTotal }}</h5>                
+            </div>
         </div>
       </div>
   </div>
@@ -198,6 +201,14 @@ export default {
                 }
             }                       
             return table
+        },
+        getTotal(){
+            var share = 0
+            if(this.getProfitSharingReportForOwner.profit_sharings 
+            && this.getProfitSharingReportForOwner.profit_sharings.length > 0){
+                share = this.getProfitSharingReportForOwner.profit_sharings.reduce((a, b) => a.ar_ownerShare + b.ar_ownerShare, share)
+            }
+            return share
         }
     }
 }
