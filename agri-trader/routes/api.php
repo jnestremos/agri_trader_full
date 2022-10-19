@@ -783,12 +783,23 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                     array_push($produces, $contract->produce()->first());
                 }
             }       
-            $profit_sharing = [];           
+            $profit_sharing = []; 
+            $accs = [];
+            $orders = [];
             foreach($projects as $project){    
                 if($project->profit_sharing()->first()){
                     array_push($profit_sharing, $project->profit_sharing()->first());
-                }                            
+                }
+                foreach($project->bid_order()->get() as $order){
+                    array_push($orders, $order);
+                }
             }
+            foreach($orders as $order){
+                foreach($order->bid_order_account()->get() as $acc){
+                    array_push($acc, $accs);
+                }
+            }
+            $sales = Sale::where('sale_type', 'Unsold Goods')->get();
             return response([
                 'profit_sharing' => $profit_sharing,                
                 'farms' => $farms,                
@@ -796,6 +807,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 'produces' => $produces,                
                 'contracts' => $contracts,
                 'projects' => $projects,
+                'sales' => $sales,
+                'accs' => $accs
             ]);
         });
 

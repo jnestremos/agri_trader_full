@@ -69,11 +69,11 @@
                   </tbody>
               </table>
             </div>
-            <!-- <div class="d-flex align-items-baseline justify-content-between mt-5">
-                <h5>Total Income: </h5>
-                <h5>Total Expenses: </h5>
-                <h5>Balance: </h5>
-            </div> -->
+            <div class="d-flex align-items-baseline justify-content-between mt-5">
+                <h5>Total Income: {{ getIncome }}</h5>
+                <h5>Total Expenses: {{ getExpenses }}</h5>
+                <h5>Balance: {{ getBalance }}</h5>
+            </div>
         </div>
       </div>
     </div>
@@ -205,8 +205,28 @@ import { format, sub, add } from 'date-fns';
                 }
             }                       
             return table
+        },
+        getIncome(){
+            var income = 0
+            if(this.getProfitSharingReport.accs && this.getProfitSharingReport.accs.length > 0
+            && this.getProfitSharingReport.sales && this.getProfitSharingReport.sales.length > 0){
+                income = this.getProfitSharingReport.accs.reduce((a, b) => a.bid_order_acc_amount + b.bid_order_acc_amount, income)
+                income = this.getProfitSharingReport.sales.reduce((a, b) => a.sale_total + b.sale_total, income)                 
+            }
+            return income
+        },
+        getExpenses(){
+            var expense = 0
+            if(this.getProfitSharingReport.profit_sharing 
+            && this.getProfitSharingReport.profit_sharing.length > 0){
+                expense = this.getProfitSharingReport.profit_sharing.reduce((a, b) => a.ar_totalExpenses + b.ar_totalExpenses, expense)
+            }
+            return expense
+        },
+        getBalance(){
+            return this.getIncome - this.getExpenses
         }
-      },
+      },      
   }
   </script>
   

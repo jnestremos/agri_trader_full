@@ -20,7 +20,9 @@ const state = {
         projects:null,
         produces: null,
         farms: null,
-        farm_owners: null
+        farm_owners: null,
+        accs: null,
+        sales: null,
     }  
 }
 
@@ -89,6 +91,8 @@ const mutations = {
         state.profit_report.farms = data.farms
         state.profit_report.farm_owners = data.farm_owners
         state.profit_report.produces = data.produces
+        state.profit_report.accs = data.accs
+        state.profit_report.sales = data.sales
     }
 }
 
