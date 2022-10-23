@@ -48,7 +48,7 @@
                           <th scope="col">Farm Name</th>
                           <th scope="col">Total Sales</th>
                           <th scope="col">Produce Name</th>
-                          <!-- <th scope="col">Total Expenses</th> -->
+                          <th scope="col">Total Expenses</th>
                           <th scope="col">Owner Share</th>
                           <!-- <th scope="col">Trader Share</th> -->
                           <!-- <th scope="col">Net Profit</th> -->
@@ -56,13 +56,13 @@
                       </tr>
                   </thead>
                   <tbody align="center">
-                    <tr v-for="(report, index) in filteredTable" :key="index">
+                    <tr style="cursor:pointer;" @click="$router.push({ path: `/projects/owner/${report.project_id}` })" v-for="(report, index) in filteredTable" :key="index">
                         <td>{{ report.project_id }}</td>
                         <td>{{ getProjectName(report) }}</td>
                         <td>{{ getFarmNameTable(report) }}</td>
                         <td>{{ report.ar_totalSales }}</td>
                         <td>{{ getProduceName(report) }}</td>
-                        <!-- <td>{{ report.ar_totalExpenses }}</td> -->
+                        <td>{{ report.ar_totalExpenses }}</td>
                         <td>{{ report.ar_ownerShare }}</td>
                         <!-- <td>{{ report.ar_totalSales - report.ar_ownerShare }}</td> -->
                         <!-- <td>{{ report.ar_profit }}</td> -->

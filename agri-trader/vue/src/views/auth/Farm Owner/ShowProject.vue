@@ -43,8 +43,9 @@
               <div class="col-4 p-0 d-flex align-items-baseline">
                 <p v-if="getProduceOwner">Produce: {{ getProduceOwner.prod_name + ' ' + getProduceOwner.prod_type }}</p>
               </div>
+              <!--  -->
               <div class="col-4 p-0 d-flex align-items-baseline">
-                <p v-if="getProjectOwner">Project Start: {{ getProjectOwner.project_commenceDate }}</p>
+                <p v-if="getProjectOwner">Project Start: {{ getProjectStart }}</p>
               </div>            
             </div>
             <div class="row w-100 m-0">
@@ -318,6 +319,7 @@
   </template>
   
   <script>
+import { format } from 'date-fns'
   import { mapActions, mapGetters } from 'vuex'
   import auth from '../../../store/modules/Auth/auth'
   export default {
@@ -546,7 +548,10 @@
           'getStockOutOwner',
           'getSuppliersOwner',
           'getSuppliesOwner',
-          ]),      
+          ]),  
+          getProjectStart(){
+            return format(new Date(this.getProjectOwner.project_commenceDate), 'MMM. dd, yyyy')
+          },    
           getRole(){
             return auth.state.user.role
           },

@@ -47,7 +47,7 @@
               <p v-if="getProduce">Produce: {{ getProduce.prod_name + ' ' + getProduce.prod_type }}</p>
             </div>
             <div class="col-4 p-0 d-flex align-items-baseline">
-              <p v-if="getProject">Project Start: {{ getProject.project_commenceDate }}</p>
+              <p v-if="getProject">Project Start: {{ getProjectStart }}</p>
             </div>            
           </div>
           <div class="row w-100 m-0">
@@ -154,7 +154,7 @@
           <div class="row w-100 m-0"></div> 
           <div v-if="getProject && getProject.project_status_id != 1">
             <!-- position:absolute; bottom:3%; right:7%; width:40vw; -->
-            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'25vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'10vw'} : {'width':'40vw'}, {'position':'absolute'}, {'bottom':'3%'}, {'right':'7%'}]">
+            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'25vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'40vw'} : {'width':'40vw'}, {'position':'absolute'}, {'bottom':'3%'}, {'right':'7%'}]">
               <input type="button" :value="getProfitSharingForProject ? 'View Expenditures' : 'Add Expenditures'" class="btn btn-primary" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">                        
               <input type="button" :value="getProfitSharingForProject ? 'View Supplies Used' : 'Add Supplies to Project'" :disabled="stage == 'No Stage'" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
               <router-link :to="`/projects/${$route.params.id}/images`"><input type="button" value="See Images" class="btn btn-primary"></router-link>
@@ -277,17 +277,19 @@ export default {
             stage = 'No Stage'
           }
 
-          var qtys = [];          
-          if(this.getInventoryForProject && this.getInventoryForProject.length > 0){
-            this.getInventoryForProject.forEach((i) => {
-              qtys.push(i.produce_inventory_qtyOnHand)
-            })
-            var total = qtys.reduce((a, b) => a + b, 0)
-            if(total == 0){
-              this.data.project_status_id = 4
-              this.seeProfitSharing(this.$route.params.id)
+          var qtys = []; 
+          if(this.getProject.project_status_id != 4 && this.getProject.project_status_id != 5){
+            if(this.getInventoryForProject && this.getInventoryForProject.length > 0){
+              this.getInventoryForProject.forEach((i) => {
+                qtys.push(i.produce_inventory_qtyOnHand)
+              })
+              var total = qtys.reduce((a, b) => a + b, 0)
+              if(total == 0){
+                this.data.project_status_id = 4
+                this.seeProfitSharing(this.$route.params.id)
+              }
             }
-          }
+          }                    
           if(stage != 'No Stage'){
             if(this.getStockOutForProject){
               if(this.getStockOutForProject.length > 0){
@@ -524,6 +526,9 @@ export default {
         'getYieldForProject',
         'getProjectImages'
         ]),
+        getProjectStart(){
+          return format(new Date(this.getProject.project_commenceDate), 'MMM. dd, yyyy')
+        },
         getTotalExpense(){
           var supplyTotalValue = 0
           var expTotalValue = 0      

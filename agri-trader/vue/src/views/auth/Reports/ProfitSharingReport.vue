@@ -55,7 +55,7 @@
                       </tr>
                   </thead>
                   <tbody align="center">
-                    <tr v-for="(report, index) in filteredTable" :key="index">
+                    <tr style="cursor:pointer;" @click="$router.push({ path: `/projects/${report.project_id}` })" v-for="(report, index) in filteredTable" :key="index">
                         <td>{{ report.project_id }}</td>
                         <td>{{ getProjectName(report) }}</td>
                         <td>{{ getFarmNameTable(report) }}</td>
