@@ -303,7 +303,7 @@ export default {
                 if(orderObj[0].purchaseOrder_status == 'Pending' && this.modalID == modalID){
                     this.updatePOStatus(orderObj[0].purchaseOrder_num)
                     .then(() => {
-                        this.$toastr.s('Purchase Order Added Successfully!')
+                        // this.$toastr.s('Purchase Order Added Successfully!')
                         setTimeout(() => {
                             location.reload()
                         }, 5000)

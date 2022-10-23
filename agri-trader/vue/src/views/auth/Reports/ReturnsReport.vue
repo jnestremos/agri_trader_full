@@ -44,7 +44,7 @@
                   </thead>
                   <tbody align="center">
                       <tr style="cursor:pointer;" v-for="(report, index) in filteredTable" :key="index">
-                        <td>{{ getReceivingReportID(report) }}</td>
+                        <td>{{ report.report_num }}</td>
                         <td>{{ report.returnOrder_num }}</td>
                         <td>{{ report.purchaseOrder_num }}</td>
                         <td>{{ getSupplierName(report) }}</td>
@@ -53,7 +53,7 @@
                         <td>{{ getSupplyFor(report) }}</td>                        
                         <td>{{ getSupplyPrice(report) }}</td>
                         <td>{{ report.purchaseOrder_qtyDefect }}</td>
-                        <td>{{ report.purchaseOrder_subTotal }}</td>
+                        <td>{{ report.purchaseOrder_subTotal.toFixed(2) }}</td>
                         <td>{{ report.return_remark }}</td>
                         <td>{{ report.created_at.split('T')[0] }}</td>
                       </tr>                                                                        
@@ -117,13 +117,13 @@ export default {
         setOrder(e){
             this.filter_purchase = e.target.value
         },
-        getReceivingReportID(report){
-            var reportObj = this.getPurchaseReturnsReport.receiving_reports.filter((r) => {
-                return parseInt(report.supply_id) === parseInt(r.supply_id)
-                && report.returnOrder_num === r.purchaseOrder_num
-            })
-            return reportObj[0].id
-        },
+        // getReceivingReportID(report){
+        //     var reportObj = this.getPurchaseReturnsReport.receiving_reports.filter((r) => {
+        //         return parseInt(report.supply_id) === parseInt(r.supply_id)
+        //         && report.returnOrder_num === r.purchaseOrder_num
+        //     })
+        //     return reportObj[0].id
+        // },
         getSupplierName(report){
             var orderObj = this.getPurchaseReturnsReport.orders.filter((o) => {
                 return report.purchaseOrder_num === o.purchaseOrder_num

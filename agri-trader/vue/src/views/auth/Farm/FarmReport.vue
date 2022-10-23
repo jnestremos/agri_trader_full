@@ -91,7 +91,8 @@ export default {
             farmProdObj = farmProdObj.sort((a, b) => {
                 return new Date(a.prod_lastDateOfHarvest) - new Date(b.prod_lastDateOfHarvest)
             })
-            return farmProdObj[farmProdObj.length - 1].prod_lastDateOfHarvest
+            return farmProdObj[farmProdObj.length - 1] ? farmProdObj[farmProdObj.length - 1].prod_lastDateOfHarvest
+            : 'No Harvest Data'
         },
     },
     computed: {

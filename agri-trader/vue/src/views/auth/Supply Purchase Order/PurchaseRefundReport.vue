@@ -26,7 +26,7 @@
                           </tr>
                       </thead>
                       <tbody align="center">
-                          <tr v-for="(supply, index) in filteredTable" :key="index" @click="triggerModal(supply)">                   
+                          <tr style="cursor:pointer;" v-for="(supply, index) in filteredTable" :key="index" @click="triggerModal(supply)">                   
                               <td>{{ supply.purchaseOrder_num }}</td>                                                                            
                               <td>{{ supply.purchaseOrder_qtyDefect }}</td>
                               <td>{{ supply.purchaseOrder_subTotal }}</td>                                            
