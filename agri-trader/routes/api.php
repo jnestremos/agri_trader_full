@@ -796,7 +796,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             }
             foreach($orders as $order){
                 foreach($order->bid_order_account()->get() as $acc){
-                    array_push($acc, $accs);
+                    array_push($accs, $acc);
                 }
             }
             $sales = Sale::where('sale_type', 'Unsold Goods')->get();

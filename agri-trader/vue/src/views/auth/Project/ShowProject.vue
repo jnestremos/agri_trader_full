@@ -288,51 +288,52 @@ export default {
               this.seeProfitSharing(this.$route.params.id)
             }
           }
-
-          if(this.getStockOutForProject){
-            if(this.getStockOutForProject.length > 0){
-              var check = true
-              // for(var i = 0; i < this.getStockOutForProject.length; i++){
-              //   if(this.getStockOutForProject[i].stockOut_stage != stage){
-              //     check = false
-              //   }
-              //   else{
-              //     check = true
-              //     break
-              //   }
-              // }
-              this.getStockOutForProject.forEach((s) => {
-                if(s.stockOut_stage != stage){
-                  check = false
+          if(stage != 'No Stage'){
+            if(this.getStockOutForProject){
+              if(this.getStockOutForProject.length > 0){
+                var check = true
+                // for(var i = 0; i < this.getStockOutForProject.length; i++){
+                //   if(this.getStockOutForProject[i].stockOut_stage != stage){
+                //     check = false
+                //   }
+                //   else{
+                //     check = true
+                //     break
+                //   }
+                // }
+                this.getStockOutForProject.forEach((s) => {
+                  if(s.stockOut_stage != stage){
+                    check = false
+                  }
+                  else {
+                    check = true                             
+                  }
+                })
+                if(!check){
+                  alert(`Please add supplies for the ${stage} stage`)
+                  this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
                 }
-                else {
-                  check = true                             
-                }
-              })
-              if(!check){
-                alert(`Please add supplies for the ${stage} stage`)
-                this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
+              }
+              else{
+                if(stage != 'No Stage'){
+                  alert(`Please add supplies for the ${stage} stage`)
+                  this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
+                }              
               }
             }
-            else{
-              if(stage != 'No Stage'){
-                alert(`Please add supplies for the ${stage} stage`)
-                this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
-              }              
-            }
-          }
-          if(this.getProjectImages.images){
-            if(this.getProjectImages.images.length == 0){
-              alert(`Please add progress images for ${stage} stage`)
-              this.$router.push({ path: `/projects/${this.$route.params.id}/images` })
-            }
-            else if(this.getProjectImages.images.length > 0){
-              var images = this.getProjectImages.images.filter((a) => {
-                return a.project_image_stage === stage
-              })
-              if(images.length == 0){
+            if(this.getProjectImages.images){
+              if(this.getProjectImages.images.length == 0){
                 alert(`Please add progress images for ${stage} stage`)
                 this.$router.push({ path: `/projects/${this.$route.params.id}/images` })
+              }
+              else if(this.getProjectImages.images.length > 0){
+                var images = this.getProjectImages.images.filter((a) => {
+                  return a.project_image_stage === stage
+                })
+                if(images.length == 0){
+                  alert(`Please add progress images for ${stage} stage`)
+                  this.$router.push({ path: `/projects/${this.$route.params.id}/images` })
+                }
               }
             }
           }

@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="row ps-5 w-100 m-0" style="height:70%;">
-          <div class="col-8 p-0 d-flex flex-column justify-content-evenly">
+          <div class="col-7 p-0 d-flex flex-column justify-content-evenly">
             <div class="row w-100 m-0">
               <div class="col-4 p-0 d-flex align-items-baseline">
                 <p v-if="getProduceOwner">Produce: {{ getProduceOwner.prod_name + ' ' + getProduceOwner.prod_type }}</p>
@@ -108,7 +108,7 @@
               </div>            
             </div>          -->
           </div>  
-          <div class="col-4 d-flex flex-column justify-content-evenly">
+          <div class="col-5 d-flex flex-column justify-content-evenly">
             <div class="row w-100 m-0">
               <div v-if="getRole == 'farm_owner'" class="col-12 p-0 d-flex align-items-baseline">
                 <label for="project_status_id" class="form-label me-4">Project Status:</label>

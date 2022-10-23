@@ -45,7 +45,8 @@ const actions = {
         })
     },
     updateSupply({ commit }, data){
-        return axiosClient.patch(`/supply/${data.id}`)
+        console.log(data)
+        return axiosClient.patch(`/supply/${data.id}`, data)
         .then((res) => {
             console.log(res.data)
             commit('asd')

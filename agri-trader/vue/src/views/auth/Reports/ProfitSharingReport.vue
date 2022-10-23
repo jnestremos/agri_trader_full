@@ -37,7 +37,8 @@
                 </div>
             </div>
           </div>
-          <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
+          <!-- ;  ; -->
+          <div class="container-fluid m-0 p-0" :style="[filteredTable && filteredTable.length > 7 ? {'overflow-y': 'scroll'} : {}, {'width':'100%'}, {'height':'40vh'}]">
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                   <thead align="center">
                       <tr>
@@ -70,9 +71,9 @@
               </table>
             </div>
             <div class="d-flex align-items-baseline justify-content-between mt-5">
-                <h5>Total Income: {{ getIncome }}</h5>
-                <h5>Total Expenses: {{ getExpenses }}</h5>
-                <h5>Balance: {{ getBalance }}</h5>
+                <h5>Total Income: {{ getIncome.toFixed(2) }}</h5>
+                <h5>Total Expenses: {{ getExpenses.toFixed(2) }}</h5>
+                <h5>Balance: {{ getBalance.toFixed(2) }}</h5>
             </div>
         </div>
       </div>
@@ -209,9 +210,18 @@ import { format, sub, add } from 'date-fns';
         getIncome(){
             var income = 0
             if(this.getProfitSharingReport.accs && this.getProfitSharingReport.accs.length > 0
-            && this.getProfitSharingReport.sales && this.getProfitSharingReport.sales.length > 0){
-                income = this.getProfitSharingReport.accs.reduce((a, b) => a.bid_order_acc_amount + b.bid_order_acc_amount, income)
-                income = this.getProfitSharingReport.sales.reduce((a, b) => a.sale_total + b.sale_total, income)                 
+            || this.getProfitSharingReport.sales && this.getProfitSharingReport.sales.length > 0){
+                var accs = []
+                var sales = []                
+                this.getProfitSharingReport.accs.forEach((a) => {
+                    accs.push(a.bid_order_acc_amount)
+                })
+                console.log(accs)
+                this.getProfitSharingReport.sales.forEach((s) => {
+                    accs.push(s.sale_total)
+                })
+                income = accs.reduce((a, b) => parseFloat(a) + parseFloat(b), income)
+                income = sales.reduce((a, b) => parseFloat(a) + parseFloat(b), income)                 
             }
             return income
         },
@@ -219,7 +229,11 @@ import { format, sub, add } from 'date-fns';
             var expense = 0
             if(this.getProfitSharingReport.profit_sharing 
             && this.getProfitSharingReport.profit_sharing.length > 0){
-                expense = this.getProfitSharingReport.profit_sharing.reduce((a, b) => a.ar_totalExpenses + b.ar_totalExpenses, expense)
+                var expenses = [];
+                this.getProfitSharingReport.profit_sharing.forEach((s) => {
+                    expenses.push(s.ar_totalExpenses)
+                })
+                expense = expenses.reduce((a, b) => parseFloat(a) + parseFloat(b), expense)
             }
             return expense
         },

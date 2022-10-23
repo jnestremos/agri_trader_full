@@ -9,7 +9,7 @@
         <h5 v-if="getHarvestDetails.produce">Produce: {{ getHarvestDetails.produce.prod_name + ' ' + getHarvestDetails.produce.prod_type }}</h5>
         <h5 v-if="getHarvestDetails.produce_trader && getHarvestDetails.produce_trader[0].produce_numOfGrades > 1">Grades: A, B, C</h5>
         <h5 v-else>Grades: None</h5>
-        <h5>Expected Date of Harvest: {{ data.project_harvestableEnd }}</h5>
+        <h5>Expected Date of Harvest: {{ formatExpectedDateHarvest }}</h5>
         <div class="d-flex justify-content-between align-items-baseline" style="width:65%">
           <h5>Date Harvested:</h5>
           <input type="date" v-model="data.produce_yield_dateHarvestFrom" onkeydown="return false" class="form-control me-3" style="width:150px;" :disabled="confirm">
@@ -101,12 +101,12 @@
                     <div class="d-flex align-items-baseline justify-content-between mb-5" style="width:100%;">              
                       <div class="d-flex align-items-baseline w-50">
                         <h5 class="me-3">Date Placed:</h5>
-                        <p>{{ order.created_at.split('T')[0] }}</p> 
+                        <p>{{ getDatePlaced(order) }}</p> 
                       </div>                                 
                       <div class="d-flex align-items-baseline w-50">
                         <div class="d-flex align-items-baseline">
                           <h5 class="me-3">Date Updated:</h5>
-                          <p>{{ order.updated_at.split('T')[0] }}</p> 
+                          <p>{{ getDateUpdated(order) }}</p> 
                         </div>                  
                       </div>
                     </div>                    
@@ -118,7 +118,7 @@
                       <div class="d-flex align-items-baseline w-50">
                         <div class="d-flex align-items-baseline">
                           <h5 class="me-3">Expected Date of Harvest:</h5>
-                          <p>{{ getHarvestDetails.project_harvestableEnd }}</p> 
+                          <p>{{ formatExpectedDateHarvest }}</p> 
                         </div>                  
                       </div>
                     </div>                    
@@ -146,8 +146,8 @@
                     </div> 
                     <div class="d-flex align-items-baseline justify-content-between mb-2" style="width:60%;">
                       <h5>Expected Dates Needed:</h5>
-                      <p>{{ order.order_dateNeededFrom }}</p>
-                      <p>{{ order.order_dateNeededTo }}</p>
+                      <p>{{ getDateNeededFrom(order) }}</p>
+                      <p>{{ getDateNeededTo(order) }}</p>
                     </div>                   
                     <div class="d-flex align-items-baseline justify-content-between mb-2" style="width:100%;">
                       <div class="d-flex align-items-baseline w-50">
@@ -201,7 +201,7 @@
                     </div>                   
                     <div class="d-flex justify-content-between align-items-baseline mb-2" style="width:50%;">
                       <h5>Date of First Payment:</h5>
-                      <p>{{ order.order_dpDueDate }}</p>
+                      <p>{{ getDpDueDate(order) }}</p>
                     </div>                   
                     <div class="d-flex justify-content-between align-items-baseline mb-2" style="width:50%;">
                       <h5>Remaining Balance:</h5>
@@ -314,6 +314,21 @@ export default {
     },
     methods: {
         ...mapActions(['readyApp', 'fetchHarvestDetails', 'sendHarvestDetails']),
+        getDpDueDate(order){
+          return format(new Date(order.order_dpDueDate), 'MMM. dd, yyyy')
+        },
+        getDateNeededFrom(order){
+          return format(new Date(order.order_dateNeededFrom), 'MMM. dd, yyyy')
+        },
+        getDateNeededTo(order){
+          return format(new Date(order.order_dateNeededTo), 'MMM. dd, yyyy')
+        },
+        getDatePlaced(order){
+          return format(new Date(order.created_at.split('T')[0]), 'MMM. dd, yyyy')
+        },
+        getDateUpdated(order){
+          return format(new Date(order.updated_at.split('T')[0]), 'MMM. dd, yyyy')
+        },
         triggerModal(order){
           this.$bvModal.show(`modal-${order.id}`)
           var qty = this.getQty(order).split(' - ')
@@ -477,6 +492,9 @@ export default {
     },    
     computed: {
       ...mapGetters(['getHarvestDetails']),
+      formatExpectedDateHarvest(){
+        return format(new Date(this.data.project_harvestableEnd), 'MMM. dd, yyyy')
+      },
       getProduceList(){
         var bidOrderObj = this.getHarvestDetails.bid_orders.filter((b) => { // start layouting for harvest inventory per project
           return parseInt(b.id) === parseInt(this.id)

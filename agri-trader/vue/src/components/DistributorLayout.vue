@@ -14,7 +14,7 @@
     <div class="container-fluid d-flex justify-content-end" style="background:lightgreen; height: 6vh;">
         <div class="d-flex pe-5" style="width: 60%;">
             <ul class="d-flex justify-content-between align-items-center w-100 h-100" style="list-style:none">
-                <li>Home</li>
+                <li><router-link to="`/catalog`">Home</router-link></li>
                 <li>About</li>
                 <li>Produces</li>
                 <li>Traders</li>

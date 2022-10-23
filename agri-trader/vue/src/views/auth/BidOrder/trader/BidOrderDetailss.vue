@@ -14,15 +14,15 @@
         </div>        
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-2">
             <h5 v-if="getOrder.distributor">Dist #: {{ getOrder.distributor_contactNum[0].distributor_contactNum }}</h5>        
-            <h5 v-if="getOrder.project || getOrder.produce_yield">{{ getOrder.produce_yield ? 'Last Date of Harvest:' : 'Expected Date of Harvest:' }} {{ getOrder.produce_yield ? getOrder.produce_yield.produce_yield_dateHarvestTo : getProgressDate }}</h5>
+            <h5 v-if="getOrder.project || getOrder.produce_yield">{{ getOrder.produce_yield ? 'Last Date of Harvest:' : 'Expected Date of Harvest:' }} {{ getProgressDate }}</h5>
         </div>        
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-2">
-            <h5 v-if="getOrder.bidOrder">Order Placed: {{ getOrder.bidOrder.created_at.split('T')[0] }}</h5>        
-            <h5 v-if="getOrder.bidOrder">Expected Dates Needed: {{ getOrder.bidOrder.order_dateNeededFrom + ' - ' + getOrder.bidOrder.order_dateNeededTo }}</h5>
+            <h5 v-if="getOrder.bidOrder">Order Placed: {{ getOrderPlaced }}</h5>        
+            <h5 v-if="getOrder.bidOrder">Expected Dates Needed: {{ getOrderNeeded }}</h5>
         </div>
         <div class="d-flex align-items-baseline justify-content-between w-100 mt-2">
             <h5 v-if="getOrder.dist_address">Dist Address: {{ getOrder.dist_address.distributor_address + ' ' + getOrder.dist_address.distributor_province + ' ' + getOrder.dist_address.distributor_zipcode }}</h5>        
-            <h5 v-if="getOrder.delivery">Delivery Dispatch Date: {{ getOrder.delivery.delivery_date }}</h5>
+            <h5 v-if="getOrder.delivery">Delivery Dispatch Date: {{ getDispatchDate }}</h5>
         </div>
         <table width="100%" class="mt-3 mb-4">
             <thead>
@@ -46,7 +46,7 @@
                     <td>{{ acc.bid_order_acc_accNum }}</td>
                     <td>{{ acc.bid_order_acc_bankName }}</td>
                     <td>{{ acc.bid_order_acc_amount }}</td>
-                    <td>{{ acc.bid_order_acc_datePaid }}</td>
+                    <td>{{ getDatePaid(acc) }}</td>
                 </tr>
                 <tr>                    
                     <td>&nbsp;</td>
@@ -152,7 +152,7 @@
             <div v-if="bid_order_status_id != 3 && bid_order_status_id != 4 && bid_order_status_id != 5 && bid_order_status_id != 6 && bid_order_status_id != 7" class="d-flex align-items-baseline">
                 <h5 v-if="bid_order_status_id == 1 || bid_order_status_id == 2" class="me-3">Due Date of First Payment:</h5>
                 <h5 v-else class="me-3">Date of First Payment:</h5>
-                <p v-if="getOrder.bid_order_acc">{{ getOrder.bid_order_acc.bid_order_acc_datePaid ? getOrder.bid_order_acc.bid_order_acc_datePaid : data.order_dpDueDate }}</p>
+                <p v-if="getOrder.bid_order_acc">{{ getDpDueDate }}</p>
             </div>
             <h5 v-if="bid_order_status_id == 4 && data.order_finalPrice && data.order_finalQty && data.produce_trader_id && getDeliveryForm.bid_order && getDeliveryForm.bid_order.order_dpAmount || (bid_order_status_id == 4 && getOrder.on_hand_bid)">Paid Amount: {{ bid_order_status_id == 4 && getOrder.on_hand_bid ? getOrder.bidOrder.order_dpAmount.toFixed(2) :getDeliveryForm.bid_order.order_dpAmount.toFixed(2) }}</h5>
             <div v-if="bid_order_status_id == 7 && getOrder.refund && getOrder.bid_order_acc[0].bid_order_acc_type != 'Refund'" class="d-flex align-items-baseline">
@@ -308,6 +308,9 @@ export default {
             'approveRefund',
             'cancelPaymentOrOrder'           
         ]),
+        getDatePaid(acc){
+            return format(new Date(acc.bid_order_acc_datePaid), 'MMM. dd, yyyy')
+        },
         getStatus(){
             if(this.getOrder.bidOrder.bid_order_status_id == 1){                
                 return 'For Approval'
@@ -510,18 +513,22 @@ export default {
     },
     computed: {
         ...mapGetters(['getOrder', 'getDeliveryForm']),
+        getDispatchDate(){
+            return format(new Date(this.getOrder.delivery.delivery_date), 'MMM. dd, yyyy')
+        },
         getInitialRemaining(){
             if(this.getOrder.project_bid){
                 return parseFloat(this.getOrder.project_bid.project_bid_total) 
                 - parseFloat(this.getOrder.bid_order_acc[0].bid_order_acc_amount)
             }
             else if(this.getOrder.on_hand_bid){
-                return parseFloat(this.getOrder.project_bid.on_hand_bid_total) 
+                return parseFloat(this.getOrder.on_hand_bid.on_hand_bid_total) 
                 - parseFloat(this.getOrder.bid_order_acc[0].bid_order_acc_amount)
             }
             return null
         },
         getProgressDate(){
+            // getOrder.produce_yield ? getOrder.produce_yield.produce_yield_dateHarvestTo : getProgressDate
             if(!this.getOrder.project.project_harvestableEnd){
                 var harvestDate = add(new Date(this.getOrder.project.project_commenceDate), {
                     weeks: 1
@@ -529,9 +536,38 @@ export default {
                 var formattedDate = format(harvestDate, 'yyyy-MM-dd');       
                 return formattedDate                    
             }
-            else{
-                return this.getOrder.project.project_harvestableEnd
+            else if(this.getOrder.produce_yield){
+                return format(new Date(this.getOrder.produce_yield.produce_yield_dateHarvestTo), 'MMM. dd, yyyy')
             }
+            else{
+                return format(new Date(this.getOrder.project.project_harvestableEnd), 'MMM. dd, yyyy')
+            }
+        },
+        getOrderPlaced(){
+            if(this.getOrder.bidOrder){
+                return format(new Date(this.getOrder.bidOrder.created_at.split('T')[0]), 'MMM. dd, yyyy')
+            }
+            return null
+        },
+        getOrderNeeded(){
+            if(this.getOrder.bidOrder){                
+                // getOrder.bidOrder.order_dateNeededFrom + ' - ' + getOrder.bidOrder.order_dateNeededTo
+                return format(new Date(this.getOrder.bidOrder.order_dateNeededFrom), 'MMM. dd, yyyy') + ' - ' +
+                format(new Date(this.getOrder.bidOrder.order_dateNeededTo), 'MMM. dd, yyyy')
+            }
+            return null
+        },
+        getDpDueDate(){
+            // getOrder.bid_order_acc.bid_order_acc_datePaid ? getOrder.bid_order_acc.bid_order_acc_datePaid : data.order_dpDueDate
+            if(this.getOrder.bid_order_acc){
+                if(this.getOrder.bid_order_acc.bid_order_acc_datePaid){
+                    return format(new Date(this.getOrder.bid_order_acc.bid_order_acc_datePaid), 'MMM. dd, yyyy')
+                }
+                else{
+                    return format(new Date(this.data.order_dpDueDate), 'MMM. dd, yyyy')
+                }
+            }
+            return null
         },
         getTotal(){
             var total = null;

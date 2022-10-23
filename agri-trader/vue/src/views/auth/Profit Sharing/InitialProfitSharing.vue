@@ -41,7 +41,7 @@
                     <h5 v-if="getProfitSharing.produce">Produce: {{ getProfitSharing.produce.prod_name + ' ' + getProfitSharing.produce.prod_type }}</h5>     
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getOwnerShare || getOwnerShare == 0" class="pb-3" style="border-bottom:2px solid black; width:40%;">Owner Share: {{ getOwnerShare }}</h5>                    
+                    <h5 v-if="getOwnerShare || getOwnerShare == 0" class="pb-3" style="border-bottom:2px solid black; width:40%;">Owner Share: {{ getOwnerShare.toFixed(2) }}</h5>                    
                 </div>
             </div>
             <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">

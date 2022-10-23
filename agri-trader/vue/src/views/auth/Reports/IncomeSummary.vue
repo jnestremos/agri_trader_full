@@ -3,7 +3,7 @@
         <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
             <h3>Income Summary</h3>
             <div class="d-flex">
-                <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
+                <!-- <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link> -->
             </div>
         </div>
         <div class="d-flex justify-content-between align-items-baseline px-3" style="width:100%; background; height:5%;">
@@ -305,14 +305,15 @@ export default {
                         orders = this.getIncomeSummary.bidOrders.filter((o) => {
                             return parseInt(this.filter_produce) === parseInt(o.produce_trader_id)
                         })
+                        console.log(orders)
                         orders.forEach((order) => {
                             container = this.bid_order_accounts.filter((o) => {
                                 return parseInt(order.id) === parseInt(o.bid_order_id)
                             })
-                        })
-                        container.forEach((a) => {
-                            accounts.push(a)
-                        })                  
+                            container.forEach((a) => {
+                                accounts.push(a)
+                            })    
+                        })                                     
                     }
                     accounts = accounts.filter((a) => {                    
                         return new Date(a.created_at).setHours(8,0,0,0) >= new Date(dateFrom).getTime() 

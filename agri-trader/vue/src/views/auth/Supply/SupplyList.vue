@@ -120,7 +120,7 @@ export default {
         },
         triggerModal(supply){
             this.$bvModal.show(`modal-${supply.id}`)
-            this.supply_id = supply.supply_id
+            this.supply_id = supply.id
             this.supply_initialPrice = supply.supply_initialPrice
             this.supply_reorderLevel = supply.supply_reorderLevel
         },

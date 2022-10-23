@@ -215,7 +215,7 @@ export default {
           return formattedDate                    
         }
         else{
-          return this.getProgressData.project_harvestableEnd
+          return format(new Date(this.getProgressData.project_harvestableEnd), 'MMM. dd, yyyy')
         }
       },
       getDates(){

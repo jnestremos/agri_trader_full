@@ -26,7 +26,8 @@ class ProduceYieldController extends Controller
             'produce_yield_qtyHarvested' => 'required',
             'produce_yield_price' => 'required',
             'project_harvestableEnd' => 'required|date',
-            'produce_yield_dateHarvestFrom' => 'required|date|after_or_equal:project_harvestableEnd',
+            // 'produce_yield_dateHarvestFrom' => 'required|date|after_or_equal:project_harvestableEnd',
+            'produce_yield_dateHarvestFrom' => 'required|date',
             'produce_yield_dateHarvestTo' => 'required|date|after:produce_yield_dateHarvestFrom'
         ]);
         $contract = Project::find($request->project_id)->contract()->first();

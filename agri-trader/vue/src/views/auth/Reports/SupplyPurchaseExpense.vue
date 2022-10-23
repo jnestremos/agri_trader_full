@@ -21,6 +21,16 @@
                   <input type="number" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
               </div>
           </div>
+          <div class="form-row mb-3 mt-2">
+            <div class="col-lg-3 me-3">
+                <label class="form-label me-4 fw-bold">From</label>
+                <input type="date" class="form-control" v-model="filter_dateFrom">
+            </div>
+            <div class="col-lg-3 me-3">
+                <label class="form-label me-4 fw-bold">To</label>
+                <input type="date" class="form-control" v-model="filter_dateTo">
+            </div>
+          </div>
           <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                   <thead align="center">
@@ -55,19 +65,29 @@
   </template>
   
   <script>
+import { format, add, sub } from 'date-fns';
   import { mapActions, mapGetters } from 'vuex';
   export default {
       name: "SupplyPurchaseExpenseReport",
       created() {
         this.fetchStockOutReport()
         .then(() => {
+            if(this.getStockOutReport.stockOut && this.getStockOutReport.stockOut.length > 0){
+                var stockOut = this.getStockOutReport.stockOut.sort((a, b) => {
+                    return new Date(a.created_at) - new Date(b.created_at)
+                })
+                this.filter_dateFrom = format(new Date(stockOut[0].created_at), 'yyyy-MM-dd')
+                this.filter_dateTo = format(new Date(stockOut[stockOut.length - 1].created_at), 'yyyy-MM-dd')
+            }
             this.readyApp()
         })        
       },
       data(){
         return {
             filter_project: 'None',
-            total_arr: []
+            total_arr: [],
+            filter_dateFrom: null,
+            filter_dateTo: null
         }
       },
       watch:{
@@ -79,7 +99,27 @@
                 })
                 this.total_arr.push(supplyObj[0].supply_initialPrice * v.supply_qty)
             })
-        }
+        },        
+        filter_dateFrom(newVal, oldVal){
+            if(!newVal){
+               this.filter_dateFrom = oldVal 
+            }
+            else if(newVal >= this.filter_dateTo){
+                this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
+                    days: 1
+                }), 'yyyy-MM-dd')
+            }
+        },
+        filter_dateTo(newVal, oldVal){
+            if(!newVal){
+                this.filter_dateTo = oldVal 
+            }
+            else if(newVal <= this.filter_dateFrom){
+                this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
+                    days: 1
+                }) , 'yyyy-MM-dd')
+            }
+        },
       },
       methods: {
           ...mapActions(['readyApp', 'fetchStockOutReport']),
@@ -145,15 +185,19 @@
         },
         filterTable(){
             var table = [];
-            if(this.filter_project != 'None'){
+            if(this.getStockOutReport.stockOut && this.getStockOutReport.stockOut.length > 0){
                 table = this.getStockOutReport.stockOut.filter((s) => {
-                    return parseInt(this.filter_project) === parseInt(s.project_id)
+                    return format(new Date(s.created_at), 'yyyy-MM-dd') >= this.filter_dateFrom &&
+                    format(new Date(s.created_at), 'yyyy-MM-dd') <= this.filter_dateTo
                 })
+                if(this.filter_project != 'None'){
+                    table = table.filter((s) => {
+                        return parseInt(this.filter_project) === parseInt(s.project_id)
+                    })                    
+                }
                 return table
             }
-            else{
-                return this.getStockOutReport.stockOut
-            }
+            return table            
         },  
         getTotal(){
             return this.total_arr.reduce((a, b) => a + b, 0) 

@@ -284,7 +284,12 @@ export default {
                     var supplierObj = this.getFormPO.suppliers.filter((ss) => {
                         return parseInt(supplyObj[0].supplier_id) === parseInt(ss.id)
                     })
-                    table.push(supplierObj[0])
+                    if(!table.find((e) => {
+                        return e === supplierObj[0]
+                    }))
+                    {
+                        table.push(supplierObj[0])
+                    }                    
                 })
             }
             return table

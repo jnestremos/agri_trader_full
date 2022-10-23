@@ -11,7 +11,7 @@
                 <p v-if="getFarmInfoForOwner.farm">{{ getFarmInfoForOwner.farm.farm_hectares }} hectares of land</p>
             </div>
             <div v-if="getFarmInfoForOwner.projects && getFarmInfoForOwner.projects.length == 0" class="trader_terminate d-flex justify-content-center align-items-center">
-                <button class="btn btn-danger">Terminate Partnership</button>
+                <!-- <button class="btn btn-danger">Terminate Partnership</button> -->
             </div>
             <!-- <div class="edit-profile">
                 <p class="me-3">Edit Profile</p>

@@ -72,7 +72,7 @@
               </table>
             </div>
             <div class="d-flex align-items-baseline justify-content-between mt-5">
-                <h5>Total Share Generated: {{ getTotal }}</h5>                
+                <h5>Total Share Generated: {{ getTotal.toFixed(2) }}</h5>                
             </div>
         </div>
       </div>
@@ -206,7 +206,11 @@ export default {
             var share = 0
             if(this.getProfitSharingReportForOwner.profit_sharings 
             && this.getProfitSharingReportForOwner.profit_sharings.length > 0){
-                share = this.getProfitSharingReportForOwner.profit_sharings.reduce((a, b) => a.ar_ownerShare + b.ar_ownerShare, share)
+                var shares = []
+                this.getProfitSharingReportForOwner.profit_sharings.forEach((s) => {
+                    shares.push(s.ar_ownerShare)
+                })
+                share = shares.reduce((a, b) => parseFloat(a) + parseFloat(b), share)
             }
             return share
         }

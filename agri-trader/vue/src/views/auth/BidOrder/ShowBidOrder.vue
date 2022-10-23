@@ -220,7 +220,7 @@ export default {
           var oneMonthBefore = sub(new Date(this.data.exp_dateHarvest).setHours(8,0,0,0), {
             months: 1
           })
-          this.cutoffDate = format(oneMonthBefore, 'yyyy-MM-dd')
+          this.cutoffDate = format(oneMonthBefore, 'MMM. dd, yyyy')
           if(isAfter(new Date().setHours(8,0,0,0), oneMonthBefore) || isEqual(new Date().setHours(8,0,0,0), oneMonthBefore)){
             this.disabled = true
           }
@@ -407,7 +407,7 @@ export default {
             return formattedDate                                 
           }
           else{
-            return this.getProgressData.project_harvestableEnd
+            return format(new Date(this.getProgressData.project_harvestableEnd), 'MMM. dd, yyyy')
           }                   
         }
         else if(this.$route.name == 'BidOrderOnHand'){  
@@ -416,7 +416,7 @@ export default {
               return parseInt(p.produce_trader_id) === parseInt(this.data.produce_trader_id) && parseInt(p.farm_id) === parseInt(this.$route.params.farm_id)
             })
             if(farmProduceObj.length > 0){
-              return farmProduceObj[0].prod_lastDateOfHarvest
+              return format(new Date(farmProduceObj[0].prod_lastDateOfHarvest), 'MMM. dd, yyyy')
             }            
           }                         
         }               

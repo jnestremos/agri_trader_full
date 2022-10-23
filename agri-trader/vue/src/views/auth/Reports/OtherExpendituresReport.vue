@@ -28,7 +28,17 @@
                 <label class="form-label me-4 fw-bold">Total</label>
                 <input type="number" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
             </div>
-        </div>        
+        </div>  
+        <div class="form-row mb-3 mt-2">
+            <div class="col-lg-3 me-3">
+                <label class="form-label me-4 fw-bold">From</label>
+                <input type="date" class="form-control" v-model="filter_dateFrom">
+            </div>
+            <div class="col-lg-3 me-3">
+                <label class="form-label me-4 fw-bold">To</label>
+                <input type="date" class="form-control" v-model="filter_dateTo">
+            </div>
+        </div>      
         <div class="container-fluid m-0 p-0" :style="[filterTable && filterTable.length > 6 ? {'overflow-y':'scroll'} : {}, {'width':'100%'}, {'height':'40vh'}]">
             <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                 <thead align="center">
@@ -39,6 +49,7 @@
                         <th scope="col">Type of Expense</th>
                         <th scope="col">Payment Date</th>
                         <th scope="col">Amount</th>
+                        <th scope="col">Date Issued</th>
                     </tr>
                 </thead>
                 <tbody align="center">
@@ -49,6 +60,7 @@
                         <td>{{ e.exp_type }}</td>
                         <td>{{ e.exp_dateFrom + ' ' + e.exp_dateTo }}</td>
                         <td>{{ e.exp_amount.toFixed(2) }}</td>
+                        <td>{{ e.created_at.split('T')[0] }}</td>
                     </tr>                                                                 
                 </tbody>
             </table>
@@ -59,20 +71,52 @@
 </template>
 
 <script>
+import { format, add, sub } from 'date-fns';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     name: "OtherExpendituresReport",
     created() {
         this.fetchExpenditureReport()
         .then(() => {
+            if(this.getExpenditureReport.expenditures && this.getExpenditureReport.expenditures.length > 0){
+                var expenditures = this.getExpenditureReport.expenditures.sort((a, b) => {
+                    return new Date(a.created_at) - new Date(b.created_at)
+                })
+                this.filter_dateFrom = format(new Date(expenditures[0].created_at), 'yyyy-MM-dd')
+                this.filter_dateTo = format(new Date(expenditures[expenditures.length - 1].created_at), 'yyyy-MM-dd')
+            }
             this.readyApp()
         })        
     },
     data(){
         return {
             filter_project: 'None',
-            filter_type: 'None'
+            filter_type: 'None',
+            filter_dateFrom: null,
+            filter_dateTo: null,
         }
+    },
+    watch:{
+        filter_dateFrom(newVal, oldVal){
+            if(!newVal){
+               this.filter_dateFrom = oldVal 
+            }
+            else if(newVal >= this.filter_dateTo){
+                this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
+                    days: 1
+                }), 'yyyy-MM-dd')
+            }
+        },
+        filter_dateTo(newVal, oldVal){
+            if(!newVal){
+                this.filter_dateTo = oldVal 
+            }
+            else if(newVal <= this.filter_dateFrom){
+                this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
+                    days: 1
+                }) , 'yyyy-MM-dd')
+            }
+        },
     },
     methods: {
         ...mapActions(['readyApp', 'fetchExpenditureReport']),
@@ -116,28 +160,32 @@ export default {
             return arr
         },
         filterTable(){
-            var table = [];            
-            if(this.filter_project != 'None' && this.filter_type == 'None'){
+            var table = [];
+            if(this.getExpenditureReport.expenditures && this.getExpenditureReport.expenditures.length > 0){
                 table = this.getExpenditureReport.expenditures.filter((e) => {
-                    return parseInt(this.filter_project) === parseInt(e.project_id)
+                    return format(new Date(e.created_at), 'yyyy-MM-dd') >= this.filter_dateFrom &&
+                    format(new Date(e.created_at), 'yyyy-MM-dd') <= this.filter_dateTo
                 })
-                return table
+                if(this.filter_project != 'None' && this.filter_type == 'None'){
+                    table = table.filter((e) => {
+                        return parseInt(this.filter_project) === parseInt(e.project_id)
+                    })                    
+                }
+                else if(this.filter_project == 'None' && this.filter_type != 'None'){
+                    table = table.filter((e) => {
+                        return (this.filter_type) === (e.exp_type)
+                    })
+                    
+                }
+                else if(this.filter_project != 'None' && this.filter_type != 'None'){
+                    table = table.filter((e) => {
+                        return (this.filter_type) === (e.exp_type) && parseInt(this.filter_project) === parseInt(e.project_id)
+                    })                   
+                }
+                return table              
             }
-            else if(this.filter_project == 'None' && this.filter_type != 'None'){
-                table = this.getExpenditureReport.expenditures.filter((e) => {
-                    return (this.filter_type) === (e.exp_type)
-                })
-                return table
-            }
-            else if(this.filter_project != 'None' && this.filter_type != 'None'){
-                table = this.getExpenditureReport.expenditures.filter((e) => {
-                    return (this.filter_type) === (e.exp_type) && parseInt(this.filter_project) === parseInt(e.project_id)
-                })
-                return table
-            }
-            else{
-                return this.getExpenditureReport.expenditures
-            }
+            return table                       
+        
         },
         getTotal(){
             var amounts = [];

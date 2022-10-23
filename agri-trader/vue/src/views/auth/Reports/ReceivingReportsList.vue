@@ -8,7 +8,7 @@
           <div class="form-row mb-3 mt-2">
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Purchase Order Number</label>
-                  <select class="form-select">
+                  <select class="form-select" @click="setOrder($event)">
                       <option value="None">Select PO #</option>
                       <option v-for="(number, index) in getPurchaseNumbers" :key="index" :value="number">{{ number }}</option>
                   </select>
@@ -24,11 +24,12 @@
                 <input type="date" class="form-control" v-model="filter_dateTo">
             </div>
           </div>
-          <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
+          <!-- ; ; ; -->
+          <div class="container-fluid m-0 p-0" :style="[filteredTable && filteredTable.length > 6 ? {'overflow-y': 'scroll'} : {}, {'width':'100%'}, {'height': '40vh'}]">
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                   <thead align="center">
                       <tr>
-                          <th scope="col">RR No.</th>
+                          <!-- <th scope="col">RR No.</th> -->
                           <th scope="col">Purchase Order No.</th>
                           <th scope="col">Supplier</th>
                           <th scope="col">Supply Name</th>
@@ -45,7 +46,7 @@
                   </thead>
                   <tbody align="center">
                     <tr v-for="(report, index) in filteredTable" :key="index">
-                        <td>{{ report.id }}</td>
+                        <!-- <td>{{ report.id }}</td> -->
                         <td>{{ report.purchaseOrder_num }}</td>
                         <td>{{ getSupplierName(report) }}</td>
                         <td>{{ getSupplyName(report) }}</td>
@@ -110,6 +111,9 @@ export default {
       },      
       methods: {
           ...mapActions(['readyApp', 'fetchReceivingReport']),
+          setOrder(e){
+            this.filter_order = e.target.value
+          },
           getSupplierName(report){
             var supplyObj = this.getReceivingReport.supplies.filter((s) => {
                 return parseInt(report.supply_id) === parseInt(s.id)

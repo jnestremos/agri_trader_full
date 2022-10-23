@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Produce;
 use App\Models\Supplier;
 use App\Models\Supply;
+use App\Models\SupplyInventory;
 use App\Models\Trader;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -63,6 +64,10 @@ class SupplyController extends Controller
 
         Supply::find($id)->update([
             'supply_initialPrice' => $request->supply_initialPrice,
+            'supply_reorderLevel' => $request->supply_reorderLevel,
+        ]);
+
+        SupplyInventory::where('supply_id', $id)->update([
             'supply_reorderLevel' => $request->supply_reorderLevel,
         ]);
 

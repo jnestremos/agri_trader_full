@@ -34,12 +34,12 @@
                 <div class="d-flex align-items-baseline justify-content-between" style="width:100%;">              
                   <div class="d-flex align-items-baseline w-50">
                     <h5 class="me-3">Date Placed:</h5>
-                    <p>{{ order.created_at.split('T')[0] }}</p> 
+                    <p>{{ getCreatedDate(order) }}</p> 
                   </div>                                 
                   <div class="d-flex align-items-baseline w-50">
                     <div class="d-flex align-items-baseline">
                       <h5 class="me-3">Date Updated:</h5>
-                      <p>{{ isProjectOrOnHand(order) == 'Project' ? order.updated_at.split('T')[0] : getUpdatedDate(order) }}</p> 
+                      <p>{{ getUpdatedDate(order) }}</p> 
                     </div>                  
                   </div>
                 </div>
@@ -111,7 +111,7 @@
                 </div>
                 <div class="d-flex align-items-baseline mt-3">
                   <h5 class="me-3">Expected Dates Needed:</h5>
-                  <p>{{ order.order_dateNeededFrom + ' - ' + order.order_dateNeededTo }}</p>                
+                  <p>{{ getDatesNeeded(order) }}</p>                
                 </div>
                 <div class="d-flex align-items-baseline justify-content-between mt-4" style="width:100%;">              
                   <div class="d-flex align-items-baseline w-50">
@@ -153,7 +153,7 @@
                 </div>
                 <div class="d-flex align-items-baseline" v-if="order.bid_order_status_id != 1 && (order.bid_order_status_id == 3 && getDpDueDate(order) == order.order_dpDueDate)">
                   <h5 class="me-3">{{ getDpDueDate(order) != order.order_dpDueDate ? 'Date of First Payment:' : 'Due Date of First Payment:' }}</h5>
-                  <p>{{ getDpDueDate(order) }}</p>                
+                  <p>{{ dpDueDateFormat(getDpDueDate(order)) }}</p>                
                 </div>
                 <div class="d-flex align-items-baseline justify-content-between" style="width:100%;" v-if="order.bid_order_status_id == 5">
                   <div class="d-flex align-items-baseline w-50">
@@ -396,6 +396,14 @@ export default {
             return 'OnHand'
           }
         },
+        getCreatedDate(order){
+          return format(new Date(order.created_at.split('T')[0]), 'MMM. dd, yyyy')
+        },
+        getDatesNeeded(order){
+          // order.order_dateNeededFrom + ' - ' + order.order_dateNeededTo
+          return format(new Date(order.order_dateNeededFrom), 'MMM. dd, yyyy') + ' - ' +
+          format(new Date(order.order_dateNeededTo), 'MMM. dd, yyyy')
+        },
         getUpdatedDate(order){
           if(this.isProjectOrOnHand(order) == 'OnHand'){
             var projObj = this.getOrderHistory.projects.filter((p) => {
@@ -407,7 +415,10 @@ export default {
             var farmProdObj = this.getOrderHistory.farm_produce.filter((pp) => {
               return parseInt(contractObj[0].farm_id) === parseInt(pp.farm_id) && parseInt(order.produce_trader_id) === parseInt(pp.produce_trader_id)
             })            
-            return farmProdObj[0].updated_at.split(' ')[0] // stopped on for approval on hand bid on history
+            return format(new Date(farmProdObj[0].updated_at.split(' ')[0]), 'MMM. dd, yyyy') // stopped on for approval on hand bid on history
+          }
+          else{
+            return format(new Date(order.updated_at.split('T')[0]), 'MMM. dd, yyyy')
           }
         },
         getBidType(order){
@@ -535,7 +546,7 @@ export default {
               return parseInt(order.project_id) === parseInt(p.id)
             })                  
             if(projectObj[0].project_harvestableEnd){                   
-                return projectObj[0].project_harvestableEnd
+                return format(new Date(projectObj[0].project_harvestableEnd), 'MMM. dd, yyyy')
             }
             else {
                 var harvestDate = add(new Date(projectObj[0].project_commenceDate), {
@@ -555,7 +566,7 @@ export default {
             var farmProdObj = this.getOrderHistory.farm_produce.filter((ppp) => {
               return parseInt(contractObj[0].farm_id) === parseInt(ppp.farm_id) && parseInt(ppp.produce_trader_id) === parseInt(order.produce_trader_id)
             })            
-            return farmProdObj[0].prod_lastDateOfHarvest
+            return format(new Date(farmProdObj[0].prod_lastDateOfHarvest), 'MMM. dd, yyyy')
           } 
                         
         },
@@ -642,11 +653,11 @@ export default {
             var year = parseInt(projectObj[0].project_harvestableEnd.split('-')[0]);                                      
             var month = parseInt(projectObj[0].project_harvestableEnd.split('-')[1]);          
             var day = parseInt(projectObj[0].project_harvestableEnd.split('-')[2]);            
-            var isAfterDate = isAfter(new Date(year, month-1, day).setHours(8, 0, 0, 0), new Date().setHours(8, 0, 0, 0))          
+            var isAfterDate = isAfter(new Date(year, month-1, day).setHours(8, 0, 0, 0), new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0))          
             console.log(new Date())                        
             if(isAfterDate){
               this.payment_data.refund_numOfDays = (eachDayOfInterval({
-                start: new Date().setHours(8, 0, 0, 0),
+                start: new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0),
                 end: new Date(year, month-1, day).setHours(8, 0, 0, 0)
               }).length - 1)   
 
@@ -673,8 +684,8 @@ export default {
           var year = parseInt(projObj[0].project_harvestableEnd.split('-')[0]);                                      
           var month = parseInt(projObj[0].project_harvestableEnd.split('-')[1]);          
           var day = parseInt(projObj[0].project_harvestableEnd.split('-')[2]);
-          var isAfterDate = isAfter(new Date().setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0)) || isEqual(new Date().setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0))
-          console.log(new Date())
+          var isAfterDate = isAfter(new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0)) || isEqual(new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0))
+          console.log(new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0))
           console.log(new Date(year, month-1, day))
           console.log(isAfterDate)
           // console.log(order.id, 1)
@@ -818,6 +829,9 @@ export default {
           var result = (order.order_finalPrice * order.order_finalQty) - order.order_dpAmount 
           return result < 0 ? 0 : result
         },
+        dpDueDateFormat(date){
+          return format(new Date(date), 'MMM. dd, yyyy')
+        },
         getDpDueDate(order){
           var bidOrderAccObj = this.getOrderHistory.bid_order_accs.filter((o) => {
             if(o){
@@ -860,7 +874,7 @@ export default {
             }
           })
           if(bidOrderAccObj.length > 0){
-            return bidOrderAccObj[0].bid_order_acc_datePaid   
+            return format(new Date(bidOrderAccObj[0].bid_order_acc_datePaid), 'MMM. dd, yyyy')
           }        
         },
         getRefundDate(order, percentage){
@@ -911,7 +925,7 @@ export default {
           var deliveryObj = this.getOrderHistory.deliveries.filter((d) => {
             return parseInt(order.id) === parseInt(d.bid_order_id)
           })
-          return deliveryObj[0].delivery_date
+          return format(new Date(deliveryObj[0].delivery_date), 'MMM. dd, yyyy')
         }
     },
     computed: {

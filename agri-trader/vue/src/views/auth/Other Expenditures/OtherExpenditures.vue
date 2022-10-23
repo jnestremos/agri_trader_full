@@ -13,7 +13,7 @@
             </div>
             <div class="col-lg-3 me-3">
               <label class="form-label me-4">OR/Acc Num</label>
-              <input type="text" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" name="OtherExp_AccNum" id="" class="form-control" placeholder="022654" v-model="data.exp_ORNum">
+              <input type="text" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" name="OtherExp_AccNum" id="" class="form-control" placeholder="022654" v-model="data.exp_ORNum">
             </div>
             <div class="col-lg-3 me-3">
               <label class="form-label me-4">Project Commence Date</label>
@@ -23,7 +23,7 @@
           <div class="form-row mt-2">
             <div class="col-lg-4 me-1">
               <label class="form-label me-4">Type of Expense</label>
-              <select class="form-select" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" @change="setExpenseType($event)">
+              <select class="form-select" :disabled="gg && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" @change="setExpenseType($event)">
                 <option disabled selected value="None">Select Expense</option>
                 <option value="Utilities">Utilities</option>
                 <option value="Food">Food</option>
@@ -36,11 +36,11 @@
           <div class="form-row mt-2">
             <div class="col-lg-4 me-1">
               <label class="form-label me-4">Period from:</label>
-              <input type="date" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" class="form-control" v-model="data.exp_dateFrom">
+              <input type="date" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" class="form-control" v-model="data.exp_dateFrom">
             </div>
             <div class="col-lg-4 me-1">
               <label class="form-label me-4">To:</label>
-              <input type="date" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" class="form-control" v-model="data.exp_dateTo">
+              <input type="date" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" class="form-control" v-model="data.exp_dateTo">
             </div>
           </div>
           <div class="form-row mt-2">
@@ -54,30 +54,30 @@
             </div>
             <div v-if="data.exp_paymentType == 'Bank'" class="col-lg-3">
               <label class="form-label me-4">Bank Name</label>
-              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_bankName">
+              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_bankName">
             </div>
             <div v-if="data.exp_paymentType == 'Bank'" class="col-lg-3">
               <label class="form-label me-4">Account Number</label>
-              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_accNum">
+              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_accNum">
             </div>
             <div class="col-lg-3">
               <label class="form-label me-4">Account Name</label>
-              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_accName">
+              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_accName">
             </div>
           </div>
           <div class="form-row mt-2">
             <div class="col-md-5">
               <label class="form-label me-4">Amount</label>
-              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" type="number" class="form-control" v-model="data.exp_amount">
+              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" type="number" class="form-control" v-model="data.exp_amount">
             </div>
             <div class="col-md-5">
               <label class="form-label me-4">Remarks</label>
-              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_remark">
+              <input :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" type="text" class="form-control" v-model="data.exp_remark">
             </div>
           </div>
           <div class="btn-toolbar pt-2">
             <div class="btn-group me-3 mt-3">
-              <button type="submit" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || etProjectForExpenditure.project_status_id == 5)" class="btn btn-success" style="width:150px; height: 40px;">Add to Project</button>
+              <button type="submit" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" class="btn btn-success" style="width:150px; height: 40px;">Add to Project</button>
             </div>           
         </div>
         </form>
