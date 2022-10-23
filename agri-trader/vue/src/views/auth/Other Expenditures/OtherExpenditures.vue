@@ -23,7 +23,7 @@
           <div class="form-row mt-2">
             <div class="col-lg-4 me-1">
               <label class="form-label me-4">Type of Expense</label>
-              <select class="form-select" :disabled="gg && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" @change="setExpenseType($event)">
+              <select class="form-select" :disabled="getProjectForExpenditure && (getProjectForExpenditure.project_status_id == 4 || getProjectForExpenditure.project_status_id == 5)" @change="setExpenseType($event)">
                 <option disabled selected value="None">Select Expense</option>
                 <option value="Utilities">Utilities</option>
                 <option value="Food">Food</option>
@@ -160,7 +160,7 @@ export default {
           .then(() => {
             this.$toastr.s('Expenditure added successfully!')
             setTimeout(() => {
-              location.reload()
+              this.$router.push({ path: `projects/${this.$route.params.id}` })
             }, 5000)
           })
         },

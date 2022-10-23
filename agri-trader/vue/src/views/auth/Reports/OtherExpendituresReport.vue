@@ -10,7 +10,7 @@
                 <label class="form-label me-4 fw-bold">Project</label>
                 <select class="form-select" @change="setProjectID($event)">
                     <option value="None">Select Project</option>
-                    <option v-for="(id, index) in filterProjectIDS" :key="index" :value="id">{{ getProjectName(id) }}</option>
+                    <option v-for="(id, index) in filterProjectIDS" :key="index" :value="id">{{ id + ' - ' + getProjectName(id) }}</option>
                 </select>
             </div>
             <div class="col-lg-3 me-3">

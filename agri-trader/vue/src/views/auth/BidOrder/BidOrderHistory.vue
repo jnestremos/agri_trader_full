@@ -653,11 +653,11 @@ export default {
             var year = parseInt(projectObj[0].project_harvestableEnd.split('-')[0]);                                      
             var month = parseInt(projectObj[0].project_harvestableEnd.split('-')[1]);          
             var day = parseInt(projectObj[0].project_harvestableEnd.split('-')[2]);            
-            var isAfterDate = isAfter(new Date(year, month-1, day).setHours(8, 0, 0, 0), new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0))          
+            var isAfterDate = isAfter(new Date(year, month-1, day).setHours(8, 0, 0, 0), new Date().setHours(8, 0, 0, 0))          
             console.log(new Date())                        
             if(isAfterDate){
               this.payment_data.refund_numOfDays = (eachDayOfInterval({
-                start: new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0),
+                start: new Date().setHours(8, 0, 0, 0),
                 end: new Date(year, month-1, day).setHours(8, 0, 0, 0)
               }).length - 1)   
 
@@ -684,8 +684,8 @@ export default {
           var year = parseInt(projObj[0].project_harvestableEnd.split('-')[0]);                                      
           var month = parseInt(projObj[0].project_harvestableEnd.split('-')[1]);          
           var day = parseInt(projObj[0].project_harvestableEnd.split('-')[2]);
-          var isAfterDate = isAfter(new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0)) || isEqual(new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0))
-          console.log(new Date(order.created_at.split('T')[0]).setHours(8, 0, 0, 0))
+          var isAfterDate = isAfter(new Date().setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0)) || isEqual(new Date().setHours(8, 0, 0, 0), new Date(year, month-1, day).setHours(8, 0, 0, 0))
+          console.log(new Date().setHours(8, 0, 0, 0))
           console.log(new Date(year, month-1, day))
           console.log(isAfterDate)
           // console.log(order.id, 1)

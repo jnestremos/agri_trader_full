@@ -102,7 +102,7 @@ export default {
             formData.append('stage', this.stage)
             this.addProjectImage(formData)
             .then(() => {
-                location.reload()
+                this.$router.push({ path: `/projects/${this.$route.params.id}` })
             })
         }
     },
