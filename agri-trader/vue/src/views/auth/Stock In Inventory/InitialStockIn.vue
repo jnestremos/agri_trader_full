@@ -6,20 +6,18 @@
     <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">
             <form class="d-flex flex-column justify-content-between mt-2 ms-2" style="height:20%">
-                <div class="form-row mb-2">
+                <div class="form-row mb-3">
                     <div class="col-lg-3 me-3">
                         <label for="stockIn_date" class="form-label me-4" >Date</label>
                         <input type="date" name="stockIn_Date" id="" class="form-control" placeholder="09/05/2022" v-model="dateToday" disabled>
                     </div>
                     <div class="col-lg-3 me-3">
-                        <label for="stockIn_purchaseOrderNum" class="form-label me-4" >Purchase Order No.:</label>
-                        <!-- <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567"> -->
-                        <input type="text" name="" id="" class="form-control" style="width:350px;" disabled v-model="data.purchaseOrder_num">
+                        <label for="stockIn_purchaseOrderNum" class="form-label me-3" >Purchase Order No.:</label>
+                        <input type="text" name="" id="" class="form-control" style="width:275px;" disabled v-model="data.purchaseOrder_num">
                     </div>
                     <div class="col-lg-3 me-3">
-                        <label for="stockIn_purchaseOrderNum" class="form-label me-4" >RR No.:</label>
-                        <!-- <input type="text" name="stockIn_purchaseOrderNum" id="" disabled class="form-control"  placeholder="PO-1234567"> -->
-                        <input type="text" name="" id="" class="form-control" style="width:350px;" disabled v-model="data.report_num">
+                        <label for="stockIn_purchaseOrderNum" class="form-label me-3" >RR No.:</label>
+                        <input type="text" name="" id="" class="form-control" style="width:275px;" disabled v-model="data.report_num">
                     </div>
                 </div>
                 <div class="row">
@@ -56,7 +54,7 @@
                                 <td>{{ getSupplyFor(record) }}</td>
                                 <td>{{ record.purchaseOrder_qty }}</td>
                                 <td>{{ record.purchaseOrder_unit }}</td>
-                                <td>{{ record.purchaseOrder_subTotal }}</td>
+                                <td>{{ record.purchaseOrder_subTotal | toCurrency }}</td>
                                 <td v-if="data.purchaseOrder_qtyGood && data.purchaseOrder_qtyGood.length > 0">
                                     <input type="number"  class="form-control" style="width:150px" v-model="data.purchaseOrder_qtyGood[index]" disabled>
                                 </td>
@@ -70,7 +68,7 @@
                 <div class="form-row mt-2 mb-2">
                     <div class="col-sm-4">
                         <label for="orderSummary_quantityReceived" class="form-label me-4" >Total Amount</label>
-                        <input v-if="data.purchaseOrder_subTotal && data.purchaseOrder_subTotal.length > 0" type="text" name="orderSummary_totalAmount" id="" class="form-control" style="width: 40%" disabled :value="data.purchaseOrder_subTotal.reduce((partialSum, a) => partialSum + a, 0)">
+                        <input v-if="data.purchaseOrder_subTotal && data.purchaseOrder_subTotal.length > 0" type="text" name="orderSummary_totalAmount" id="" class="form-control" style="width: 40%" disabled :value="formattedSubTotal">
                     </div>                                       
                 </div>
                 <div class="form-row">
@@ -204,7 +202,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getPOForRR', 'getName'])
+        ...mapGetters(['getPOForRR', 'getName']),
+        formattedSubTotal() {
+            return this.data.purchaseOrder_subTotal.reduce((partialSum, a) => partialSum + a, 0).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
+        }
     }
 }
 </script>

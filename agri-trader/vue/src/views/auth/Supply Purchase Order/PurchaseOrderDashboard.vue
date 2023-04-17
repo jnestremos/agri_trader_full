@@ -45,7 +45,7 @@
                                                         <td>{{ getSupplyName(order) }}</td>
                                                         <td>{{ order.purchaseOrder_qty }}</td>
                                                         <td>{{ order.purchaseOrder_unit }}</td>
-                                                        <td>{{ order.purchaseOrder_subTotal.toFixed(2) }}</td>
+                                                        <td>{{ order.purchaseOrder_subTotal | toCurrency }}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -64,7 +64,7 @@
                                                 <h5>Account Number: {{ getAccNum(o) }}</h5>                                                
                                             </div> -->
                                             <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
-                                                <h5>Total Balance: {{ getTotalBalance(o) }}</h5>                                                
+                                                <h5>Total Balance: {{ getTotalBalance(o) | toCurrency }}</h5>                                                
                                             </div>
                                             <div class="d-flex justify-content-between align-items-baseline w-100 mb-5">
                                                 <h5>Paid Balance: {{ getPaidBalance(o) }}</h5>                                                
@@ -173,22 +173,22 @@ export default {
             var supplyPaymentObj = this.getPODashboard.purchaseOrder_accs.filter((a) => {
                 return order.purchaseOrder_num === a.purchaseOrder_num
             })
-            return supplyPaymentObj[0].purchaseOrder_totalBalance.toFixed(2)
+            return supplyPaymentObj[0].purchaseOrder_totalBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
         getPaidBalance(order){
             var supplyPaymentObj = this.getPODashboard.purchaseOrder_accs.filter((a) => {
                 return order.purchaseOrder_num === a.purchaseOrder_num
             })
             if(supplyPaymentObj[0].purchaseOrder_dpAmount == 0){
-                return supplyPaymentObj[0].purchaseOrder_dpAmount.toFixed(2) + ' (Reorder for Defects)'
+                return supplyPaymentObj[0].purchaseOrder_dpAmount.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) + ' (Reorder for Defects)'
             }
-            return supplyPaymentObj[0].purchaseOrder_dpAmount.toFixed(2)
+            return supplyPaymentObj[0].purchaseOrder_dpAmount.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
         getRemainingBalance(order){
             var supplyPaymentObj = this.getPODashboard.purchaseOrder_accs.filter((a) => {
                 return order.purchaseOrder_num === a.purchaseOrder_num
             })
-            return supplyPaymentObj[0].purchaseOrder_balance.toFixed(2)
+            return supplyPaymentObj[0].purchaseOrder_balance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
         getPaymentMethod(order){
             var accObj = this.getPODashboard.purchaseOrder_accs.filter((a) => {

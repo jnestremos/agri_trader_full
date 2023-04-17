@@ -1,6 +1,6 @@
 <template>
-  <div class="showProduceForOwner px-3">
-    <div class="container-fluid w-100 d-flex align-items-center" style="height:10%;">
+  <div class="showProduceForOwner">
+    <div class="container-fluid w-100 d-flex align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3 v-if="getProduceInfoForOwner.produce">{{ getProduceInfoForOwner.produce.prod_name + ' ' + getProduceInfoForOwner.produce.prod_type }}</h3>        
     </div>
     <div class="container-fluid d-flex justify-content-between mb-5" style="width:70%; float:left;">

@@ -15,14 +15,14 @@
                       <option value="None">Select Farm</option>
                       <option v-for="(farm, index) in getProfitSharingReport.farms" :key="index" :value="farm.id">{{ getFarmName(farm) }}</option>
                   </select>
-              </div>              
+              </div>
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Produce</label>
                   <select class="form-select" :disabled="this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length == 0" @change="setProduce($event)">
                       <option selected value="None">Select Produce</option>
                       <option v-for="(produce, index) in getProfitSharingReport.produces" :key="index" :value="produce.id">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
                   </select>
-              </div>              
+              </div>
           </div>
           <div class="form-row mb-3 mt-2">
             <div class="col-lg-3 me-3">
@@ -60,26 +60,26 @@
                         <td>{{ getProjectName(report) }}</td>
                         <td>{{ getFarmNameTable(report) }}</td>
                         <td>{{ getProduceName(report) }}</td>
-                        <td>{{ report.ar_totalSales }}</td>
-                        <td>{{ report.ar_totalExpenses }}</td>
-                        <td>{{ report.ar_ownerShare }}</td>
+                        <td>{{ report.ar_totalSales | toCurrency }}</td>
+                        <td>{{ report.ar_totalExpenses | toCurrency }}</td>
+                        <td>{{ report.ar_ownerShare | toCurrency }}</td>
                         <td>{{ Math.abs(report.ar_totalSales - report.ar_ownerShare) }}</td>
-                        <td>{{ report.ar_profit }}</td>
+                        <td>{{ report.ar_profit | toCurrency }}</td>
                         <td>{{ report.ar_approvedOn }}</td>
                     </tr>
                   </tbody>
               </table>
             </div>
             <div class="d-flex align-items-baseline justify-content-between mt-5">
-                <h5>Total Income: {{ getIncome.toFixed(2) }}</h5>
-                <h5>Total Expenses: {{ getExpenses.toFixed(2) }}</h5>
-                <h5>Balance: {{ getBalance.toFixed(2) }}</h5>
+                <h5>Total Income: {{ getIncome.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
+                <h5>Total Expenses: {{ getExpenses.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
+                <h5>Balance: {{ getBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
             </div>
         </div>
       </div>
     </div>
   </template>
-  
+
   <script>
 import { format, sub, add } from 'date-fns';
   import { mapActions, mapGetters } from 'vuex';
@@ -91,12 +91,12 @@ import { format, sub, add } from 'date-fns';
             if(this.getProfitSharingReport.profit_sharing && this.getProfitSharingReport.profit_sharing.length > 0){
                 var sortedData = this.getProfitSharingReport.profit_sharing.sort((a, b) => {
                     return new Date(a.created_at) - new Date(b.created_at)
-                })    
+                })
                 this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
-                this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')                
+                this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')
             }
             this.readyApp()
-        })          
+        })
       },
       data(){
         return {
@@ -109,7 +109,7 @@ import { format, sub, add } from 'date-fns';
       watch:{
         filter_dateFrom(newVal, oldVal){
             if(!newVal){
-               this.filter_dateFrom = oldVal 
+               this.filter_dateFrom = oldVal
             }
             else if(newVal > this.filter_dateTo){
                 this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
@@ -119,7 +119,7 @@ import { format, sub, add } from 'date-fns';
         },
         filter_dateTo(newVal, oldVal){
             if(!newVal){
-                this.filter_dateTo = oldVal 
+                this.filter_dateTo = oldVal
             }
             else if(newVal < this.filter_dateFrom){
                 this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
@@ -133,9 +133,9 @@ import { format, sub, add } from 'date-fns';
           resetFilter(){
             var sortedData = this.getProfitSharingReport.profit_sharing.sort((a, b) => {
                 return new Date(a.created_at) - new Date(b.created_at)
-            })   
-            this.filter_farm = 'None' 
-            this.filter_produce = 'None' 
+            })
+            this.filter_farm = 'None'
+            this.filter_produce = 'None'
             this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
             this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')
           },
@@ -175,7 +175,7 @@ import { format, sub, add } from 'date-fns';
           getProduceName(report){
             var prodObj = this.getProfitSharingReport.produces.filter((p) => {
                 return parseInt(report.produce_id) === parseInt(p.id)
-            })  
+            })
             return prodObj[0].prod_name + ' ' + prodObj[0].prod_type
           }
       },
@@ -190,7 +190,7 @@ import { format, sub, add } from 'date-fns';
                 })
                 if(this.filter_farm != 'None' && this.filter_produce != 'None'){
                     table = table.filter((pp) => {
-                        return parseInt(this.filter_farm) === parseInt(pp.farm_id) 
+                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)
                         && parseInt(this.filter_produce) === parseInt(pp.produce_id)
                     })
                 }
@@ -201,10 +201,10 @@ import { format, sub, add } from 'date-fns';
                 }
                 else if(this.filter_farm != 'None' && this.filter_produce == 'None'){
                     table = table.filter((pp) => {
-                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)                     
+                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)
                     })
                 }
-            }                       
+            }
             return table
         },
         getIncome(){
@@ -212,7 +212,7 @@ import { format, sub, add } from 'date-fns';
             if(this.getProfitSharingReport.accs && this.getProfitSharingReport.accs.length > 0
             || this.getProfitSharingReport.sales && this.getProfitSharingReport.sales.length > 0){
                 var accs = []
-                var sales = []                
+                var sales = []
                 this.getProfitSharingReport.accs.forEach((a) => {
                     accs.push(a.bid_order_acc_amount)
                 })
@@ -221,13 +221,13 @@ import { format, sub, add } from 'date-fns';
                     accs.push(s.sale_total)
                 })
                 income = accs.reduce((a, b) => parseFloat(a) + parseFloat(b), income)
-                income = sales.reduce((a, b) => parseFloat(a) + parseFloat(b), income)                 
+                income = sales.reduce((a, b) => parseFloat(a) + parseFloat(b), income)
             }
             return income
         },
         getExpenses(){
             var expense = 0
-            if(this.getProfitSharingReport.profit_sharing 
+            if(this.getProfitSharingReport.profit_sharing
             && this.getProfitSharingReport.profit_sharing.length > 0){
                 var expenses = [];
                 this.getProfitSharingReport.profit_sharing.forEach((s) => {
@@ -240,11 +240,11 @@ import { format, sub, add } from 'date-fns';
         getBalance(){
             return this.getIncome - this.getExpenses
         }
-      },      
+      },
   }
   </script>
-  
-  
+
+
   <style>
-  
+
   </style>

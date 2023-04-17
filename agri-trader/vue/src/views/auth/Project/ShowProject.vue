@@ -1,42 +1,42 @@
 <template>
   <div class="showProject">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
-        <h3>About Project</h3>        
-    </div>           
-    <form action="" @submit.prevent="sendProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">         
+        <h3>About Project</h3>
+    </div>
+    <form action="" @submit.prevent="sendProject()" class="container-fluid d-flex flex-wrap p-0" style="height:90%;">
       <div class="row px-4 w-100 m-0" style="height:30%;">
         <div class="col-6 p-0 d-flex flex-column justify-content-evenly">
           <div class="d-flex align-items-baseline">
-            <p>Project #: {{ $route.params.id }}</p>          
-          </div>                           
-          <div class="d-flex align-items-baseline">
-            <p v-if="getFarm">Farm Name: {{ getFarm.farm_name }}</p>            
+            <p>Project #: {{ $route.params.id }}</p>
           </div>
-          <div class="d-flex align-items-baseline">           
+          <div class="d-flex align-items-baseline">
+            <p v-if="getFarm">Farm Name: {{ getFarm.farm_name }}</p>
+          </div>
+          <div class="d-flex align-items-baseline">
            <p v-if="getOwner">Farm Owner: {{ getOwner.owner_firstName + " " + getOwner.owner_lastName}}</p>
           </div>
-          <div class="d-flex align-items-baseline">            
-            <p v-if="getContract">Estimated Sales: {{ getContract.contract_estimatedSales.toFixed(2) }} </p>
-          </div>          
+          <div class="d-flex align-items-baseline">
+            <p v-if="getContract">Estimated Sales: {{ getContract.contract_estimatedSales.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }} </p>
+          </div>
           <div></div>
-          <div v-if="(getStockOutForProject && getStockOutForProject.length > 0) && (getExpenditureForProject && getExpenditureForProject.length > 0)" class="d-flex align-items-baseline">            
+          <div v-if="(getStockOutForProject && getStockOutForProject.length > 0) && (getExpenditureForProject && getExpenditureForProject.length > 0)" class="d-flex align-items-baseline">
             <p v-if="getContract">Total Expenses: {{ getTotalExpense }} </p>
           </div>
           <div></div>
         </div>
         <div class="col-6 p-0 d-flex flex-column justify-content-evenly">
           <div class="d-flex align-items-baseline">
-            <p v-if="getContract">Estimated Harvest (in kg): {{ getContract.contract_estimatedHarvest.toFixed(2) }} </p>
+            <p v-if="getContract">Estimated Harvest (in kg): {{ getContract.contract_estimatedHarvest.toLocaleString("en-PH") }} kg </p>
           </div>
-          <div class="d-flex align-items-baseline">            
-            <p v-if="getContract">Estimated Price (per kg): {{ getContract.contract_estimatedPrice.toFixed(2) }} </p>
+          <div class="d-flex align-items-baseline">
+            <p v-if="getContract">Estimated Price (per kg): {{ getContract.contract_estimatedPrice.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }} </p>
           </div>
           <div class="d-flex align-items-baseline" v-if="getShare">
             <p v-if="getShare.contractShare_type == 'Percentage'">Profit Share: {{ getShare.contractShare_amount + "% (Owner)"}} </p>
-            <p v-else>Profit Share: {{ getShare.contractShare_amount + " (Owner)"}} </p>                                                 
+            <p v-else>Profit Share: {{ getShare.contractShare_amount + " (Owner)"}} </p>
           </div>
-          <div class="d-flex align-items-baseline" style="">            
-            <p v-if="getContract">Estimated Sales Sharing: {{ getContract.contract_traderShare.toFixed(2) }} (trader) - {{ getContract.contract_ownerShare.toFixed(2) }} (owner)</p>
+          <div class="d-flex align-items-baseline" style="">
+            <p v-if="getContract">Estimated Sales Sharing: {{ getContract.contract_traderShare.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }} (Trader) - {{ getContract.contract_ownerShare.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }} (Owner)</p>
           </div>
         </div>
       </div>
@@ -48,11 +48,11 @@
             </div>
             <div class="col-4 p-0 d-flex align-items-baseline">
               <p v-if="getProject">Project Start: {{ getProjectStart }}</p>
-            </div>            
+            </div>
           </div>
           <div class="row w-100 m-0">
             <div class="col-4 p-0">
-              Stages: 
+              Stages:
             </div>
             <div class="col-4 p-0">
               From
@@ -62,64 +62,64 @@
             </div>
           </div>
           <div class="row w-100 m-0">
-            <div class="col-4 p-0 d-flex align-items-baseline">                          
+            <div class="col-4 p-0 d-flex align-items-baseline">
                <label for="stage1" class="form-label">Flowering:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_floweringStart" v-model="data.project_floweringStart" id="project_floweringStart" class="form-control" style="width:200px" disabled>              
+              <input type="date" onkeydown="return false" name="project_floweringStart" v-model="data.project_floweringStart" id="project_floweringStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
               <input type="date" onkeydown="return false" name="project_floweringEnd" v-model="data.project_floweringEnd" id="project_floweringEnd" class="form-control" style="width:200px" disabled>
-            </div>            
+            </div>
           </div>
           <div class="row w-100 m-0">
-            <div class="col-4 p-0 d-flex align-items-baseline">                        
+            <div class="col-4 p-0 d-flex align-items-baseline">
                <label for="stage2" class="form-label">Fruit Budding:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_fruitBuddingStart" v-model="data.project_fruitBuddingStart" id="project_fruitBuddingStart" class="form-control" style="width:200px" disabled>              
+              <input type="date" onkeydown="return false" name="project_fruitBuddingStart" v-model="data.project_fruitBuddingStart" id="project_fruitBuddingStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_fruitBuddingEnd" v-model="data.project_fruitBuddingEnd" id="project_fruitBuddingEnd" class="form-control" style="width:200px" disabled>              
+              <input type="date" onkeydown="return false" name="project_fruitBuddingEnd" v-model="data.project_fruitBuddingEnd" id="project_fruitBuddingEnd" class="form-control" style="width:200px" disabled>
             </div>
           </div>
           <div class="row w-100 m-0">
-            <div class="col-4 p-0 d-flex align-items-baseline">               
+            <div class="col-4 p-0 d-flex align-items-baseline">
                <label for="stage3" class="form-label">Developing Fruit:</label>
             </div>
             <div class="col-4 p-0">
               <input type="date" onkeydown="return false" name="project_devFruitStart" v-model="data.project_devFruitStart" id="project_devFruitStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_devFruitEnd" v-model="data.project_devFruitEnd" id="project_devFruitEnd" class="form-control" style="width:200px" disabled>              
+              <input type="date" onkeydown="return false" name="project_devFruitEnd" v-model="data.project_devFruitEnd" id="project_devFruitEnd" class="form-control" style="width:200px" disabled>
             </div>
           </div>
           <div class="row w-100 m-0">
-            <div class="col-4 p-0 d-flex align-items-baseline">               
+            <div class="col-4 p-0 d-flex align-items-baseline">
                <label for="stage4" class="form-label">Harvestable:</label>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_harvestableStart" v-model="data.project_harvestableStart" id="project_harvestableStart" class="form-control" style="width:200px" disabled>              
+              <input type="date" onkeydown="return false" name="project_harvestableStart" v-model="data.project_harvestableStart" id="project_harvestableStart" class="form-control" style="width:200px" disabled>
             </div>
             <div class="col-4 p-0">
-              <input type="date" onkeydown="return false" name="project_harvestableEnd" v-model="data.project_harvestableEnd" id="project_harvestableEnd" class="form-control" style="width:200px" disabled>              
+              <input type="date" onkeydown="return false" name="project_harvestableEnd" v-model="data.project_harvestableEnd" id="project_harvestableEnd" class="form-control" style="width:200px" disabled>
             </div>
-          </div> 
+          </div>
           <div class="row w-100 m-0">
             <div class="col-4 p-0">
-              
-            </div>            
-          </div>         
-        </div>  
+
+            </div>
+          </div>
+        </div>
         <div class="col-3 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
             <!-- <div v-if="getProject && getProject.project_status_id != 1" class="col-12 p-0 d-flex align-items-baseline">
               <label for="project_status_id" class="form-label me-4">Project Status:</label>
-              <select name="project_status_id" class="form-select" style="width:250px" id="" @change="setStatus($event)" v-if="getProject && !(getProfitSharingForProject)">               
+              <select name="project_status_id" class="form-select" style="width:250px" id="" @change="setStatus($event)" v-if="getProject && !(getProfitSharingForProject)">
                   <option v-if="getProject.project_status_id == 1" value="2" selected>Approved</option>
-                  <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>                                
+                  <option v-if="getProject.project_status_id == 1" value="3">Cancelled</option>
                   <option v-if="getProject.project_status_id == 2" value="4" selected>Terminated Successfully</option>
-                  <option v-if="getProject.project_status_id == 2" value="5">Terminated w/ Complications</option>                                
+                  <option v-if="getProject.project_status_id == 2" value="5">Terminated w/ Complications</option>
               </select>
               <label v-else-if="getInventoryForProject && getInventoryForProject.length > 0" for="">Terminated Successfully</label>
               <label v-else for="">{{ getProject.project_status_id == 4 ? 'Terminated Successfully' : 'Terminated w/ Complications' }}</label>
@@ -142,25 +142,25 @@
                     <td v-if="history.project_status_id == 4" :style="[history.project_status_id == getProject.project_status_id ? {color: 'blue'} : {color : 'black'}]">Terminated Successfully</td>
                     <td v-if="history.project_status_id == 5" :style="[history.project_status_id == getProject.project_status_id ? {color: 'blue'} : {color : 'black'}]">Terminated w/ Complications</td>
                     <td>{{ getDate(history) }}</td>
-                  </tr>                  
+                  </tr>
                 </tbody>
-              </table>               
-            </div>             
+              </table>
+            </div>
           </div>
-          <div class="row w-100 m-0"></div> 
-          <div class="row w-100 m-0"></div> 
-          <div class="row w-100 m-0"></div> 
-          <div class="row w-100 m-0"></div> 
-          <div class="row w-100 m-0"></div> 
+          <div class="row w-100 m-0"></div>
+          <div class="row w-100 m-0"></div>
+          <div class="row w-100 m-0"></div>
+          <div class="row w-100 m-0"></div>
+          <div class="row w-100 m-0"></div>
           <div v-if="getProject && getProject.project_status_id != 1">
             <!-- position:absolute; bottom:3%; right:7%; width:40vw; -->
-            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'40vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'40vw'} : {'width':'25vw'}, {'position':'absolute'}, {'bottom':'3%'}, {'right':'7%'}]">
-              <input type="button" :value="getProfitSharingForProject ? 'View Expenditures' : 'Add Expenditures'" class="btn btn-primary" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">                        
-              <input type="button" :value="getProfitSharingForProject ? 'View Supplies Used' : 'Add Supplies to Project'" :disabled="stage == 'No Stage'" class="btn btn-primary" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
-              <router-link :to="`/projects/${$route.params.id}/images`"><input type="button" value="See Images" class="btn btn-primary"></router-link>
-              <input type="button" :value="getYieldForProject && getYieldForProject.length > 0 ? 'View Harvest' : 'Add Harvest'" v-if="getProject.project_status_id != 5" class="btn btn-primary" @click="$router.push({ path: `/harvest/${$route.params.id}` })">                        
-              <input type="button" v-b-modal.modal-1 value="Refund All Orders" v-if="getProject.project_status_id == 5 && getProject.project_completionDate == null && getRefundForProject && getRefundForProject.length == 0" class="btn btn-primary me-3">
-              <input type="button" v-if="(getProject.project_status_id == 2 && getInventoryForProject && (getInventoryForProject.length == 0 || isInventoryEmpty)) || getProject.project_status_id == 4 || getProject.project_status_id == 5" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary">                                                
+            <div class="d-flex justify-content-between align-items-center" :style="[getProject.project_status_id == 5 && getRefundForProject && getRefundForProject.length == 0 ? {'width':'40vw'} : getProject.project_status_id == 4 || (getRefundForProject && getRefundForProject.length != 0) ? {'width':'50vw'} : {'width':'30vw'}, {'position':'absolute'}, {'bottom':'7%'}, {'right':'8%'}]">
+              <input type="button" :value="getProfitSharingForProject ? 'View Expenditures' : 'Add Expenditures'" class="btn btn-primary mb-2" @click="$router.push({ path: `/project/expenditures/${$route.params.id}` })">
+              <input type="button" :value="getProfitSharingForProject ? 'View Supplies Used' : 'Add Supplies to Project'" :disabled="stage == 'No Stage'" class="btn btn-primary mb-2" @click="$router.push({ path: `/stockOut/${$route.params.id}` })">
+              <router-link :to="`/projects/${$route.params.id}/images`"><input type="button" value="See Images" class="btn btn-primary mb-2"></router-link>
+              <input type="button" :value="getYieldForProject && getYieldForProject.length > 0 ? 'View Harvest' : 'Add Harvest'" v-if="getProject.project_status_id != 5" class="btn btn-primary mb-2" @click="$router.push({ path: `/harvest/${$route.params.id}` })">
+              <input type="button" v-b-modal.modal-1 value="Refund All Orders" v-if="getProject.project_status_id == 5 && getProject.project_completionDate == null && getRefundForProject && getRefundForProject.length == 0" class="btn btn-primary mb-2">
+              <input type="button" v-if="(getProject.project_status_id == 2 && getInventoryForProject && (getInventoryForProject.length == 0 || isInventoryEmpty)) || getProject.project_status_id == 4 || getProject.project_status_id == 5" :value="getProfitSharingForProject ? 'View Profit Sharing' : 'Update Project'" @click="seeProfitSharing()" class="btn btn-primary me-2 mb-2">
             </div>
             <b-modal size="lg" id="modal-1" :title="`Refund Bid Orders for Project #${$route.params.id}`">
               <div class="w-100 h-100">
@@ -193,13 +193,13 @@
                 </div>
               </div>
             </b-modal>
-            <!-- <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>                                                  
-              <input type="submit" value="Update Project" class="btn btn-primary">                                      
+            <!-- <div class="d-flex justify-content-end align-items-center" style="position:absolute; bottom:7%; right:25%; width:30vw;" v-else>
+              <input type="submit" value="Update Project" class="btn btn-primary">
             </div>  -->
-          </div>    
-        </div>                
+          </div>
+        </div>
       </div>
-    </form>        
+    </form>
   </div>
 </template>
 
@@ -210,7 +210,7 @@ export default {
     name: "ShowProject",
     created(){
         this.fetchProject(this.$route.params.id)
-        .then(() => {          
+        .then(() => {
           var dates = document.querySelectorAll('input[type="date"]')
           dates.forEach((d) => {
             if(d.name == 'project_floweringStart'){
@@ -237,14 +237,14 @@ export default {
             else if(d.name == 'project_harvestableEnd'){
               this.data.project_harvestableEnd = this.getProject.project_harvestableEnd
             }
-          }) 
+          })
 
           if(this.getProject.project_status_id == 1){
             this.data.project_status_id = 2
-          } 
+          }
           else{
             this.data.project_status_id = 4
-          } 
+          }
 
           var stage = null
           var dateToday = format(new Date(), 'yyyy-MM-dd')
@@ -260,36 +260,36 @@ export default {
 
           var harvestableCheck = this.data.project_harvestableStart <= dateToday
           && this.data.project_harvestableEnd >= dateToday
-          
+
           if(floweringCheck){
             stage = 'Flowering'
-          } 
+          }
           else if(buddingCheck){
             stage = 'Fruit Budding'
-          } 
+          }
           else if(devFruitCheck){
             stage = 'Developing Fruit'
-          } 
+          }
           else if(harvestableCheck){
             stage = 'Harvestable'
-          }  
+          }
           else{
             stage = 'No Stage'
           }
 
-          var qtys = []; 
+          var qtys = [];
           if(this.getProject.project_status_id != 4 && this.getProject.project_status_id != 5){
             if(this.getInventoryForProject && this.getInventoryForProject.length > 0){
               this.getInventoryForProject.forEach((i) => {
                 qtys.push(i.produce_inventory_qtyOnHand)
               })
               var total = qtys.reduce((a, b) => a + b, 0)
-              if(total == 0){
+              if(total <= 0){
                 this.data.project_status_id = 4
                 this.seeProfitSharing(this.$route.params.id)
               }
             }
-          }                    
+          }
           if(stage != 'No Stage'){
             if(this.getStockOutForProject){
               if(this.getStockOutForProject.length > 0){
@@ -308,7 +308,7 @@ export default {
                     check = false
                   }
                   else {
-                    check = true                             
+                    check = true
                   }
                 })
                 if(!check){
@@ -320,7 +320,7 @@ export default {
                 if(stage != 'No Stage'){
                   alert(`Please add supplies for the ${stage} stage`)
                   this.$router.push({ path: `/stockOut/${this.$route.params.id}` })
-                }              
+                }
               }
             }
             if(this.getProjectImages.images){
@@ -340,8 +340,8 @@ export default {
             }
           }
           this.stage = stage
-          this.readyApp()    
-        })      
+          this.readyApp()
+        })
     },
     watch: {
       'data.bid_order_acc_paymentMethod'(newVal){
@@ -350,82 +350,82 @@ export default {
           this.data.bid_order_acc_bankName = null
         }
       },
-      edit(newVal){        
+      edit(newVal){
         var project_floweringStart = document.getElementById('project_floweringStart')
-        var project_floweringEnd = document.getElementById('project_floweringEnd') 
+        var project_floweringEnd = document.getElementById('project_floweringEnd')
         var project_fruitBuddingStart = document.getElementById('project_fruitBuddingStart')
-        var project_fruitBuddingEnd = document.getElementById('project_fruitBuddingEnd')                     
+        var project_fruitBuddingEnd = document.getElementById('project_fruitBuddingEnd')
         var project_devFruitStart = document.getElementById('project_devFruitStart')
-        var project_devFruitEnd = document.getElementById('project_devFruitEnd')           
+        var project_devFruitEnd = document.getElementById('project_devFruitEnd')
         var project_harvestableStart = document.getElementById('project_harvestableStart')
-        var project_harvestableEnd = document.getElementById('project_harvestableEnd')              
-        if(newVal){            
-          if(this.data.project_floweringStart && this.data.project_floweringEnd){              
+        var project_harvestableEnd = document.getElementById('project_harvestableEnd')
+        if(newVal){
+          if(this.data.project_floweringStart && this.data.project_floweringEnd){
             project_floweringStart.disabled = false
             project_floweringEnd.disabled = false
           }
-          if(this.data.project_fruitBuddingStart && this.data.project_fruitBuddingEnd){              
+          if(this.data.project_fruitBuddingStart && this.data.project_fruitBuddingEnd){
             project_fruitBuddingStart.disabled = false
             project_fruitBuddingEnd.disabled = false
           }
-          if(this.data.project_devFruitStart && this.data.project_devFruitEnd){              
+          if(this.data.project_devFruitStart && this.data.project_devFruitEnd){
             project_devFruitStart.disabled = false
             project_devFruitEnd.disabled = false
           }
-          if(this.data.project_harvestableStart && this.data.project_harvestableEnd){              
+          if(this.data.project_harvestableStart && this.data.project_harvestableEnd){
             project_harvestableStart.disabled = false
             project_harvestableEnd.disabled = false
-          }                        
+          }
         }
         else{
           project_floweringStart.disabled = true
-          project_floweringEnd.disabled = true   
+          project_floweringEnd.disabled = true
           project_fruitBuddingStart.disabled = true
-          project_fruitBuddingEnd.disabled = true                 
+          project_fruitBuddingEnd.disabled = true
           project_devFruitStart.disabled = true
-          project_devFruitEnd.disabled = true    
+          project_devFruitEnd.disabled = true
           project_harvestableStart.disabled = true
-          project_harvestableEnd.disabled = true                         
+          project_harvestableEnd.disabled = true
         }
       },
-      'data.project_floweringStart'(newVal, oldVal){        
+      'data.project_floweringStart'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_floweringStart = oldVal          
+          this.data.project_floweringStart = oldVal
         }
       },
-      'data.project_floweringEnd'(newVal, oldVal){        
+      'data.project_floweringEnd'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_floweringEnd = oldVal          
+          this.data.project_floweringEnd = oldVal
         }
       },
-      'data.project_fruitBuddingStart'(newVal, oldVal){        
+      'data.project_fruitBuddingStart'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_fruitBuddingStart = oldVal          
+          this.data.project_fruitBuddingStart = oldVal
         }
       },
-      'data.project_fruitBuddingEnd'(newVal, oldVal){        
+      'data.project_fruitBuddingEnd'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_fruitBuddingEnd = oldVal          
+          this.data.project_fruitBuddingEnd = oldVal
         }
       },
-      'data.project_devFruitStart'(newVal, oldVal){        
+      'data.project_devFruitStart'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_devFruitStart = oldVal          
+          this.data.project_devFruitStart = oldVal
         }
       },
-      'data.project_devFruitEnd'(newVal, oldVal){        
+      'data.project_devFruitEnd'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_devFruitEnd = oldVal          
+          this.data.project_devFruitEnd = oldVal
         }
       },
-      'data.project_harvestableStart'(newVal, oldVal){               
+      'data.project_harvestableStart'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_harvestableStart = oldVal          
+          this.data.project_harvestableStart = oldVal
         }
       },
-      'data.project_harvestableEnd'(newVal, oldVal){        
+      'data.project_harvestableEnd'(newVal, oldVal){
         if(newVal == null){
-          this.data.project_harvestableEnd = oldVal          
+          this.data.project_harvestableEnd = oldVal
         }
       },
     },
@@ -462,10 +462,10 @@ export default {
           if(parseInt(hr) >= 12){
             if(parseInt(hr) != 12){
               hr = parseInt(hr) - 12
-            }    
+            }
             meridiem = 'PM'
           }
-          else{           
+          else{
             meridiem = 'AM'
             if(parseInt(hr) == 0){
               hr = 1
@@ -478,7 +478,7 @@ export default {
           var data = {
             data: this.data,
             id: this.$route.params.id
-          }         
+          }
           this.updateProject(data)
           .then(() => {
             this.$router.push({ 'name' : 'AllProjects' })
@@ -491,12 +491,12 @@ export default {
                 this.$toastr.e(this.errors[error][0])
               }
             }
-            else{              
-              this.errors = err.response.data.error                          
+            else{
+              this.errors = err.response.data.error
               this.$toastr.e(this.errors.toString())
-            }           
-          })          
-        }, 
+            }
+          })
+        },
         seeProfitSharing(){
           if(this.getInventoryForProject && this.getInventoryForProject.length == 0){
             this.data.project_status_id = 5
@@ -506,12 +506,12 @@ export default {
           }
           this.initStatusForProfit(this.data.project_status_id)
           this.$router.push({ path: `/project/profit/sharing/${this.$route.params.id}` })
-        }        
+        }
     },
     computed: {
       ...mapGetters([
-        'getProject', 
-        'getContract',       
+        'getProject',
+        'getContract',
         'getFarm',
         'getProduce',
         'getOwner',
@@ -531,7 +531,7 @@ export default {
         },
         getTotalExpense(){
           var supplyTotalValue = 0
-          var expTotalValue = 0      
+          var expTotalValue = 0
           var supplyObj = null
           if(this.getExpenditureForProject && this.getStockOutForProject){
             this.getStockOutForProject.forEach((s) => {
@@ -543,10 +543,10 @@ export default {
             var expAmounts = [];
             this.getExpenditureForProject.forEach((e) => {
               expAmounts.push(e.exp_amount)
-            })              
-            expTotalValue = expAmounts.reduce((a, b) => a + b, 0)                      
-          }         
-          return parseFloat(expTotalValue + supplyTotalValue).toFixed(2)
+            })
+            expTotalValue = expAmounts.reduce((a, b) => a + b, 0)
+          }
+          return parseFloat(expTotalValue + supplyTotalValue).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
         isInventoryEmpty(){
           var qtys = []
@@ -554,7 +554,7 @@ export default {
             this.getInventoryForProject.forEach((i) => {
               qtys.push(i.produce_inventory_qtyOnHand)
             })
-            var total = qtys.reduce((a, b) => a + b, 0);          
+            var total = qtys.reduce((a, b) => a + b, 0);
             if(total == 0){
               return true
             }
@@ -564,12 +564,12 @@ export default {
           }
           return null
         }
-        
+
     },
     data(){
       return {
         errors: null,
-        edit: false,        
+        edit: false,
         stage1: false,
         stage2: false,
         stage3: false,
@@ -594,7 +594,7 @@ export default {
           bid_order_acc_accName: null,
           bid_order_acc_remarks: null,
           bid_order_acc_datePaid: format(new Date(), 'yyyy-MM-dd'),
-        }        
+        }
       }
     }
 }

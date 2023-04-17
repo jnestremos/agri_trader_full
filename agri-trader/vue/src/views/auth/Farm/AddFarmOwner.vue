@@ -3,10 +3,10 @@
     <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Add Farm Owner</h3>        
     </div>          
-    <div class="container-fluid w-100" style="height:90%;">    
+    <div class="container-fluid d-flex" style="height:90%;">    
         <div style="width:100%; height:100%;" class="pb-5">
             <form action="" class="d-flex flex-column justify-content-between" style="height:100%; position:relative; z-index: 9;" @submit.prevent="sendOwner()">
-                <div class="d-flex align-items-center w-100">
+                <div class="d-flex align-items-center w-100 mt-3">
                     <label for="firstName" class="form-label me-4" style="width:5%;">First Name:</label>
                     <input type="text" name="firstName" style="width:30%;" class="form-control" v-model="owner.firstName">
                 </div>
@@ -42,6 +42,13 @@
                     <label for="birthDate" class="form-label me-4" style="width:5%;">Birthdate:</label>
                     <input type="date" name="birthDate" style="width:30%;" class="form-control" v-model="owner.birthDate">
                 </div>
+                <div class="d-flex align-items-center w-100" style="width:50%;">                   
+                    <label for="gender" class="form-label me-4" style="width:5%;">Gender:</label>
+                    <select name="gender" class="form-select" style="width:30%;" @change="setGender($event)">
+                        <option value="M" selected>Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
                 <div class="d-flex align-items-center w-100">
                     <label for="address" class="form-label me-4" style="width:5%;">Address:</label>
                     <input type="address" name="address" style="width:30%;" class="form-control" v-model="owner.address">
@@ -54,13 +61,6 @@
                     <label for="password_confirmation" class="form-label me-4" style="width:5%;">Confirm Password:</label>
                     <input type="password" name="password_confirmation" style="width:30%;" class="form-control" v-model="owner.password_confirmation">
                 </div>                                               
-                <div class="d-flex align-items-center w-100" style="width:50%;">                   
-                    <label for="gender" class="form-label me-4" style="width:5%;">Gender:</label>
-                    <select name="gender" class="form-select" style="width:30%;" @change="setGender($event)">
-                        <option value="M" selected>Male</option>
-                        <option value="F">Female</option>
-                    </select>
-                </div>
                 <input type="submit" value="Add Owner" class="btn btn-primary" style="position:absolute; right:2%; bottom:0%;">
             </form>
         </div>

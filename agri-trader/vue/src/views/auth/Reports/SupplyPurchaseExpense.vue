@@ -13,7 +13,7 @@
                   <label class="form-label me-4 fw-bold">Project</label>
                   <select class="form-select">
                       <option value="None">Select Project</option>
-                      <option v-for="(id, index) in filterProjectIDS" :key="index" :value="id">{{ id + ' - ' + getProjectName(id) }}</option>                      
+                      <option v-for="(id, index) in filterProjectIDS" :key="index" :value="id">{{ id + ' - ' + getProjectName(id) }}</option>
                   </select>
               </div>
               <div class="col-lg-3 me-3">
@@ -55,7 +55,7 @@
                         <td>{{ stock.supply_qty }}</td>
                         <td>{{ stock.created_at.split('T')[0] }}</td>
                         <td class="amount">{{ getAmount(stock) }}</td>
-                    </tr>                                                                                 
+                    </tr>
                   </tbody>
               </table>
             </div>
@@ -63,7 +63,7 @@
       </div>
     </div>
   </template>
-  
+
   <script>
 import { format, add, sub } from 'date-fns';
   import { mapActions, mapGetters } from 'vuex';
@@ -80,7 +80,7 @@ import { format, add, sub } from 'date-fns';
                 this.filter_dateTo = format(new Date(stockOut[stockOut.length - 1].created_at), 'yyyy-MM-dd')
             }
             this.readyApp()
-        })        
+        })
       },
       data(){
         return {
@@ -99,10 +99,10 @@ import { format, add, sub } from 'date-fns';
                 })
                 this.total_arr.push(supplyObj[0].supply_initialPrice * v.supply_qty)
             })
-        },        
+        },
         filter_dateFrom(newVal, oldVal){
             if(!newVal){
-               this.filter_dateFrom = oldVal 
+               this.filter_dateFrom = oldVal
             }
             else if(newVal >= this.filter_dateTo){
                 this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
@@ -112,7 +112,7 @@ import { format, add, sub } from 'date-fns';
         },
         filter_dateTo(newVal, oldVal){
             if(!newVal){
-                this.filter_dateTo = oldVal 
+                this.filter_dateTo = oldVal
             }
             else if(newVal <= this.filter_dateFrom){
                 this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
@@ -159,7 +159,7 @@ import { format, add, sub } from 'date-fns';
             var supplyObj = this.getStockOutReport.supplies.filter((s) => {
                 return parseInt(stock.supply_id) === parseInt(s.id)
             })
-            return parseInt(supplyObj[0].supply_initialPrice).toFixed(2)
+            return parseInt(supplyObj[0].supply_initialPrice).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
         getAmount(stock){
             var supplyObj = this.getStockOutReport.supplies.filter((s) => {
@@ -193,21 +193,21 @@ import { format, add, sub } from 'date-fns';
                 if(this.filter_project != 'None'){
                     table = table.filter((s) => {
                         return parseInt(this.filter_project) === parseInt(s.project_id)
-                    })                    
+                    })
                 }
                 return table
             }
-            return table            
-        },  
+            return table
+        },
         getTotal(){
-            return this.total_arr.reduce((a, b) => a + b, 0) 
+            return this.total_arr.reduce((a, b) => a + b, 0)
             ? parseFloat(this.total_arr.reduce((a, b) => a + b, 0)).toFixed(2) : null
-        }      
+        }
       }
   }
   </script>
-  
-  
+
+
   <style>
-  
+
   </style>

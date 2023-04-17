@@ -91,16 +91,16 @@
                   <th scope="col">Payment Type</th>
                   <th scope="col">Amount</th>
                   <th scope="col">Remarks</th>   
-                  <th scope="col">Date</th>                                 
+                  <th scope="col">Date Duration</th>                                 
                 </tr>
               </thead>
               <tbody align="center">
                   <tr v-for="(exp, index) in getExpenditures" :key="index">
                     <td>{{ exp.exp_type }}</td>
                     <td>{{ exp.exp_paymentType }}</td>
-                    <td>{{ exp.exp_amount }}</td>
+                    <td>{{ exp.exp_amount | toCurrency }}</td>
                     <td>{{ exp.exp_remark }}</td>
-                    <td>{{ exp.exp_dateFrom + ' ' + exp.exp_dateTo }}</td>
+                    <td>{{ exp.exp_dateFrom + ' | ' + exp.exp_dateTo }}</td>
                   </tr>                          
               </tbody>
           </table>

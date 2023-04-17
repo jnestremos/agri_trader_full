@@ -57,7 +57,7 @@
                                                     <td>{{ getSupplyFor(order) }}</td>
                                                     <td>{{ order.purchaseOrder_qtyDefect }}</td>
                                                     <td>{{ order.purchaseOrder_unit }}</td>
-                                                    <td>{{ order.purchaseOrder_subTotal }}</td>
+                                                    <td>{{ order.purchaseOrder_subTotal | toCurrency }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>                                    

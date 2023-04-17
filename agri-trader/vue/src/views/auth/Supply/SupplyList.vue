@@ -50,7 +50,7 @@
                         <td>{{ supply.supply_for }}</td>
                         <td>{{ supply.supply_description }}</td>
                         <td>{{ supply.supply_reorderLevel }}</td>
-                        <td>{{ supply.supply_initialPrice.toFixed(2) }}</td>
+                        <td>{{ supply.supply_initialPrice | toCurrency }}</td>
                         <td>{{ supply.supply_unit }}</td>
                         <b-modal size="lg" :id="`modal-${supply.id}`" :title="supply.supply_name">
                             <div class="d-flex p-3 w-100 h-100">

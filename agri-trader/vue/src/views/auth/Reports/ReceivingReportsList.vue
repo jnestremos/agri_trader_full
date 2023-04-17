@@ -1,7 +1,7 @@
 <template>
     <div class="ReceivingReportsList">
       <div class="container-fluid w-100 d-flex pe-5 align-items-center" style="height:10%; background-color: #E0EDCA;">
-        <h3>Receiving Reports</h3>        
+        <h3>Receiving Reports</h3>
       </div>
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:100%; height:65%" class="pb-5">
@@ -40,8 +40,8 @@
                           <th scope="col">Items Ordered</th>
                           <th scope="col">Stocked In</th>
                           <th scope="col">Defective</th>
-                          <th scope="col">Remarks</th>                                            
-                          <th scope="col">Date Created</th>                                            
+                          <th scope="col">Remarks</th>
+                          <th scope="col">Date Created</th>
                       </tr>
                   </thead>
                   <tbody align="center">
@@ -53,7 +53,7 @@
                         <td>{{ getSupplyType(report) }}</td>
                         <td>{{ getSupplyFor(report) }}</td>
                         <td>{{ report.purchaseOrder_unit }}</td>
-                        <td>{{ getInitialPrice(report) }}</td>
+                        <td>{{ getInitialPrice(report) | toCurrency }}</td>
                         <td>{{ report.purchaseOrder_qtyGood + report.purchaseOrder_qtyDefect }}</td>
                         <td>{{ report.purchaseOrder_qtyGood }}</td>
                         <td>{{ report.purchaseOrder_qtyDefect }}</td>
@@ -84,8 +84,8 @@ export default {
                 this.filter_dateTo = format(new Date(reports[reports.length - 1].created_at), 'yyyy-MM-dd')
             }
             this.readyApp()
-        })          
-      }, 
+        })
+      },
       data(){
         return {
             filter_order: 'None',
@@ -108,7 +108,7 @@ export default {
                 }), 'yyyy-MM-dd')
             }
         }
-      },      
+      },
       methods: {
           ...mapActions(['readyApp', 'fetchReceivingReport']),
           setOrder(e){
@@ -182,8 +182,8 @@ export default {
       }
   }
   </script>
-  
-  
+
+
   <style>
-  
+
   </style>

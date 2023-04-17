@@ -4,7 +4,7 @@
         <h3>Sales Report</h3>
     </div>
     <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
-        <div style="width:85%; height:65%" class="pb-5"> 
+        <div style="width:85%; height:65%" class="pb-5">
             <div class="form-row mb-3 mt-2">
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Select Project</label>
@@ -17,10 +17,10 @@
                   <label class="form-label me-4 fw-bold">Select Produce</label>
                   <select class="form-select" @change="setProduce($event)">
                       <option value="None">None</option>
-                      <option v-for="(produce, index) in getSalesReportForOwner.produce_traders" :key="index" :value="produce.id">{{ getProduceNamee(produce) }}</option>                    
+                      <option v-for="(produce, index) in getSalesReportForOwner.produce_traders" :key="index" :value="produce.id">{{ getProduceNamee(produce) }}</option>
                   </select>
               </div>
-          </div>           
+          </div>
           <div class="form-row mb-3 mt-2">
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">From</label>
@@ -44,7 +44,7 @@
                           <th scope="col">Produce Name</th>
                           <th scope="col">Qty</th>
                           <th scope="col">Price Sold</th>
-                          <th scope="col">Total</th>                          
+                          <th scope="col">Total</th>
                           <th scope="col">Date Completed</th>
                       </tr>
                   </thead>
@@ -55,8 +55,8 @@
                         <td>{{ getFarmName(sale) }}</td>
                         <td>{{ getProduceName(sale) }}</td>
                         <td>{{ sale.sale_qty }}</td>
-                        <td>{{ sale.sale_price }}</td>
-                        <td>{{ sale.sale_total }}</td>                        
+                        <td>{{ sale.sale_price | toCurrency }}</td>
+                        <td>{{ sale.sale_total | toCurrency }}</td>
                         <td>{{ sale.created_at.split('T')[0] }}</td>
                     </tr>
                   </tbody>
@@ -83,7 +83,7 @@ export default {
                 this.filter_dateTo = format(new Date(sales[sales.length - 1].created_at), 'yyyy-MM-dd')
             }
             this.readyApp()
-        })        
+        })
     },
     data(){
         return {
@@ -96,7 +96,7 @@ export default {
     watch:{
         filter_dateFrom(newVal, oldVal){
             if(!newVal){
-               this.filter_dateFrom = oldVal 
+               this.filter_dateFrom = oldVal
             }
             else if(newVal >= this.filter_dateTo){
                 this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
@@ -106,7 +106,7 @@ export default {
         },
         filter_dateTo(newVal, oldVal){
             if(!newVal){
-                this.filter_dateTo = oldVal 
+                this.filter_dateTo = oldVal
             }
             else if(newVal <= this.filter_dateFrom){
                 this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
@@ -122,13 +122,13 @@ export default {
         },
         setProduce(e){
             this.filter_produce = e.target.value
-        }, 
+        },
         getProjectName(project){
             var contractObj = this.getSalesReportForOwner.contracts.filter((c) => {
                 return parseInt(project.contract_id) === parseInt(c.id)
             })
             return `${contractObj[0].id} - ${contractObj[0].farm_name} Project`
-        },               
+        },
         getFarmName(sale){
             var projectObj = this.getSalesReportForOwner.projects.filter((p) => {
                 return parseInt(sale.project_id) === parseInt(p.id)
@@ -169,7 +169,7 @@ export default {
                 }
                 else{
                     return prodTraderObj[0].prod_name + ' ' + prodObj[0].prod_type
-                }                
+                }
             }
             else{
                 var inventoryObj = this.getSalesReportForOwner.produce_inventories.filter((i) => {
@@ -192,16 +192,16 @@ export default {
                 else{
                     return prodTraderObj[0].prod_name + ' ' + prodObj[0].prod_type
                 }
-            }        
+            }
         }
     },
     computed: {
         ...mapGetters(['getSalesReportForOwner']),
         filteredTable(){
-            var table = []       
-            var orderObj = null            
-            var inventoryObj = null            
-            var yieldObj = null            
+            var table = []
+            var orderObj = null
+            var inventoryObj = null
+            var yieldObj = null
             var container = []
             var containerr = []
             if(this.getSalesReportForOwner.sales){
@@ -209,10 +209,10 @@ export default {
                     return format(new Date(s.created_at), 'yyyy-MM-dd') >= this.filter_dateFrom
                     && format(new Date(s.created_at), 'yyyy-MM-dd') <= this.filter_dateTo
                 })
-                if(this.filter_project != "None" && this.filter_produce != 'None'){                                       
+                if(this.filter_project != "None" && this.filter_produce != 'None'){
                     orderObj = this.getSalesReportForOwner.orders.filter((o) => {
                         return parseInt(o.produce_trader_id) === parseInt(this.filter_produce)
-                    })                    
+                    })
                     orderObj.forEach((o) => {
                         containerr = table.filter((s) => {
                             return parseInt(o.id) === parseInt(s.bid_order_id)
@@ -236,12 +236,12 @@ export default {
                             if(parseInt(yieldObj[0].produce_trader_id) === parseInt(this.filter_produce)){
                                 container.push(s)
                             }
-                        })                            
-                    })   
+                        })
+                    })
                     container = container.filter((c) => {
                         return parseInt(this.filter_project) === parseInt(c.project_id)
                     })
-                    table = container                    
+                    table = container
                 }
                 else if(this.filter_project == "None" && this.filter_produce != 'None'){
                     orderObj = this.getSalesReportForOwner.orders.filter((o) => {
@@ -270,7 +270,7 @@ export default {
                             if(parseInt(yieldObj[0].produce_trader_id) === parseInt(this.filter_produce)){
                                 container.push(s)
                             }
-                        })                            
+                        })
                     })
                     table = container
                 }

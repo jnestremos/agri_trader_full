@@ -1,28 +1,28 @@
 <template>
-  <div class="showProduce px-3">
+  <div class="showProduce pb-5 pe-4">
     <div class="container-fluid w-100 d-flex align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3 v-if="getProduceDetails.produce">{{ getProduceDetails.produce.prod_name + ' ' + getProduceDetails.produce.prod_type }}</h3>        
     </div>  
-    <div class="container-fluid d-flex justify-content-between mb-5" style="width:70%; float:left;">
+    <div class="container-fluid d-flex justify-content-between mb-5 mt-2" style="width:80%; float:left;">
       <div>
-        <h4 v-if="getProduceDetails.produce">Time To Harvest: {{ getProduceDetails.produce.prod_timeOfHarvest }}</h4>
-        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">Grades: A, B, C</h4>
-        <h4 v-else>Grades: None</h4>
-        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader.length > 0">Farms Associated: {{ getProduceDetails.produce_trader[0].prod_numOfFarms }}</h4>
-        <h4 v-if="getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0">Last Date of Harvest: {{ getProduceDetails.produce_yields[0].produce_yield_dateHarvestTo }}</h4>
-        <h4 v-else>Last Date of Harvest: No Harvest Date Recorded</h4>
+        <h4  v-if="getProduceDetails.produce">Time To Harvest: {{ getProduceDetails.produce.prod_timeOfHarvest }}</h4>
+        <h4  v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">Grades: A, B, C</h4>
+        <h4  v-else>Grades: None</h4>
+        <h4  v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader.length > 0">Farms Associated: {{ getProduceDetails.produce_trader[0].prod_numOfFarms }}</h4>
+        <h4  v-if="getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0">Last Date of Harvest: {{ getProduceDetails.produce_yields[0].produce_yield_dateHarvestTo }}</h4>
+        <h4  v-else>Last Date of Harvest: No Harvest Date Recorded</h4>
       </div>
       <div class="">
-        <h4 v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">Prices (per class)</h4>
+        <h4 class="form-row ms-5" v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">Prices (Per Class)</h4>
         <h4 v-else>Price</h4>
         <div v-if="getProduceDetails.produce_trader && getProduceDetails.produce_trader[0].produce_numOfGrades > 1">
-           <div class="d-flex">
-            <h4 class="me-5">A: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[2].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>
-            <h4>&NonBreakingSpace; B: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[1].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>
-          </div> 
-          <h4>C: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>                 
+          <div class="form-row">
+            <h4 class="ms-5">A: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[2].produce_yield_price.toLocaleString("en-PH") : 'No Price Data!' }}</h4>
+            <h4 class="ms-5">B: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[1].produce_yield_price.toLocaleString("en-PH") : 'No Price Data!' }}</h4>
+            <h4 class="ms-5">C: {{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price.toLocaleString("en-PH") : 'No Price Data!' }}</h4>
+          </div>                  
         </div>
-        <h4 v-else>{{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price.toFixed(2) : 'No Price Data!' }}</h4>
+        <h4 v-else>{{ getProduceDetails.produce_yields && getProduceDetails.produce_yields.length > 0 ? getProduceDetails.produce_yields[0].produce_yield_price.toLocaleString("en-PH") : 'No Price Data!' }}</h4>
       </div>
     </div>
     <div style="width:100%; height:65%; clear:left;">
@@ -44,7 +44,7 @@
             <td>{{ record.produce_yield_qtyHarvested }}</td>
             <td>{{ record.produce_yield_dateHarvestTo }}</td>
             <td>{{ record.produce_yield_class }}</td>
-            <td>{{ record.produce_yield_price }}</td>
+            <td>{{ record.produce_yield_price | toCurrency }}</td>
           </tr>
         </tbody>    
       </table>

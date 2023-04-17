@@ -1,7 +1,7 @@
 <template>
   <div class="OtherExpendituresReport">
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
-        <h3>Other Expenditures Report</h3>        
+        <h3>Other Expenditures Report</h3>
     </div>
     <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
       <div style="width:85%; height:65%" class="pb-5">
@@ -17,18 +17,18 @@
                 <label class="form-label me-4 fw-bold">Expense Type</label>
                 <select class="form-select" @change="setType($event)">
                     <option selected value="None">Select Expense Type</option>
-                    <option value="Utilities">Utilities</option>                                
-                    <option value="Food">Food</option>                                
-                    <option value="Transportation">Transportation</option>                                
+                    <option value="Utilities">Utilities</option>
+                    <option value="Food">Food</option>
+                    <option value="Transportation">Transportation</option>
                     <option value="Communication">Communication</option>
                     <option value="Maintenance">Maintenance</option>
                 </select>
             </div>
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">Total</label>
-                <input type="number" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
+                <input type="text" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
             </div>
-        </div>  
+        </div>
         <div class="form-row mb-3 mt-2">
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">From</label>
@@ -38,7 +38,7 @@
                 <label class="form-label me-4 fw-bold">To</label>
                 <input type="date" class="form-control" v-model="filter_dateTo">
             </div>
-        </div>      
+        </div>
         <div class="container-fluid m-0 p-0" :style="[filterTable && filterTable.length > 6 ? {'overflow-y':'scroll'} : {}, {'width':'100%'}, {'height':'40vh'}]">
             <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                 <thead align="center">
@@ -59,9 +59,9 @@
                         <td>{{ getProjectName(e) }}</td>
                         <td>{{ e.exp_type }}</td>
                         <td>{{ e.exp_dateFrom + ' ' + e.exp_dateTo }}</td>
-                        <td>{{ e.exp_amount.toFixed(2) }}</td>
+                        <td>{{ e.exp_amount | toCurrency }}</td>
                         <td>{{ e.created_at.split('T')[0] }}</td>
-                    </tr>                                                                 
+                    </tr>
                 </tbody>
             </table>
           </div>
@@ -86,7 +86,7 @@ export default {
                 this.filter_dateTo = format(new Date(expenditures[expenditures.length - 1].created_at), 'yyyy-MM-dd')
             }
             this.readyApp()
-        })        
+        })
     },
     data(){
         return {
@@ -99,7 +99,7 @@ export default {
     watch:{
         filter_dateFrom(newVal, oldVal){
             if(!newVal){
-               this.filter_dateFrom = oldVal 
+               this.filter_dateFrom = oldVal
             }
             else if(newVal >= this.filter_dateTo){
                 this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
@@ -109,7 +109,7 @@ export default {
         },
         filter_dateTo(newVal, oldVal){
             if(!newVal){
-                this.filter_dateTo = oldVal 
+                this.filter_dateTo = oldVal
             }
             else if(newVal <= this.filter_dateFrom){
                 this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
@@ -169,23 +169,23 @@ export default {
                 if(this.filter_project != 'None' && this.filter_type == 'None'){
                     table = table.filter((e) => {
                         return parseInt(this.filter_project) === parseInt(e.project_id)
-                    })                    
+                    })
                 }
                 else if(this.filter_project == 'None' && this.filter_type != 'None'){
                     table = table.filter((e) => {
                         return (this.filter_type) === (e.exp_type)
                     })
-                    
+
                 }
                 else if(this.filter_project != 'None' && this.filter_type != 'None'){
                     table = table.filter((e) => {
                         return (this.filter_type) === (e.exp_type) && parseInt(this.filter_project) === parseInt(e.project_id)
-                    })                   
+                    })
                 }
-                return table              
+                return table
             }
-            return table                       
-        
+            return table
+
         },
         getTotal(){
             var amounts = [];
@@ -196,7 +196,7 @@ export default {
                 var total = amounts.reduce((a, b) => a + b, 0)
             }
 
-            return total ? total.toFixed(2) : null
+            return total ? total.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) : null
         }
     }
 }

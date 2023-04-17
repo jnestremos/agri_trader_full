@@ -8,33 +8,33 @@
           <div class="form-row mb-3 mt-2">
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Farm</label>
-                  <select class="form-select" :disabled="this.getProfitSharingReportForOwner.profit_sharings 
+                  <select class="form-select" :disabled="this.getProfitSharingReportForOwner.profit_sharings
                   && this.getProfitSharingReportForOwner.profit_sharings.length == 0" @change="setFarm($event)">
                       <option value="None">None</option>
                       <option v-for="(farm, index) in getProfitSharingReportForOwner.farms" :key="index" :value="farm.id">{{ getFarmName(farm) }}</option>
                   </select>
-              </div>              
+              </div>
               <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Produce</label>
-                  <select class="form-select" :disabled="this.getProfitSharingReportForOwner.profit_sharings 
+                  <select class="form-select" :disabled="this.getProfitSharingReportForOwner.profit_sharings
                   && this.getProfitSharingReportForOwner.profit_sharings.length == 0" @change="setProduce($event)">
                       <option selected value="None">None</option>
                       <option v-for="(produce, index) in getProfitSharingReportForOwner.produces" :key="index" :value="produce.id">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
                   </select>
-              </div>              
+              </div>
           </div>
           <div class="form-row mb-3 mt-2">
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">From</label>
-                <input type="date" :disabled="this.getProfitSharingReportForOwner.profit_sharings 
+                <input type="date" :disabled="this.getProfitSharingReportForOwner.profit_sharings
                   && this.getProfitSharingReportForOwner.profit_sharings.length == 0" v-model="filter_dateFrom" class="form-control">
             </div>
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">To</label>
                 <div class="d-flex align-items-baseline">
-                    <input type="date" :disabled="this.getProfitSharingReportForOwner.profit_sharings 
+                    <input type="date" :disabled="this.getProfitSharingReportForOwner.profit_sharings
                   && this.getProfitSharingReportForOwner.profit_sharings.length == 0" v-model="filter_dateTo" class="form-control me-3">
-                    <input type="reset" :disabled="this.getProfitSharingReportForOwner.profit_sharings 
+                    <input type="reset" :disabled="this.getProfitSharingReportForOwner.profit_sharings
                   && this.getProfitSharingReportForOwner.profit_sharings.length == 0" class="btn btn-secondary" value="Reset" @click="resetFilter()">
                 </div>
             </div>
@@ -62,7 +62,7 @@
                         <td>{{ getFarmNameTable(report) }}</td>
                         <td>{{ report.ar_totalSales }}</td>
                         <td>{{ getProduceName(report) }}</td>
-                        <td>{{ report.ar_totalExpenses }}</td>
+                        <td>{{ report.ar_totalExpenses | toCurrency }}</td>
                         <td>{{ report.ar_ownerShare }}</td>
                         <!-- <td>{{ report.ar_totalSales - report.ar_ownerShare }}</td> -->
                         <!-- <td>{{ report.ar_profit }}</td> -->
@@ -72,7 +72,7 @@
               </table>
             </div>
             <div class="d-flex align-items-baseline justify-content-between mt-5">
-                <h5>Total Share Generated: {{ getTotal.toFixed(2) }}</h5>                
+                <h5>Total Share Generated: {{ getTotal.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
             </div>
         </div>
       </div>
@@ -91,12 +91,12 @@ export default {
             && this.getProfitSharingReportForOwner.profit_sharings.length > 0){
                 var sortedData = this.getProfitSharingReportForOwner.profit_sharings.sort((a, b) => {
                     return new Date(a.created_at) - new Date(b.created_at)
-                })    
+                })
                 this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
                 this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')
             }
             this.readyApp()
-        })        
+        })
     },
     data(){
         return {
@@ -109,7 +109,7 @@ export default {
       watch:{
         filter_dateFrom(newVal, oldVal){
             if(!newVal){
-               this.filter_dateFrom = oldVal 
+               this.filter_dateFrom = oldVal
             }
             else if(newVal > this.filter_dateTo){
                 this.filter_dateFrom = format(sub(new Date(this.filter_dateTo), {
@@ -119,7 +119,7 @@ export default {
         },
         filter_dateTo(newVal, oldVal){
             if(!newVal){
-                this.filter_dateTo = oldVal 
+                this.filter_dateTo = oldVal
             }
             else if(newVal < this.filter_dateFrom){
                 this.filter_dateTo = format(add(new Date(this.filter_dateFrom), {
@@ -133,9 +133,9 @@ export default {
         resetFilter(){
             var sortedData = this.getProfitSharingReportForOwner.profit_sharing.sort((a, b) => {
                 return new Date(a.created_at) - new Date(b.created_at)
-            })   
-            this.filter_farm = 'None' 
-            this.filter_produce = 'None' 
+            })
+            this.filter_farm = 'None'
+            this.filter_produce = 'None'
             this.filter_dateFrom = format(new Date(sortedData[0].created_at), 'yyyy-MM-dd')
             this.filter_dateTo = format(new Date(sortedData[sortedData.length - 1].created_at), 'yyyy-MM-dd')
           },
@@ -148,7 +148,7 @@ export default {
           getFarmName(farm){
             var farmObj = this.getProfitSharingReportForOwner.farms.filter((f) => {
                 return parseInt(farm.id) === parseInt(f.id)
-            })            
+            })
             return farmObj[0].farm_name
           },
           getProjectName(report){
@@ -163,13 +163,13 @@ export default {
           getFarmNameTable(report){
             var farmObj = this.getProfitSharingReportForOwner.farms.filter((f) => {
                 return parseInt(report.farm_id) === parseInt(f.id)
-            })            
+            })
             return farmObj[0].farm_name
           },
           getProduceName(report){
             var prodObj = this.getProfitSharingReportForOwner.produces.filter((p) => {
                 return parseInt(report.produce_id) === parseInt(p.id)
-            })  
+            })
             return prodObj[0].prod_name + ' ' + prodObj[0].prod_type
           }
     },
@@ -177,7 +177,7 @@ export default {
         ...mapGetters(['getProfitSharingReportForOwner']),
         filteredTable(){
             var table = []
-            if(this.getProfitSharingReportForOwner.profit_sharings 
+            if(this.getProfitSharingReportForOwner.profit_sharings
             && this.getProfitSharingReportForOwner.profit_sharings.length > 0){
                 table = this.getProfitSharingReportForOwner.profit_sharings.filter((p) => {
                     return format(new Date(p.created_at), 'yyyy-MM-dd') >= format(new Date(this.filter_dateFrom), 'yyyy-MM-dd')
@@ -185,7 +185,7 @@ export default {
                 })
                 if(this.filter_farm != 'None' && this.filter_produce != 'None'){
                     table = table.filter((pp) => {
-                        return parseInt(this.filter_farm) === parseInt(pp.farm_id) 
+                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)
                         && parseInt(this.filter_produce) === parseInt(pp.produce_id)
                     })
                 }
@@ -196,15 +196,15 @@ export default {
                 }
                 else if(this.filter_farm != 'None' && this.filter_produce == 'None'){
                     table = table.filter((pp) => {
-                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)                     
+                        return parseInt(this.filter_farm) === parseInt(pp.farm_id)
                     })
                 }
-            }                       
+            }
             return table
         },
         getTotal(){
             var share = 0
-            if(this.getProfitSharingReportForOwner.profit_sharings 
+            if(this.getProfitSharingReportForOwner.profit_sharings
             && this.getProfitSharingReportForOwner.profit_sharings.length > 0){
                 var shares = []
                 this.getProfitSharingReportForOwner.profit_sharings.forEach((s) => {

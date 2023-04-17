@@ -12,7 +12,7 @@
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Negotiated Price:</h5>
                 <h5 class="me-3">Php</h5>
-                <h5 v-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_negotiatedPrice.toFixed(2) }}</h5>                
+                <h5 v-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_negotiatedPrice.toLocaleString("en-PH")  }}</h5>                
             </div>
         </div>
         <div class="d-flex justify-content-between align-items-baseline w-100 mt-4">
@@ -23,7 +23,7 @@
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">First Payment:</h5>
                 <h5 class="me-3">Php</h5>
-                <h5 v-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount.toFixed(2) }}</h5>                
+                <h5 v-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount.toLocaleString("en-PH")  }}</h5>                
                 <h5 v-if="getOrder.bidOrder" class="me-3">{{ getPercentage + '%' }}</h5>                
             </div>
         </div>
@@ -44,7 +44,7 @@
             </div>
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Total (Original):</h5>        
-                <picture v-if="getOrder.project_bid || getOrder.on_hand_bid" class="me-3">{{ getOrder.project_bid ? getOrder.project_bid.project_bid_total : getOrder.on_hand_bid.on_hand_bid_total.toFixed(2) }}</picture>                
+                <picture v-if="getOrder.project_bid || getOrder.on_hand_bid" class="me-3">{{ getOrder.project_bid ? getOrder.project_bid.project_bid_total : getOrder.on_hand_bid.on_hand_bid_total.toLocaleString("en-PH")  }}</picture>                
             </div>
         </div>
         <div class="d-flex justify-content-between align-items-baseline w-100 mt-4">
@@ -60,7 +60,7 @@
         <div class="d-flex justify-content-between align-items-baseline w-100 mt-4">
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Trader's Price:</h5>
-                <p v-if="getOrder.contract">{{ getOrder.bidOrder.order_traderPrice.toFixed(2) }}</p>                
+                <p v-if="getOrder.contract">{{ getOrder.bidOrder.order_traderPrice.toLocaleString("en-PH")  }}</p>                
             </div>            
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Payment Method:</h5>
@@ -74,7 +74,7 @@
         <div class="d-flex justify-content-between align-items-baseline w-100 mt-4">
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Asking Price:</h5>
-                <p v-if="getOrder.bidOrder">{{ getOrder.bidOrder.order_initialPrice ? getOrder.bidOrder.order_initialPrice.toFixed(2) : '' }}</p>                
+                <p v-if="getOrder.bidOrder">{{ getOrder.bidOrder.order_initialPrice ? getOrder.bidOrder.order_initialPrice.toLocaleString("en-PH")  : '' }}</p>                
             </div>            
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Account Name:</h5>
@@ -85,12 +85,12 @@
         <div class="d-flex justify-content-between align-items-baseline w-100 mt-4">
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Estimated Harvest Qty:</h5>
-                <p v-if="getOrder.contract">{{ getOrder.contract.contract_estimatedHarvest ? getOrder.contract.contract_estimatedHarvest.toFixed(2) + ' kgs' : ''}}</p>
+                <p v-if="getOrder.contract">{{ getOrder.contract.contract_estimatedHarvest ? getOrder.contract.contract_estimatedHarvest.toLocaleString("en-PH")  + ' kgs' : ''}}</p>
             </div>
             <div v-if="data.bid_order_acc_paymentMethod == 'Cash'" class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Amount:</h5>
                 <h5 class="me-3">Php</h5>
-                <h5 v-if="getOrder.refund" class="me-3">{{ getOrder.refund.refund_amount.toFixed(2) }}</h5>                
+                <h5 v-if="getOrder.refund" class="me-3">{{ getOrder.refund.refund_amount.toLocaleString("en-PH")  }}</h5>                
                 <h5 v-if="getOrder.refund" class="me-3">{{ getOrder.refund.refund_percentage * 100 + '%' }}</h5> 
             </div>
             <div v-else class="d-flex align-items-baseline w-50">
@@ -101,7 +101,7 @@
         <div class="d-flex justify-content-between align-items-baseline w-100 mt-4">
             <div class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Quantity Needed:</h5>
-                <p v-if="getOrder.project_bid || getOrder.on_hand_bid">{{ getOrder.project_bid ? getOrder.project_bid.project_bid_minQty.toFixed(2) + ' - ' + getOrder.project_bid.project_bid_maxQty.toFixed(2) + ' kg/s' : getOrder.on_hand_bid.on_hand_bid_qty.toFixed(2) + ' kg/s' }}</p>            
+                <p v-if="getOrder.project_bid || getOrder.on_hand_bid">{{ getOrder.project_bid ? getOrder.project_bid.project_bid_minQty.toLocaleString("en-PH")  + ' - ' + getOrder.project_bid.project_bid_maxQty.toLocaleString("en-PH")  + ' kg/s' : getOrder.on_hand_bid.on_hand_bid_qty.toLocaleString("en-PH")  + ' kg/s' }}</p>            
             </div>
             <div v-if="data.bid_order_acc_paymentMethod == 'Bank'" class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Account #:</h5>
@@ -121,7 +121,7 @@
             <div v-if="data.bid_order_acc_paymentMethod == 'Bank'" class="d-flex align-items-baseline w-50">
                 <h5 class="me-3">Amount:</h5>
                 <h5 class="me-3">Php</h5>
-                <h5 v-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount.toFixed(2) }}</h5>                
+                <h5 v-if="getOrder.bidOrder" class="me-3">{{ getOrder.bidOrder.order_dpAmount.toLocaleString("en-PH")  }}</h5>                
                 <h5 v-if="getOrder.bidOrder" class="me-3">{{ getPercentage + '%' }}</h5> 
             </div>           
         </div>
@@ -155,12 +155,12 @@ export default {
         this.fetchOrder(this.$route.params.id)
         .then(() => {
             if(this.getOrder.bidOrder.order_negotiatedPrice){
-                this.data.order_negotiatedPrice = this.getOrder.bidOrder.order_negotiatedPrice.toFixed(2)
+                this.data.order_negotiatedPrice = this.getOrder.bidOrder.order_negotiatedPrice.toLocaleString("en-PH") 
             }
             else{
-                this.data.order_negotiatedPrice = this.getOrder.bidOrder.order_initialPrice.toFixed(2)
+                this.data.order_negotiatedPrice = this.getOrder.bidOrder.order_initialPrice.toLocaleString("en-PH") 
             }
-            this.data.bid_order_acc_amount = this.getOrder.refund.refund_amount.toFixed(2)
+            this.data.bid_order_acc_amount = this.getOrder.refund.refund_amount.toLocaleString("en-PH") 
             this.data.id = this.getOrder.bidOrder.id
             this.readyApp()
         })
@@ -242,11 +242,11 @@ export default {
         getTotal(){
             var total = null;
             if(this.getOrder.project_bid){
-                total = (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_minQty).toFixed(2) + ' - ' + (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_maxQty).toFixed(2)
+                total = (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_minQty).toLocaleString("en-PH")  + ' - ' + (this.data.order_negotiatedPrice * this.getOrder.project_bid.project_bid_maxQty).toLocaleString("en-PH") 
                 return total
             }
             else{
-                total = (this.data.order_negotiatedPrice * this.getOrder.on_hand_bid.on_hand_bid_qty).toFixed(2)                
+                total = (this.data.order_negotiatedPrice * this.getOrder.on_hand_bid.on_hand_bid_qty).toLocaleString("en-PH")                 
                 return total
             } 
         },
@@ -265,10 +265,10 @@ export default {
         getPercentage() {
             var total = null;
             if(this.getOrder.project_bid){
-                total = (this.getOrder.project_bid.project_bid_maxQty * this.data.order_negotiatedPrice).toFixed(2)
+                total = (this.getOrder.project_bid.project_bid_maxQty * this.data.order_negotiatedPrice).toLocaleString("en-PH") 
             }
             else{
-                total = (this.getOrder.on_hand_bid.on_hand_bid_qty * this.data.order_negotiatedPrice).toFixed(2)
+                total = (this.getOrder.on_hand_bid.on_hand_bid_qty * this.data.order_negotiatedPrice).toLocaleString("en-PH") 
             }
             return parseFloat((parseFloat(this.getOrder.bidOrder.order_dpAmount) / total) * 100)
         },

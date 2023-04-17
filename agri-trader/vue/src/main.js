@@ -12,6 +12,7 @@ import VueToastr from 'vue-toastr'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+
 Vue.config.productionTip = false
 library.add(faCirclePlus, faUser, faArrowRightFromBracket, faPagelines, faXmark)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -19,6 +20,20 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(ToastPlugin)
 Vue.use(VueToastr)
+
+Vue.filter('toCurrency', function (value) {
+  if (typeof value !== "number") {
+      return value;
+  }
+  var formatter = new Intl.NumberFormat('en-PH', {
+      style: 'currency',
+      currency: 'PHP'
+  });
+  return formatter.format(value);
+});
+
+
+
 // window.bootstrap = require('bootstrap')
 
 new Vue({

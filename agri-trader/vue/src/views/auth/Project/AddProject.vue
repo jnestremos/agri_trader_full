@@ -16,7 +16,7 @@
            <p>Farm Owner: {{ owner_name }}</p>
           </div>
           <div class="d-flex align-items-baseline">
-            <p>Estimated Sales: {{ data.contract_estimatedSales }}</p>
+            <p>Estimated Sales: {{ data.contract_estimatedSales | toCurrency }}</p>
           </div>
           <div></div>
           <div></div>
@@ -32,28 +32,28 @@
           </div>
           <div class="d-flex align-items-baseline">
             <label for="contractShare_type" class="form-label me-4">Profit Share: </label>
-            <select name="contractShare_type" id="" class="form-select" style="width:200px" @change="resetShareAmount($event)">
+            <select name="contractShare_type" id="" class="form-select" style="width:150px" @change="resetShareAmount($event)">
               <option value="Percentage" selected>Percentage</option>
               <option value="Amount">Amount</option>
             </select>
-            <input type="number" name="contractShare_amount" id="" class="form-control" style="width:200px" v-model="data.contractShare_amount">    
-            <p>(owner)</p>                           
+            <input type="number" name="contractShare_amount" id="" class="form-control ms-2" style="width:150px" v-model="data.contractShare_amount">    
+            <p class="ms-1">(Owner Share)</p>                           
           </div>
           <div class="d-flex align-items-baseline" style="">
-            <p>Estimated Sales Sharing: {{ data.contract_traderShare }} (trader) - {{ data.contract_ownerShare }} (owner)</p>
+            <p>Estimated Sales Sharing: {{ data.contract_traderShare | toCurrency }} (Trader) - {{ data.contract_ownerShare | toCurrency }} (Owner)</p>
           </div>
         </div>
       </div>
-      <div class="row px-5 w-100 m-0" style="height:70%;">
+      <div class="row px-4 w-100 m-0" style="height:70%;">
         <div class="col-9 d-flex flex-column justify-content-evenly">
           <div class="row w-100 m-0">
-            <div class="col-4 p-0 d-flex align-items-baseline">
+            <div class="col-5 p-0 d-flex align-items-baseline">
               <label for="produce_id" class="form-label me-4">Select Produce:</label>
               <select name="produce_id" id="" class="form-select" style="width:250px" @change="setProduce($event)">
                 <option :value="produce.id" v-for="(produce, index) in getTimeOfHarvest" :key="index">{{ produce.prod_name + ' ' + produce.prod_type }}</option>
               </select>
             </div>
-            <div class="col-4 p-0 d-flex align-items-baseline">
+            <div class="col-5 p-0 ms-1 d-flex align-items-baseline">
               <label for="project_commenceDate" class="form-label me-4">Project Start:</label>
               <input type="date" onkeydown="return false" name="project_commenceDate" id="" v-model="data.project_commenceDate" class="form-control" style="width:200px">
             </div>            
@@ -152,7 +152,7 @@ export default {
           this.data.contract_estimatedPrice = '0.00'
           this.data.contract_estimatedSales = '0.00'
         }
-        this.data.contract_estimatedSales = (parseFloat(newVal) * parseFloat(this.data.contract_estimatedHarvest)).toFixed(2)
+        this.data.contract_estimatedSales = (parseFloat(newVal) * parseFloat(this.data.contract_estimatedHarvest))
       },
       'data.contract_estimatedHarvest'(newVal){
         this.data.contractShare_amount = '0.00'
@@ -162,7 +162,7 @@ export default {
           this.data.contract_estimatedHarvest = '0.00'
           this.data.contract_estimatedSales = '0.00'
         }
-        this.data.contract_estimatedSales = (parseFloat(newVal) * parseFloat(this.data.contract_estimatedPrice)).toFixed(2)
+        this.data.contract_estimatedSales = (parseFloat(newVal) * parseFloat(this.data.contract_estimatedPrice))
       },
       'data.contractShare_amount'(newVal){
         if(parseFloat(newVal) <= 0 || newVal.trim() == '' || (this.data.contractShare_type == 'Percentage' && parseFloat(newVal) > 100)){
@@ -172,12 +172,12 @@ export default {
         }
         else{
           if(this.data.contractShare_type == 'Percentage'){
-            this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100))).toFixed(2)
-            this.data.contract_ownerShare = (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100)).toFixed(2)        
+            this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100)))
+            this.data.contract_ownerShare = (parseFloat(this.data.contract_estimatedSales) * parseFloat(this.data.contractShare_amount / 100))       
           }
           else{
-            this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - parseFloat(newVal)).toFixed(2)
-            this.data.contract_ownerShare = parseFloat(newVal).toFixed(2)
+            this.data.contract_traderShare = (parseFloat(this.data.contract_estimatedSales) - parseFloat(newVal))
+            this.data.contract_ownerShare = parseFloat(newVal)
           }          
         }      
       },    

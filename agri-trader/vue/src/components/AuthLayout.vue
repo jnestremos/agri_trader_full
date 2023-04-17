@@ -1,23 +1,23 @@
 <template>
   <div id="authLayout" class="d-flex">   
     <div>
-        <b-nav vertical class="vh-100 justify-content-between align-items-center py-5" style="background-color:green; width:8vw">
-        <b-nav-item class="d-flex justify-content-center">
+        <b-nav vertical class="vh-100 justify-content-between align-items-center py-5" style="background-color:green; width:8vw; position:;">
+          <b-nav-item class="d-flex justify-content-center">
             <font-awesome-icon icon="fa-regular fa-user" style="font-size:40px; color:white;"/>
           </b-nav-item>
-        <div style="width:100%; color:black;">          
-          <b-nav-item @mouseenter="moduleLeave()"><router-link style="color:black" :to="role == 'trader' ? '/dashboard' : '/dashboard/owner'">Home</router-link></b-nav-item>
-          <b-nav-item @mouseenter="showModules()" @mouseleave="hideModules()" class="w-100"><p style="color:black; margin:0">Modules</p></b-nav-item>
-          <b-nav-item @mouseenter="moduleLeave()"><p style="color:black; margin:0">Settings</p></b-nav-item>
-        </div>
-        <b-nav-text class="d-flex justify-content-center">
-          <form action="" @submit.prevent="logoutUser()">
-            <button type="submit" style="border:0; background-color:transparent">
-              <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" style="font-size:40px; transform:rotate(-180deg); color:white;"/>
-            </button>
-          </form>          
-        </b-nav-text>                    
-      </b-nav>
+          <div style="width:100%; color:black;">          
+            <b-nav-item @mouseenter="moduleLeave()"><router-link style="color:black" :to="role == 'trader' ? '/dashboard' : '/dashboard/owner'">Home</router-link></b-nav-item>
+            <b-nav-item @mouseenter="showModules()" @mouseleave="hideModules()" class="w-100"><p style="color:black; margin:0">Modules</p></b-nav-item>
+            <b-nav-item @mouseenter="moduleLeave()"><p style="color:black; margin:0">Settings</p></b-nav-item>
+          </div>
+          <b-nav-text class="d-flex justify-content-center">
+            <form action="" @submit.prevent="logoutUser()">
+              <button type="submit" style="border:0; background-color:transparent">
+                <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" style="font-size:40px; transform:rotate(-180deg); color:white;"/>
+              </button>
+            </form>          
+          </b-nav-text>                    
+        </b-nav>
     </div>
     <div style="width:300px; height:100vh; position: fixed; left:8%; z-index:-1;" class="d-flex align-items-center" id="moduless">
       <div style="background-color:green; width:100%; height:70%; opacity:0; display:none; transition:0.5s" id="modules" @mouseenter="moduleEnter()" @mouseleave="moduleLeave()">

@@ -29,14 +29,14 @@
                             </select>                    
                         </div>
                         <div class="col-lg-3 me-3">
-                            <label for="stockInHistory_supplyType" class="form-label me-4" >Choose Supply Type</label>
+                            <label for="stockInHistory_supplyType" class="form-label me-4" >Supply Type</label>
                             <select class="form-select" id="supply_type" :disabled="filter_supplier == 'None'" @change="setSupplyType($event)">
                                 <option selected value="None">Select Supply Type</option>
                                 <option v-for="(type, index) in getTypes" :key="index" :value="type">{{ type }}</option>
                             </select>
                         </div>
                         <div class="col-lg-3 me-3">
-                            <label for="stockInHistory_SupplyFor" class="form-label me-4">Choose Supply For</label>
+                            <label for="stockInHistory_SupplyFor" class="form-label me-4">Supply For</label>
                             <select class="form-select" id="supply_for" :disabled="filter_supplier == 'None'" @change="setSupplyFor($event)">
                                 <option selected value="None">Select Supply Type</option> 
                                 <option v-for="(produce, index) in getSupplyForFiltered" :key="index" :value="produce">{{ produce }}</option>             

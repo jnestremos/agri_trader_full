@@ -75,8 +75,8 @@
                 <div class="btn-toolbar mt-3" role="toolbar">
                     <div class="btn-group me-3">
                         <button class="btn btn-success fw-bold" style="width:150px; height:50px" @click="sendSupply()">Add</button>
-                    </div>                   
-                </div>          
+                    </div>
+                </div>
             </form>
         </div>
     </div>

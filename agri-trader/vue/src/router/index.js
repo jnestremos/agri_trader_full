@@ -74,6 +74,7 @@ import GuestLayout from '../components/GuestLayout.vue'
 import ErrorPage from '../views/404.vue'
 import auth from '../store/modules/Auth/auth'
 import store from '../store'
+import PrintReport from '../views/auth/Reports/PrintReports.vue'
 
 import AllProjectsOwner from '../views/auth/Farm Owner/AllProjects.vue'
 import ShowProjectOwner from '../views/auth/Farm Owner/ShowProject.vue'
@@ -455,6 +456,12 @@ const routes = [
         meta:{needsAuth: true, role: "trader"},
         component:AllReports
       },
+      {
+        path:"reports/print",
+        name: "PrintReport",
+        meta:{needsAuth: true, role: "trader"},
+        component:PrintReport
+      }
     ]
   },
   {

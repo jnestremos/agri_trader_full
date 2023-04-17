@@ -32,7 +32,7 @@
                             <div class="form-row mt-2">
                                 <div class="col-md-4">
                                     <label for="payment_totalPrice" class="form-label"> Total Price </label>
-                                    <input type="text" name="payment_totalPrice" id="" class="form-control" placeholder="7,500.00" disabled v-model="data.purchaseOrder_totalBalance">
+                                    <input type="text" name="payment_totalPrice" id="" class="form-control" disabled v-model="formattedTotal">
                                 </div>
                             </div>
                             <div class="form-row mt-3">
@@ -293,7 +293,10 @@ export default {
                 })
             }
             return table
-        }
+        },
+        formattedTotal(){
+            return this.data.purchaseOrder_totalBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
+        },
     }
 }
 </script>

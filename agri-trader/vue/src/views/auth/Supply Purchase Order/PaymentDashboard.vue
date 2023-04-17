@@ -20,7 +20,7 @@
                     <div class="form-row mt-3">
                         <div class="col-md-2 me-3">
                             <label for="payment_totalPrice" class="form-label"> Total Price </label>
-                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_totalBalance" placeholder="7,500.00" disabled>
+                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="formattedTotalPrice" disabled>
                         </div>
                         <!-- <div class="col-md-2">
                             <label for="payment_totalPrice" class="form-label"> Payment Method </label>
@@ -30,7 +30,7 @@
                     <div class="form-row mt-3">
                         <div class="col-lg-2 me-3">
                             <label for="payment_downpaymentAmount" class="form-label"> Paid Balance </label>
-                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_dpAmount" disabled>
+                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="formattedDownpayment" disabled>
                         </div>
                         <!-- <div class="col-lg-2">
                             <label for="payment_downpaymentAmount" class="form-label"> Account Name </label>
@@ -40,7 +40,7 @@
                     <div class="form-row mt-3">
                         <div class="col-lg-2 me-3">
                             <label for="payment_downpaymentAmount" class="form-label"> Remaining Balance </label>
-                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="getPO.purchaseOrder_balance" disabled>
+                            <input type="text" name="payment_totalPrice" id="" class="form-control" :value="formattedBalance" disabled>
                         </div>
                         <div v-if="getPO.purchaseOrder_accNum" class="col-lg-2">
                             <label for="payment_downpaymentAmount" class="form-label"> Account Number </label>
@@ -80,7 +80,16 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getPO'])
+        ...mapGetters(['getPO']),
+        formattedTotalPrice() {
+            return this.getPO.purchaseOrder_totalBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
+        },
+        formattedDownpayment() {
+            return this.getPO.purchaseOrder_dpAmount.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
+        },
+        formattedBalance() {
+            return this.getPO.purchaseOrder_balance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
+        }
     },
     methods: {
         ...mapActions(['readyApp', 'updatePOPayment']),

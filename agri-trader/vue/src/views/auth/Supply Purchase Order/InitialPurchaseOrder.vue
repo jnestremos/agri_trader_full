@@ -74,7 +74,7 @@
                                             <td>{{ supply.supply_type }}</td>
                                             <td>{{ supply.supply_for }}</td>
                                             <td>{{ supply.supply_description }}</td>
-                                            <td>{{ supply.supply_initialPrice }}</td>
+                                            <td>{{ supply.supply_initialPrice | toCurrency }}</td>
                                             <td>{{ supply.supply_unit }}</td>
                                         </tr>                                                                          
                                     </tbody>
@@ -105,9 +105,9 @@
                                             <td>{{ supply.supply_for }}</td>
                                             <td>{{ supply.supply_description }}</td>
                                             <td>{{ supply.purchaseOrder_qty }}</td>
-                                            <td>{{ supply.supply_initialPrice }}</td>
+                                            <td>{{ supply.supply_initialPrice | toCurrency }}</td>
                                             <td>{{ supply.purchaseOrder_unit }}</td>
-                                            <td>{{ supply.purchaseOrder_subTotal }}</td>
+                                            <td>{{ supply.purchaseOrder_subTotal | toCurrency}}</td>
                                         </tr>                                                                          
                                     </tbody>
                                 </table>
@@ -117,7 +117,7 @@
                     <div class="form-row mb-2">                       
                         <div class="col-lg-2 mb-2 me-3">
                             <label for="supplyOrder_transactionPrice" class="form-label me-4">Transaction Price</label>
-                            <input type="text" name="supplyOrder_transactionPrice" id="" disabled v-model="totalBalance" class="form-control">
+                            <input type="text" name="supplyOrder_transactionPrice" id="" disabled v-model="formattedTotal" class="form-control">
                         </div>
                     </div>                    
                     <div class="text-left">
@@ -132,6 +132,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { format } from 'date-fns'
+
 export default {
     name: "InitialPurchaseOrder",
     created() {
@@ -344,7 +345,10 @@ export default {
            else{
                 return true
            }            
-        },        
+        },
+        formattedTotal(){
+            return this.totalBalance.toLocaleString("en-ph", { style: 'currency', currency: 'PHP' })
+        }       
     },
 
 }

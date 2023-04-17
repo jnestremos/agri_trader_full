@@ -10,16 +10,16 @@
     <div class="container-fluid w-100 d-flex flex-wrap" style="height:90%; position: relative;">
         <div class="w-100" v-if="getProjects.length > 0">                 
             <div class="row mb-5" v-for="(project, index) in filtered" :key="index">                                   
-                <div class="col-4" style="height:30vh" v-for="(p, i) in project" :key="i">                
-                    <div class="d-flex project" style="height:100%; border-radius:50px; position: relative;" @click="showProject(p.id)">                    
+                <div class="col-4 mt-3" style="height:30vh" v-for="(p, i) in project" :key="i">                
+                    <div class="d-flex project" style="height:100%; border-radius:40px; position: relative;" @click="showProject(p.id)">                    
                         <div class="" style="position: absolute; top:5%; left:5%; width:85%;">
-                            <div class="d-flex mb-4">
+                            <div class="d-flex mb-4 mt-2">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
-                                <h4 class="mb-4">{{ getName(p) }} - {{ getCommenceDate(p)}} &nbsp; {{100 - getShareAmount(p) + "% / " + getShareAmount(p) + '%' }}</h4>
+                                <h5 class="mb-2">{{ getName(p) }} - {{ getCommenceDate(p)}} &nbsp; {{100 - getShareAmount(p) + "% / " + getShareAmount(p) + '%' }}</h5>
                             </div>                                                                
-                            <h4 class="d-flex">Produce: <p class="ms-3">{{ getProduceName(p) }}</p></h4>
-                            <h4 class="d-flex">Estimated Harvest (in kg): <p class="ms-3">{{ p.contract_estimatedHarvest + ' kg'}}</p></h4>
-                            <h4 class="d-flex">Status: <p class="ms-3">{{ getStatus(p) }}</p></h4>
+                            <h6 class="d-flex align-items-baseline mb-2">Produce: <p class="ms-3">{{ getProduceName(p) }}</p></h6>
+                            <h6 class="d-flex align-items-baseline mb-2">Estimated Harvest (in kg): <p class="ms-3">{{ p.contract_estimatedHarvest + ' kg'}}</p></h6>
+                            <h6 class="d-flex align-items-baseline mb-2">Status: <p class="ms-3">{{ getStatus(p) }}</p></h6>
                         </div>                                                
                     </div>
                 </div>                

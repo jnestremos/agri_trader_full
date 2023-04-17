@@ -2,7 +2,7 @@
   <div class="allFarms">    
     <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
         <h3>Farms and Owners</h3>
-        <div class="d-flex align-items-center" style="width:23%;">
+        <div class="d-flex align-items-center">
             <button class="btn btn-success me-3" @click="toAddFarm()">Add</button>
             <router-link to="/farms/report"><button class="btn btn-success me-3">View All Farms</button></router-link>
             <router-link to="/farms/owners/report"><button class="btn btn-success">See All Farm Owners</button></router-link>          
@@ -13,14 +13,14 @@
             <div class="row mb-5" v-for="(farm, index) in filtered" :key="index">                     
                 <div class="col-4 mt-3" style="height:30vh" v-for="(f, i) in farm" :key="i">                
                     <div class="d-flex farm" style="height:100%; border-radius:50px; position: relative;" @click="showFarm(f.id)">
-                        <div class="" style="position: absolute; top:5%; left:5%; 
+                        <div class="" style="position: relative; top:5%; left:5%; 
                         width:85%;">
-                            <div class="d-flex mb-4">
+                            <div class="d-flex mb-4 mt-2">
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
                                 <h3 class="mb-4">{{ f.farm_name }}</h3>
                             </div>                                                                                
-                            <h4 class="d-flex">Owner: <p class="ms-3">{{ getOwner(f.farm_owner_id) }}</p></h4>
-                            <h4 class="d-flex">Produces Owned: <p class="ms-3">{{ getProduces(f.id) }}</p></h4>
+                            <h5 class="d-flex align-items-baseline mb-2">Owner: <p class="ms-3">{{ getOwner(f.farm_owner_id) }}</p></h5>
+                            <h6 class="d-flex align-items-baseline mb-2">Produces Owned: <p class="ms-3">{{ getProduces(f.id) }}</p></h6>
                         </div>                                                
                     </div>
                 </div>                

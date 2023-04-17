@@ -6,42 +6,46 @@
     <div class="container-fluid d-flex" style="height:90%; position:relative; z-index: 999;">
         <div style="width:55%; height:65%;" class="pb-5">
             <form enctype="multipart/form-data" action="POST" class="d-flex flex-column justify-content-between" style="height:100%;" @submit.prevent='sendFarm()'>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_name" class="form-label me-4" style="width:15%;">Farm Name:</label>
                     <input type="text" name="farm_name" id="" class="form-control" v-model="farm.farm_name">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_address" class="form-label me-4" style="width:15%;">Farm Address:</label>
                     <input type="address" name="farm_address" id="" class="form-control" v-model="farm.farm_address">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_province" class="form-label me-4" style="width:15%;">Farm Province:</label>
                     <input type="text" name="farm_province" id="" class="form-control" v-model="farm.farm_province">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_city" class="form-label me-4" style="width:15%;">City:</label>
                     <input type="text" name="farm_city" id="" class="form-control" v-model="farm.farm_city">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_titleNum" class="form-label me-4" style="width:15%;">Title #:</label>
                     <input type="text" name="farm_titleNum" id="" class="form-control" v-model="farm.farm_titleNum">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_zipcode" class="form-label me-4" style="width:15%;">Zipcode:</label>
                     <input type="text" name="farm_zipcode" id="" class="form-control" v-model="farm.farm_zipcode">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_hectares" class="form-label me-4" style="width:15%;">Hectares:</label>
                     <input type="number" name="farm_hectares" id="" class="form-control" v-model="farm.farm_hectares">
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 mt-3">
                     <label for="farm_imageUrl" class="form-label me-4" style="width:15%;">Select Image:</label>
                     <input type="file" name="farm_imageUrl" id="" class="form-control" @change="setImageUrl($event)">                    
                 </div>
-                <div class="d-flex justify-content-between align-items-center" style="width:50%;" id="isExisting">
+                <div class="d-flex justify-content-between align-items-center mt-3" style="width:50%;" id="isExisting">
                     <label for="" class="form-label me-4">Is he/she an existing owner?</label>
-                    <button style="width:100px;" class="btn btn-primary" @click.prevent="hideOption()">YES</button>
-                    <router-link to="/farms/owners/add"><button style="width:100px;" class="btn btn-secondary">NO</button></router-link>
+                    <div class="btn-group me-3">
+                        <button style="width:100px;" class="btn btn-primary" @click.prevent="hideOption()">YES</button>
+                    </div>
+                    <div class="btn-group me-3">
+                        <router-link to="/farms/owners/add"><button style="width:100px;" class="btn btn-secondary">NO</button></router-link>
+                    </div>
                 </div>                
                 <div class="d-none" id="showExisting">                   
                     <label for="owner_id" class="form-label me-4" style="width:15%;">Select Farm Owner:</label>
@@ -53,7 +57,7 @@
             </form>
         </div>
         <div style="width:45%;" class="d-flex justify-content-center align-items-start">
-            <div style="width:90%; height:50%; background-color: grey;" id="coverBg" class="d-flex justify-content-center align-items-center">
+            <div style="width:90%; height:50%; background-color: grey;" id="coverBg" class="d-flex justify-content-center align-items-center mt-5">
                 <h3 v-if="!previewUrl">NO IMAGE</h3>
                 <img :src="previewUrl" alt="" width="100%" style="object-fit: cover;" v-else>
             </div>

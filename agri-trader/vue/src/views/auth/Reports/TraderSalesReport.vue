@@ -52,8 +52,8 @@
                             <td>{{ getProduceNameSale(sale) }}</td>
                             <td>{{ sale.sale_type }}</td>
                             <td>{{ sale.sale_qty }}</td>
-                            <td>{{ sale.sale_price }}</td>
-                            <td>{{ sale.sale_total }}</td>
+                            <td>{{ sale.sale_price | toCurrency }}</td>
+                            <td>{{ sale.sale_total | toCurrency }}</td>
                             <td>{{ sale.created_at.split('T')[0] }}</td>
                         </tr>                                                                        
                   </tbody>

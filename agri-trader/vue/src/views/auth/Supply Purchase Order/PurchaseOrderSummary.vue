@@ -55,8 +55,8 @@
                                     <td>{{ supply.supply_for }}</td>   
                                     <td>{{ supply.purchaseOrder_qty }}</td>                                 
                                     <td>{{ supply.purchaseOrder_unit }}</td>                                 
-                                    <td>{{ supply.supply_initialPrice }}</td>                                    
-                                    <td>{{ supply.purchaseOrder_subTotal }}</td>                             
+                                    <td>{{ supply.supply_initialPrice | toCurrency }}</td>                                    
+                                    <td>{{ supply.purchaseOrder_subTotal | toCurrency }}</td>                             
                                 </tr>
                             </tbody>
                         </table>
@@ -64,7 +64,7 @@
                     <div class="row">
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_totalAmount" class="form-label me-4" >Total Amount</label>
-                            <input type="text" name="orderSummary_totalAmount" id="" class="form-control" placeholder="Php 7,500.00" disabled v-model="data.purchaseOrder_totalBalance">
+                            <input type="text" name="orderSummary_totalAmount" id="" class="form-control" disabled v-model="formattedTotalAmount">
                         </div>
                         <div class="col-lg-3 me-3">
                             <label for="orderSummary_transactedBy" class="form-label me-4" >Transacted By</label>
@@ -198,14 +198,15 @@ export default {
                 purchaseOrder_qty: null, 
                 purchaseOrder_unit: null,
                 purchaseOrder_subTotal: null,
-                purchaseOrder_totalBalance: 0,
+                purchaseOrder_totalBalance: 0 ,
                 purchaseOrder_paymentMethod: null,
                 purchaseOrder_bankName: null,
                 purchaseOrder_accNum: null,
                 purchaseOrder_accName: null,                
             },
             supplies: null,
-            dateToday: format(new Date(), 'yyyy-MM-dd'),                
+            dateToday: format(new Date(), 'yyyy-MM-dd'), 
+       
         }
     },
     watch: {
@@ -324,6 +325,9 @@ export default {
                 initBalance += parseFloat(r.purchaseOrder_subTotal).toFixed(2)
             })
             return initBalance
+        },
+        formattedTotalAmount(){
+            return this.data.purchaseOrder_totalBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         }
     }
 }

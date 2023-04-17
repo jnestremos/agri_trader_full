@@ -1,31 +1,31 @@
 <template>
     <div class="initialProfitSharing">
         <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%;">
-            <h3>Profit Sharing</h3>        
+            <h3>Profit Sharing</h3>
         </div>
         <div class="w-100 ps-3" style="height:90%; position: relative;">
             <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getProfitSharing.project">Project #: {{ getProfitSharing.project.id }}</h5>                    
+                    <h5 v-if="getProfitSharing.project">Project #: {{ getProfitSharing.project.id }}</h5>
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5>Project Status: {{ getProfitSharing.project && (getProfitSharing.project.project_status_id == 4 || getProfitSharing.project.project_status_id == 5) ? getProjectStatus : getStatus }}</h5>                    
-                </div>
-            </div>
-            <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
-                <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getProfitSharing.contract">Farm: {{ getProfitSharing.contract.farm_name }}</h5>                    
-                </div>
-                <div class="d-flex align-items-baseline w-50">
-                    <h5>Date of Termination: {{ getProfitSharing.profit_sharing ? getProfitSharing.profit_sharing.created_at.split('T')[0] : dateToday }}</h5>                    
+                    <h5>Project Status: {{ getProfitSharing.project && (getProfitSharing.project.project_status_id == 4 || getProfitSharing.project.project_status_id == 5) ? getProjectStatus : getStatus }}</h5>
                 </div>
             </div>
             <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getProfitSharing.farm_owner">Farm Owner: {{ getProfitSharing.farm_owner.owner_firstName + ' ' + getProfitSharing.farm_owner.owner_lastName }}</h5>                    
+                    <h5 v-if="getProfitSharing.contract">Farm: {{ getProfitSharing.contract.farm_name }}</h5>
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getOverallSales || getOverallSales == 0">Total Sales: {{ getOverallSales.toFixed(2) }}</h5>                    
+                    <h5>Date of Termination: {{ getProfitSharing.profit_sharing ? getProfitSharing.profit_sharing.created_at.split('T')[0] : dateToday }}</h5>
+                </div>
+            </div>
+            <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
+                <div class="d-flex align-items-baseline w-50">
+                    <h5 v-if="getProfitSharing.farm_owner">Farm Owner: {{ getProfitSharing.farm_owner.owner_firstName + ' ' + getProfitSharing.farm_owner.owner_lastName }}</h5>
+                </div>
+                <div class="d-flex align-items-baseline w-50">
+                    <h5 v-if="getOverallSales || getOverallSales == 0">Total Sales: {{ getOverallSales.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
                 </div>
             </div>
             <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
@@ -33,40 +33,40 @@
 
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getOverallExpenses">Total Expenses: {{ getOverallExpenses.toFixed(2) }}</h5>                                     
+                    <h5 v-if="getOverallExpenses">Total Expenses: {{ getOverallExpenses.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
                 </div>
             </div>
             <div class="d-flex mb-4 w-100 justify-content-between align-items-baseline">
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getProfitSharing.produce">Produce: {{ getProfitSharing.produce.prod_name + ' ' + getProfitSharing.produce.prod_type }}</h5>     
+                    <h5 v-if="getProfitSharing.produce">Produce: {{ getProfitSharing.produce.prod_name + ' ' + getProfitSharing.produce.prod_type }}</h5>
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getOwnerShare || getOwnerShare == 0" class="pb-3" style="border-bottom:2px solid black; width:40%;">Owner Share: {{ getOwnerShare.toFixed(2) }}</h5>                    
-                </div>
-            </div>
-            <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
-                <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getProfitSharing.project && getProfitSharing.project.project_status_id != 5" :style="data.newShare ? {'color': 'grey'} : {}">{{ getProfitSharing.profit_sharing ? 'Agreed Profit Share:' : 'Original Profit Share:' }}</h5>                 
-                </div>
-                <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getTotal">Total: {{ getTotal }}</h5>                    
+                    <h5 v-if="getOwnerShare || getOwnerShare == 0" class="pb-3" style="border-bottom:2px solid black; width:40%;">Owner Share: {{ getOwnerShare.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
                 </div>
             </div>
             <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 :style="data.newShare ? {'color': 'grey'} : {}" v-if="getProfitSharing.contract_share && getProfitSharing.contract_share.contractShare_type == 'Amount' && (getOwnerShare || getOwnerShare == 0)">Owner Amount: {{ getOwnerShare }}</h5>                 
-                    <h5 :style="data.newShare ? {'color': 'grey'} : {}" v-else-if="getProfitSharing.contract_share && getProfitSharing.contract_share.contractShare_type == 'Percentage' && getProfitSharing.project && getProfitSharing.project.project_status_id != 5">Owner Percentage: {{ getOwnerPercentage }}</h5>                 
+                    <h5 v-if="getProfitSharing.project && getProfitSharing.project.project_status_id != 5" :style="data.newShare ? {'color': 'grey'} : {}">{{ getProfitSharing.profit_sharing ? 'Agreed Profit Share:' : 'Original Profit Share:' }}</h5>
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5 v-if="getProfit">Profit: {{ getProfit }}</h5>                    
+                    <h5 v-if="getTotal">Total: {{ getTotal }}</h5>
+                </div>
+            </div>
+            <div class="d-flex mb-3 w-100 justify-content-between align-items-baseline">
+                <div class="d-flex align-items-baseline w-50">
+                    <h5 :style="data.newShare ? {'color': 'grey'} : {}" v-if="getProfitSharing.contract_share && getProfitSharing.contract_share.contractShare_type == 'Amount' && (getOwnerShare || getOwnerShare == 0)">Owner Amount: {{ getOwnerShare }}</h5>
+                    <h5 :style="data.newShare ? {'color': 'grey'} : {}" v-else-if="getProfitSharing.contract_share && getProfitSharing.contract_share.contractShare_type == 'Percentage' && getProfitSharing.project && getProfitSharing.project.project_status_id != 5">Owner Percentage: {{ getOwnerPercentage }}</h5>
+                </div>
+                <div class="d-flex align-items-baseline w-50">
+                    <h5 v-if="getProfit">Profit: {{ getProfit }}</h5>
                 </div>
             </div>
             <div class="d-flex mb-5 w-100 justify-content-between align-items-baseline">
                 <div class="d-flex align-items-baseline w-50">
-                    
+
                 </div>
                 <div class="d-flex align-items-baseline w-50">
-                    <h5>Profit Status: {{ getProfitStatus }}</h5>                    
+                    <h5>Profit Status: {{ getProfitStatus }}</h5>
                 </div>
             </div>
             <div class="d-flex mb-5 w-100">
@@ -82,27 +82,27 @@
                                 <option value="Percentage">Percentage</option>
                                 <option value="Amount">Amount</option>
                             </select> -->
-                        </div>                    
+                        </div>
                     </div>
                     <div class="d-flex mb-2 justify-content-between align-items-baseline">
-                        <div class="d-flex w-50 align-items-baseline">                        
+                        <div class="d-flex w-50 align-items-baseline">
                             <h5 class="me-3">Trader Share: 0.00</h5>
                         </div>
                         <div class="d-flex w-100 align-items-baseline">
                             <input type="number" v-model="data.ar_ownerShare" :disabled="!(data.newShare)" class="form-control me-2" style="width:150px" name="" id="">
-                            <p>(owner)</p>                       
-                        </div>                    
+                            <p>(owner)</p>
+                        </div>
                     </div>
                     <div class="d-flex w-100 mb-5 justify-content-between align-items-baseline">
-                        <div class="d-flex w-100 align-items-baseline">                        
+                        <div class="d-flex w-100 align-items-baseline">
                             <h5 class="me-3">Owner Share: {{ data.newShare ? data.ar_ownerShare : '0.00' }}</h5>
-                        </div>                                       
+                        </div>
                     </div>
                     <div class="d-flex w-100 justify-content-between align-items-baseline">
-                        <div class="d-flex w-100 align-items-baseline">                        
+                        <div class="d-flex w-100 align-items-baseline">
                             <h5 class="me-3">Remarks:</h5>
                             <textarea class="form-control" v-model="data.ar_remark" :disabled="!(data.newShare)" name="" id="" cols="30" rows="5"></textarea>
-                        </div>                                       
+                        </div>
                     </div>
                 </div>
                 <div class="p-4" style="width:30%; background:lightgray">
@@ -132,7 +132,7 @@
                     <div class="d-flex align-items-baseline mb-3">
                         <h5 class="me-3" style="width:40%">Amount:</h5>
                         <input type="number" v-if="!getProfitSharing.profit_sharing" :value="getOwnerShare ? getOwnerShare : 0.00" disabled class="form-control" style="width:150px" name="" id="">
-                        <h5 v-else>{{ getProfitSharing.profit_sharing.ar_ownerShare.toFixed(2) }}</h5>
+                        <h5 v-else>{{ getProfitSharing.profit_sharing.ar_ownerShare.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
                     </div>
                     <div class="d-flex align-items-baseline mb-3">
                         <h5 class="me-3" style="width:40%">Date Paid:</h5>
@@ -142,7 +142,7 @@
                 </div>
             </div>
             <button v-if="!getProfitSharing.profit_sharing" style="position:absolute; bottom:3%; right:6%" class="btn btn-success" @click="submitReport()">Generate Acknowledgment Report</button>
-        </div>      
+        </div>
     </div>
 </template>
 
@@ -160,20 +160,20 @@ export default {
             .then(() => {
                 this.data.project_id = this.$route.params.id
                 this.data.farm_id = this.getProfitSharing.contract.farm_id
-                this.data.produce_id = this.getProfitSharing.contract.produce_id                
-                this.data.farm_owner_id = this.getProfitSharing.farm_owner.id         
+                this.data.produce_id = this.getProfitSharing.contract.produce_id
+                this.data.farm_owner_id = this.getProfitSharing.farm_owner.id
                 if(this.getStatusForProfit == 5){
                     this.data.newShare = true
                     this.data.ar_ownerShareType = 'Amount'
 
-                }   
+                }
                 this.readyApp()
             })
             .catch((err) => {
                 console.error(err)
                 this.$router.push({ path: `/projects/${this.$route.params.id}` })
             })
-        }        
+        }
     },
     methods: {
         ...mapActions(['readyApp', 'fetchInitProfitSharing', 'sendProfitSharing']),
@@ -206,7 +206,7 @@ export default {
                 var errors = err.response.data.errors
                 for(var error in errors){
                     this.$toastr.e(errors[error][0])
-                } 
+                }
             })
         }
     },
@@ -232,20 +232,20 @@ export default {
                 ar_accName: null,
                 ar_accNum: null,
                 ar_bankName: null,
-                ar_datePaid: format(new Date(), 'yyyy-MM-dd'),  
+                ar_datePaid: format(new Date(), 'yyyy-MM-dd'),
                 ar_dateTerminate: format(new Date(), 'yyyy-MM-dd'),
                 ar_remark: null,
                 newShare: false,
             },
-            errors: null,            
-            dateToday: format(new Date(), 'yyyy-MM-dd')        
+            errors: null,
+            dateToday: format(new Date(), 'yyyy-MM-dd')
         }
     },
     computed: {
         ...mapGetters(['getStatusForProfit', 'getProfitSharing']),
         getOverallExpenses(){
             var stockOuts = []
-            var expenditures = [] 
+            var expenditures = []
             if(this.getProfitSharing.expenditures && this.getProfitSharing.stockOut){
                 this.getProfitSharing.expenditures.forEach((e) => {
                     expenditures.push(e.exp_amount)
@@ -259,7 +259,7 @@ export default {
                 var totalExpenses = expenditures.reduce((a, b) => a + b, 0)
                 totalExpenses = stockOuts.reduce((a, b) => a + b, totalExpenses)
 
-                }                       
+                }
             return totalExpenses
         },
         getOverallSales(){
@@ -269,7 +269,7 @@ export default {
                     sales.push(s.sale_total)
                 })
                 var totalSales = sales.reduce((a, b) => a + b, 0)
-            }            
+            }
             return totalSales ? totalSales : 0
         },
         getStatus(){
@@ -326,10 +326,10 @@ export default {
             return null
         },
         getTotal(){
-            return parseFloat(this.getOwnerShare + this.getOverallExpenses)
+            return parseFloat(this.getOwnerShare + this.getOverallExpenses).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
-        getProfit(){                                      
-            return parseFloat(this.getOverallSales - (this.getOwnerShare + this.getOverallExpenses))                        
+        getProfit(){
+            return parseFloat(this.getOverallSales - (this.getOwnerShare + this.getOverallExpenses)).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
         },
         getProfitStatus(){
             if(this.getProfit > 0){

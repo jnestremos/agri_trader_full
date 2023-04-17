@@ -15,9 +15,9 @@
                                 <font-awesome-icon icon="fa-brands fa-pagelines" style="font-size:40px;" class="me-3"/>
                                 <h3 class="mb-4">{{ f.farm_name }}</h3>
                             </div>                             
-                            <h4 class="d-flex">Projects Pending: <p class="ms-3">{{ getProjectsPending(f) }}</p></h4>
-                            <h4 class="d-flex">Produce Count: <p class="ms-3">{{ getProduceCount(f) }}</p></h4>
-                            <h4 class="d-flex">Trader In Charge: <p class="ms-3">{{ getTraderName(f) }}</p></h4>
+                            <h5 class="d-flex">Projects Pending: <p class="ms-3">{{ getProjectsPending(f) }}</p></h5>
+                            <h5 class="d-flex">Produce Count: <p class="ms-3">{{ getProduceCount(f) }}</p></h5>
+                            <h5 class="d-flex">Trader In Charge: <p class="ms-3">{{ getTraderName(f) }}</p></h5>
                         </div>
                     </div>
                 </div>
