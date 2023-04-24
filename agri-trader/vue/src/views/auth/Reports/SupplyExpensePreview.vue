@@ -1,7 +1,7 @@
 <template>
     <div class="SupplyPurchaseExpenseReport">
       <div class="container-fluid w-100 d-flex pe-5 justify-content-between align-items-center" style="height:10%; background-color: #E0EDCA;">
-        <h3>Supply Purchase Expense Report</h3>
+        <h3>Supply Purchase Expense Review</h3>
         <!-- <div class="d-flex">
             <router-link to="/reports/dashboard"><button class="btn btn-info text-right">Return to Reports Dashboard</button></router-link>
         </div> -->
@@ -9,27 +9,6 @@
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">
           <div class="form-row mb-3 mt-2">
-              <div class="col-lg-3 me-3">
-                  <label class="form-label me-4 fw-bold">Project</label>
-                  <select class="form-select" @change="setProjectID($event)" >
-                      <option value="None">Select Project</option>
-                      <option v-for="(id, index) in filterProjectIDS"  :key="index" :value="id">{{ id + ' - ' + getProjectName(id) }}</option>
-                  </select>
-              </div>
-              <div class="col-lg-3 me-3">
-                  <label class="form-label me-4 fw-bold">Total</label>
-                  <input type="text" name="" disabled :value="getTotal" class="form-control" style="width:200px" id="">
-              </div>
-          </div>
-          <div class="form-row mb-3 mt-2">
-            <div class="col-lg-3 me-3">
-                <label class="form-label me-4 fw-bold">From</label>
-                <input type="date" class="form-control" v-model="filter_dateFrom">
-            </div>
-            <div class="col-lg-3 me-3">
-                <label class="form-label me-4 fw-bold">To</label>
-                <input type="date" class="form-control" v-model="filter_dateTo">
-            </div>
           </div>
           <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
@@ -46,7 +25,7 @@
                       </tr>
                   </thead>
                   <tbody align="center">
-                    <tr v-for="(stock, index) in filterTable" :key="index">
+                    <tr v-for="(stock, index) in records" :key="index">
                         <td>{{ stock.project_id }}</td>
                         <td>{{ getProjectName(stock) }}</td>
                         <td>{{ getSupplierName(stock) }}</td>
@@ -59,8 +38,9 @@
                   </tbody>
               </table>
             </div>
-            <div class="text-left mt-4">
-                <router-link to="/reports/SupplyExpenditures/preview"><button class="btn btn-success" @click="printReport()">Preview Supply Purchase Expense Report</button></router-link>
+            <div class="col-lg-5 mt-4">
+                  <label class="form-label me-4 fw-bold h5">Total Supply Expenditures: </label>
+                  <label class="form-label me-4 fw-bold h5" name="" style="width:200px" id="">{{ getTotal }}</label>
             </div>
         </div>
       </div>
@@ -71,30 +51,28 @@
 import { format, add, sub } from 'date-fns';
   import { mapActions, mapGetters } from 'vuex';
   export default {
-      name: "SupplyPurchaseExpenseReport",
+      name: "SupplyExpensePreview",
       created() {
-        this.fetchStockOutReport()
-        .then(() => {
-            if(this.getStockOutReport.stockOut && this.getStockOutReport.stockOut.length > 0){
-                var stockOut = this.getStockOutReport.stockOut.sort((a, b) => {
-                    return new Date(a.created_at) - new Date(b.created_at)
-                })
-                this.filter_dateFrom = format(new Date(stockOut[0].created_at), 'yyyy-MM-dd')
-                this.filter_dateTo = format(new Date(stockOut[stockOut.length - 1].created_at), 'yyyy-MM-dd')
-            }
+        if(!this.getPrintReport){
+            this.$router.push({ path: "/reports/supplyExpenditures" })
+        }
+        else{
+            this.records = this.getPrintReport
             this.readyApp()
-        })
+        }
+
       },
       data(){
         return {
             filter_project: 'None',
             total_arr: [],
             filter_dateFrom: null,
-            filter_dateTo: null
+            filter_dateTo: null,
+            records: null,
         }
       },
       watch:{
-        'filterTable'(newVal){
+        'records'(newVal){
             this.total_arr = []
             newVal.forEach((v) => {
                 var supplyObj = this.getStockOutReport.supplies.filter((s) => {
@@ -125,7 +103,7 @@ import { format, add, sub } from 'date-fns';
         },
       },
       methods: {
-          ...mapActions(['readyApp', 'fetchStockOutReport', 'fetchPrintReport']),
+          ...mapActions(['readyApp', 'fetchStockOutReport']),
           getProjectName(stock){
             var projectObj = null
             if(typeof(stock) == 'object'){
@@ -169,13 +147,10 @@ import { format, add, sub } from 'date-fns';
                 return parseInt(stock.supply_id) === parseInt(s.id)
             })
             return parseFloat(supplyObj[0].supply_initialPrice * stock.supply_qty).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' })
-        },
-        printReport(){
-            this.fetchPrintReport(this.filterTable)
         }
       },
       computed: {
-        ...mapGetters(['getStockOutReport']),
+        ...mapGetters(['getStockOutReport', 'getPrintReport']),
         filterProjectIDS(){
             var ids = new Set();
             var arr = []
@@ -207,7 +182,7 @@ import { format, add, sub } from 'date-fns';
         },
         getTotal(){
             return this.total_arr.reduce((a, b) => a + b, 0)
-            ? parseFloat(this.total_arr.reduce((a, b) => a + b, 0)).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' }) : null
+            ? parseFloat(this.total_arr.reduce((a, b) => a + b, 0)).toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) : null
         }
       }
   }

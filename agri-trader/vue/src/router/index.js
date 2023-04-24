@@ -71,10 +71,13 @@ import AllReports from '../views/auth/Reports/AllReports.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import DistributorLayout from '../components/DistributorLayout.vue'
 import GuestLayout from '../components/GuestLayout.vue'
+import PrintPreview from '../components/PrintPreview.vue'
 import ErrorPage from '../views/404.vue'
 import auth from '../store/modules/Auth/auth'
 import store from '../store'
 import PrintReport from '../views/auth/Reports/PrintReports.vue'
+import ProfitSharingPreview from '../views/auth/Reports/ProfitSharingPreview.vue'
+import SupplyExpensePreview from '../views/auth/Reports/SupplyExpensePreview.vue'
 
 import AllProjectsOwner from '../views/auth/Farm Owner/AllProjects.vue'
 import ShowProjectOwner from '../views/auth/Farm Owner/ShowProject.vue'
@@ -90,117 +93,117 @@ import ProjectReportOwner from '../views/auth/Farm Owner/ProjectReportOwner.vue'
 
 Vue.use(VueRouter)
 
-const routes = [ 
+const routes = [
   {
-    path:'/', 
-    redirect: '/dashboard',    
+    path:'/',
+    redirect: '/dashboard',
     component: AuthLayout,
     children: [
       {
-        path: '/dashboard', 
-        name: 'Dashboard',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/dashboard',
+        name: 'Dashboard',
+        meta: {needsAuth : true, role:'trader'},
         component: Dashboard
       },
       {
-        path: '/farms', 
-        name: 'Farms',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/farms',
+        name: 'Farms',
+        meta: {needsAuth : true, role:'trader'},
         component: AllFarms
       },
       {
-        path: '/farms/report', 
-        name: 'FarmReport',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/farms/report',
+        name: 'FarmReport',
+        meta: {needsAuth : true, role:'trader'},
         component: FarmReport
       },
       {
-        path: '/farms/add', 
-        name: 'AddFarm',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/farms/add',
+        name: 'AddFarm',
+        meta: {needsAuth : true, role:'trader'},
         component: AddFarm
       },
       {
-        path: '/farms/owners/report', 
-        name: 'FarmOwnerReport',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/farms/owners/report',
+        name: 'FarmOwnerReport',
+        meta: {needsAuth : true, role:'trader'},
         component: FarmOwnerReport
       },
       {
-        path: '/farms/owners/add', 
-        name: 'AddFarmOwner',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/farms/owners/add',
+        name: 'AddFarmOwner',
+        meta: {needsAuth : true, role:'trader'},
         component: AddFarmOwner
       },
       {
-        path: '/farm/:id', 
-        name: 'ShowFarm',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/farm/:id',
+        name: 'ShowFarm',
+        meta: {needsAuth : true, role:'trader'},
         component: ShowFarm
       },
       {
-        path: '/produces', 
-        name: 'AllProduces',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/produces',
+        name: 'AllProduces',
+        meta: {needsAuth : true, role:'trader'},
         component: AllProduces
       },
       {
-        path: '/produces/add', 
-        name: 'AddProduce',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/produces/add',
+        name: 'AddProduce',
+        meta: {needsAuth : true, role:'trader'},
         component: AddProduce
       },
       {
-        path: '/produce/:id', 
-        name: 'ShowProduce',  
-        meta: {needsAuth : true, role:'trader'},    
+        path: '/produce/:id',
+        name: 'ShowProduce',
+        meta: {needsAuth : true, role:'trader'},
         component: ShowProduce
       },
       {
         path: '/projects',
-        name: 'AllProjects', 
+        name: 'AllProjects',
         meta: {needsAuth : true, role:'trader'},
         component: AllProjects
       },
       {
         path: '/projects/report',
-        name: 'ProjectReport', 
+        name: 'ProjectReport',
         meta: {needsAuth : true, role:'trader'},
         component: ProjectReport
       },
       {
         path: '/projects/:id',
-        name: 'ShowProject', 
+        name: 'ShowProject',
         meta: {needsAuth : true, role:'trader'},
         component: ShowProject
       },
       {
         path: '/projects/:id/images',
-        name: 'ProgressImages', 
+        name: 'ProgressImages',
         meta: {needsAuth : true, role:'trader'},
         component: ProgressImages
       },
       {
         path: '/project/add',
-        name: 'AddProject', 
+        name: 'AddProject',
         meta: {needsAuth : true, role:'trader'},
         component: AddProject
       },
       {
         path: '/bid/orders',
-        name: 'AllBidOrders', 
+        name: 'AllBidOrders',
         meta: {needsAuth: true, role:'trader'},
         component: AllBidOrders
       },
       {
         path: '/bid/orders/filter',
-        name: 'AllBidOrdersFiltered', 
+        name: 'AllBidOrdersFiltered',
         meta: {needsAuth: true, role:'trader'},
         component: AllBidOrdersFiltered
       },
       {
         path: '/bid/orders/report',
-        name: 'BidOrderReport', 
+        name: 'BidOrderReport',
         meta: {needsAuth: true, role:'trader'},
         component: BidOrderReport
       },
@@ -461,7 +464,7 @@ const routes = [
         name: "PrintReport",
         meta:{needsAuth: true, role: "trader"},
         component:PrintReport
-      }
+      },
     ]
   },
   {
@@ -489,7 +492,7 @@ const routes = [
       },
       {
         path: '/projects/owner/:id',
-        name: 'ShowProjectOwner', 
+        name: 'ShowProjectOwner',
         meta: {needsAuth : true, role:'farm_owner'},
         component: ShowProjectOwner
       },
@@ -542,7 +545,7 @@ const routes = [
         component: ProfitSharingReportOwner
       },
     ]
-  }, 
+  },
   {
     path: '/distributor',
     redirect: '/catalog',
@@ -585,53 +588,72 @@ const routes = [
         component: DistMessaging
       },
     ]
-  }, 
+  },
   {
-    path:'/login', 
+    path:'/login',
     redirect:'/login/distributor'
   },
   {
-    path: '/guest', 
-    redirect: '/login/distributor',     
+    path: '/',
+    redirect: '/reports/dashboard',
+    component: PrintPreview,
+    children: [
+        {
+            path: '/reports/ProfitSharing/preview',
+            name: 'ProfitSharingPreview',
+            meta:{needsAuth: true, role: "trader"},
+            component:ProfitSharingPreview
+        },
+        {
+            path: '/reports/SupplyExpenditures/preview',
+            name: 'SupplyExpensePreview',
+            meta:{needsAuth: true, role: "trader"},
+            component:SupplyExpensePreview
+        }
+    ]
+  },
+  {
+    path: '/guest',
+    redirect: '/login/distributor',
     component: GuestLayout,
     children: [
       {
         path: '/login/distributor',
-        name: 'LoginDistributor',    
-        meta: {needsAuth: false},         
+        name: 'LoginDistributor',
+        meta: {needsAuth: false},
         component: Login
-        
+
       },
       {
         path: '/login/trader',
-        name: 'LoginTrader',    
-        meta: {needsAuth: false},         
+        name: 'LoginTrader',
+        meta: {needsAuth: false},
         component: Login
-        
+
       },
       {
         path: '/register/distributor',
-        name: 'RegisterDistributor',  
-        meta: {needsAuth: false},            
+        name: 'RegisterDistributor',
+        meta: {needsAuth: false},
         component: Register
-      },     
+      },
       {
         path: '/register/trader',
-        name: 'RegisterTrader',  
-        meta: {needsAuth: false},            
+        name: 'RegisterTrader',
+        meta: {needsAuth: false},
         component: Register
-      },     
+      },
     ]
   },
   {
     path: '/404',
-    name: 'ErrorPage',    
+    name: 'ErrorPage',
     meta: {needsAuth: false},
     component: ErrorPage
   },
   {
     path: '/:catchAll(.*)',
-    redirect: '/404',    
+    redirect: '/404',
   },
 ]
 
@@ -643,38 +665,38 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   store.state.loading = false
-    
-  if(!to.meta.needsAuth){    
+
+  if(!to.meta.needsAuth){
     store.state.loading = true
   }
   // else{
   //   store.watch(
   //     (state) => state.loading,
   //     (ready) => {
-  //         if(ready){              
+  //         if(ready){
   //           proceed()
   //           console.log(to)
   //         }
   //     }
   //   )
-  // }      
-  
+  // }
+
   // else if(!to.meta.needsAuth){
   //   store.state.loading = true
-  // } 
-  // else{    
+  // }
+  // else{
   //   store.state.loading = false
-  // }  
-  proceed() 
-  
-  
-  
+  // }
+  proceed()
+
+
+
   function proceed(){
-    if(to.meta.needsAuth && !auth.state.user.api_token){    
+    if(to.meta.needsAuth && !auth.state.user.api_token){
       console.log(1)
       next({name: 'LoginDistributor'});
-      
-    }    
+
+    }
     else if(!to.meta.needsAuth && auth.state.user.api_token){
       console.log(1)
       if(auth.state.user.role == 'trader'){
@@ -684,12 +706,12 @@ router.beforeEach((to, from, next) => {
       else if(auth.state.user.role == 'farm_owner'){
         console.log(1)
         next({name: 'DashboardOwner'});
-      }   
+      }
       else{
         console.log(1)
         next({name: 'Catalog'});
-      } 
-      
+      }
+
     }
     else{
       if(auth.state.user.role == 'trader'){
@@ -699,7 +721,7 @@ router.beforeEach((to, from, next) => {
         }
         else{
           next()
-        }        
+        }
       }
       else if(auth.state.user.role == 'distributor'){
         if(to.meta.role == 'trader' || to.meta.role == 'farm_owner'){
@@ -708,7 +730,7 @@ router.beforeEach((to, from, next) => {
         }
         else{
           next()
-        } 
+        }
       }
       else if(auth.state.user.role == 'farm_owner'){
         if(to.meta.role == 'trader' || to.meta.role == 'distributor'){
@@ -717,7 +739,7 @@ router.beforeEach((to, from, next) => {
         }
         else{
           next()
-        } 
+        }
       }
       else{
         next()
@@ -726,17 +748,17 @@ router.beforeEach((to, from, next) => {
       //   console.log(1)
       //   next({name: 'Dashboard'});
       // }
-      // else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){        
+      // else if(to.meta.role == 'trader' && auth.state.user.role == 'distributor'){
       //   console.log(1)
       //   next({name: 'Catalog'});
       // }
       // else{
       //   console.log(1)
       //   next();
-      // }     
+      // }
     }
   }
-  
+
 });
 
 

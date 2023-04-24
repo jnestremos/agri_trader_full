@@ -22,6 +22,7 @@ import stockOut from './modules/StockOut/stockOut'
 import expenditure from './modules/Expenditure/expenditure'
 import profitSharing from './modules/Profit Sharing/profitSharing'
 import salesReport from './modules/Sales Report/salesReport'
+import printReports from './modules/Print Reports/printReports'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -30,7 +31,7 @@ Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
-export default new Vuex.Store({  
+export default new Vuex.Store({
   state: {
     loading: false
   },
@@ -61,7 +62,7 @@ export default new Vuex.Store({
     dashboard,
     supplier,
     supply,
-    supplyPurchaseOrder, 
+    supplyPurchaseOrder,
     farm_owner,
     receivingReport,
     stockIn,
@@ -69,6 +70,7 @@ export default new Vuex.Store({
     stockOut,
     expenditure,
     profitSharing,
-    salesReport
+    salesReport,
+    printReports
   },
 })

@@ -8,18 +8,20 @@
               <table id="Report Selection" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
                   <thead align="center">
                       <tr>
-                          <router-link to="/income/summary"><th scope="col">Income Summary</th></router-link>
+                          <!-- <router-link to="/income/summary"><th scope="col">Income Summary</th></router-link> -->
                           <router-link to="/reports/ProduceReport"><th scope="col">Produce</th></router-link>
                           <router-link to="/reports/ProfitSharing"><th scope="col">Profit Sharing</th></router-link>
-                          <router-link to="/reports/ReceivingReport"><th scope="col">Receiving Report from Supply Purchase Order</th></router-link>
-                          <router-link to="/reports/supplyExpenditures"><th scope="col">Supply Purchase Expense</th></router-link>
+                          <router-link to="/reports/ReceivingReport"><th scope="col">Receiving Supply Report </th></router-link>
+                          <router-link to="/reports/supplyExpenditures"><th scope="col">Supply Expenditures</th></router-link>
                           <router-link to="/reports/spo"><th scope="col">Supply Purchase Order Reports</th></router-link>
-                          <router-link to="/reports/TraderSalesReport"><th scope="col">Trader Sales Report</th></router-link>
+                          <router-link to="/reports/salesReport"><th scope="col">Sales Report</th></router-link>
+                          <router-link to="/reports/OtherExpenditures"><th scope="col">Other Expenditures Report</th></router-link>
+                          <router-link to="/reports/print"><th scope="col">Overall Report</th></router-link>
                       </tr>
                   </thead>
             </table>
-         </div>   
-    </div>    
+         </div>
+    </div>
   </div>
 </template>
 
