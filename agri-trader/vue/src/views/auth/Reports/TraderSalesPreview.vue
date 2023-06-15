@@ -6,7 +6,7 @@
       <div class="container-fluid d-flex" style="height:90%; position: relative; z-index:9;">
         <div style="width:85%; height:65%" class="pb-5">
           <div class="form-row mb-3 mt-2">
-              <div class="col-lg-3 me-3">
+              <!-- <div class="col-lg-3 me-3">
                   <label class="form-label me-4 fw-bold">Select Project</label>
                   <select class="form-select" @change="setProject($event)">
                       <option value="None">None</option>
@@ -19,17 +19,17 @@
                       <option value="None">None</option>
                       <option v-for="(produce, index) in getSalesReport.produce_traders" :key="index" :value="produce.id">{{ getProduceName(produce) }}</option>
                   </select>
-              </div>
+              </div> -->
           </div>
           <div class="form-row mb-3 mt-2">
-            <div class="col-lg-3 me-3">
+            <!-- <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">From</label>
                 <input type="date" class="form-control" v-model="filter_dateFrom">
             </div>
             <div class="col-lg-3 me-3">
                 <label class="form-label me-4 fw-bold">To</label>
                 <input type="date" class="form-control" v-model="filter_dateTo">
-            </div>
+            </div> -->
           </div>
           <div class="container-fluid m-0 p-0" style="width:100%; height: 40vh;">
               <table id="supplySelect" class="table table-striped table-bordered align-middle" width="100%" style="margin: 0; border-collapse: collapse; border-spacing: 0cm;">
@@ -46,7 +46,7 @@
                       </tr>
                   </thead>
                   <tbody align="center">
-                        <tr v-for="(sale, index) in filteredTable" :key="index">
+                        <tr v-for="(sale, index) in records" :key="index">
                             <td>{{ sale.project_id }}</td>
                             <td>{{ getProjectNameSale(sale) }}</td>
                             <td>{{ getProduceNameSale(sale) }}</td>
@@ -59,10 +59,6 @@
                   </tbody>
               </table>
             </div>
-            <div class="text-left mt-4">
-                <router-link to="/reports/salesReport/preview"><button class="btn btn-success" @click="printReport()">Preview Sales Report</button></router-link>
-                <!-- <button class="btn btn-success" @click="printReport()">Preview Sales Report</button> -->
-            </div>
         </div>
       </div>
     </div>
@@ -71,20 +67,18 @@
 <script>
 import { add, format, sub } from 'date-fns';
   import { mapActions, mapGetters } from 'vuex';
-  export default {
-      name: "TraderSalesReport",
+  export default{
+      name: "TraderSalesPreview",
       created() {
-        this.fetchSalesReport()
-        .then(() => {
-            if(this.getSalesReport.sales && this.getSalesReport.sales.length > 0){
-                var sales = this.getSalesReport.sales.sort((a, b) => {
-                    return new Date(a.created_at) - new Date(b.created_at)
-                })
-                this.filter_dateFrom = format(new Date(sales[0].created_at), 'yyyy-MM-dd')
-                this.filter_dateTo = format(new Date(sales[sales.length - 1].created_at), 'yyyy-MM-dd')
-            }
+        console.log(this.getPrintReport)
+        if(!this.getPrintReport){
+            this.$router.push({ path: "/reports/salesReport" })
+        }
+        else{
+            this.records = this.getPrintReport
             this.readyApp()
-        })
+        }
+
       },
       data(){
         return {
@@ -92,6 +86,7 @@ import { add, format, sub } from 'date-fns';
             filter_produce: 'None',
             filter_dateFrom: null,
             filter_dateTo: null,
+            records: null,
         }
       },
       watch:{
@@ -117,7 +112,7 @@ import { add, format, sub } from 'date-fns';
         },
       },
       methods: {
-          ...mapActions(['readyApp', 'fetchSalesReport', 'fetchPrintReport']),
+          ...mapActions(['readyApp', 'fetchSalesReport']),
           setProject(e){
             this.filter_project = e.target.value
           },
@@ -199,12 +194,9 @@ import { add, format, sub } from 'date-fns';
                 return produce.prod_name + ' ' + prodObj[0].prod_type
             }
           },
-          printReport(){
-            this.fetchPrintReport(this.filteredTable)
-        }
       },
       computed:{
-        ...mapGetters(['getSalesReport']),
+        ...mapGetters(['getSalesReport', 'getPrintReport']),
         filteredTable(){
             var table = []
             var orderObj = null

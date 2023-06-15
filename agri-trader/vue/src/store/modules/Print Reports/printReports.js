@@ -10,6 +10,7 @@ const getters ={
 
 const actions ={
     fetchPrintReport({ commit }, records) {
+        console.log(records)
         commit('setPrintReport', records)
     }
 }

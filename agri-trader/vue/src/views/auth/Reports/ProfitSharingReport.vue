@@ -50,7 +50,7 @@
                           <th scope="col">Total Expenses</th>
                           <th scope="col">Owner Share</th>
                           <th scope="col">Trader Share</th>
-                          <th scope="col">Net Profit</th>
+                          <th scope="col">Profit After Share</th>
                           <th scope="col">Project Date Completed</th>
                       </tr>
                   </thead>
@@ -73,7 +73,7 @@
             <div class="d-flex align-items-baseline justify-content-between mt-5">
                 <h5>Total Income: {{ getIncome.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
                 <h5>Total Expenses: {{ getExpenses.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
-                <h5>Balance: {{ getBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
+                <h5>Net Profit: {{ getBalance.toLocaleString("en-PH", { style: 'currency', currency: 'PHP' }) }}</h5>
             </div>
             <div class="text-left mt-4">
                 <router-link to="/reports/ProfitSharing/preview"><button class="btn btn-success">Preview Profit Sharing Report</button></router-link>
@@ -257,9 +257,5 @@ import { format, sub, add } from 'date-fns';
 
 
   <style>
-    @media print {
-        .noprint {
-             visibility: hidden;
-         }
-    }
+
   </style>

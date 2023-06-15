@@ -16,7 +16,7 @@
                           <router-link to="/reports/spo"><th scope="col">Supply Purchase Order Reports</th></router-link>
                           <router-link to="/reports/salesReport"><th scope="col">Sales Report</th></router-link>
                           <router-link to="/reports/OtherExpenditures"><th scope="col">Other Expenditures Report</th></router-link>
-                          <router-link to="/reports/print"><th scope="col">Overall Report</th></router-link>
+                          <!-- <router-link to="/reports/print"><th scope="col">Overall Report</th></router-link> -->
                       </tr>
                   </thead>
             </table>

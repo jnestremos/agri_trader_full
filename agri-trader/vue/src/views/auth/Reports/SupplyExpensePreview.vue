@@ -47,7 +47,7 @@
     </div>
   </template>
 
-  <script>
+<script>
 import { format, add, sub } from 'date-fns';
   import { mapActions, mapGetters } from 'vuex';
   export default {

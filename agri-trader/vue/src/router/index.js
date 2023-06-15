@@ -78,6 +78,7 @@ import store from '../store'
 import PrintReport from '../views/auth/Reports/PrintReports.vue'
 import ProfitSharingPreview from '../views/auth/Reports/ProfitSharingPreview.vue'
 import SupplyExpensePreview from '../views/auth/Reports/SupplyExpensePreview.vue'
+import TraderSalesPreview from '../views/auth/Reports/TraderSalesPreview.vue'
 
 import AllProjectsOwner from '../views/auth/Farm Owner/AllProjects.vue'
 import ShowProjectOwner from '../views/auth/Farm Owner/ShowProject.vue'
@@ -609,6 +610,12 @@ const routes = [
             name: 'SupplyExpensePreview',
             meta:{needsAuth: true, role: "trader"},
             component:SupplyExpensePreview
+        },
+        {
+            path: '/reports/salesReport/preview',
+            name: 'TraderSalesPreview',
+            meta:{needsAuth: true, role: "trader"},
+            component:TraderSalesPreview
         }
     ]
   },
